@@ -34,6 +34,8 @@ export default {
 
                 <MarkdownEditor md="# Hallo Welt" />
 
+                <VFileInput label="Anhang (max 5 MB)"  />
+
             </VForm>
         </VCardText>
 
@@ -53,9 +55,7 @@ export default {
 </template>
 
 <style scoped>
-
-    .v-btn {
-        padding: 0px 20px;
-    }
-
+.v-btn {
+    padding: 0px 20px;
+}
 </style>
