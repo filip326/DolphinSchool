@@ -32,7 +32,7 @@ export default {
 
                 <VTextField label="Betreff" />
 
-                <MarkdownEditor md="# Hallo Welt" />
+                <MarkdownEditor />
 
                 <VFileInput label="Anhang (max 5 MB)"  />
 
