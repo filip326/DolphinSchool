@@ -36,9 +36,9 @@ export default {
             <VImg src="/img/School/DolphinSchool_light.png"/>
 
 
-            <VAppTitle>
+            <VAppBarTitle>
                 DolphinSchool
-            </VAppTitle>
+            </VAppBarTitle>
 
         </VAppBar>
 
