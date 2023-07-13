@@ -31,18 +31,14 @@ export default {
 </script>
 
 <template>
-    <v-list bg-color="background">
-        <v-list-item variant="tonal" density="comfortable" v-for="email in emails" :key="email.id">
-            <EmailPreview @email_clicked="onEmailSelected" :id="email.id" :sendby="email.sendby" :unread="email.read"
-                :subject="email.subject" :timestamp="email.timestamp" :stared="email.stared" />
-        </v-list-item>
-    </v-list>
-    <v-container>
-        <v-row>
-            <v-btn @click="loadMore()" height="40px" density="comfortable" elevation="0" variant="outlined" :rounded="8"
-                class="loadMoreBtn" prepend-icon="mdi-dots-horizontal" title="mehr Mails laden">mehr laden</v-btn>
-        </v-row>
-    </v-container>
+    <div>
+        <VList bg-color="background">
+            <VListItem variant="tonal" density="comfortable" v-for="email in emails" :key="email.id">
+                <EMailPreview @email_clicked="onEmailSelected" :id="email.id" :sendby="email.sendby" :unread="email.read"
+                    :subject="email.subject" :timestamp="email.timestamp" :stared="email.stared" />
+            </VListItem>
+        </VList>
+    </div>
 </template>
 
 <style scoped>
@@ -74,8 +70,7 @@ export default {
 }
 
 .v-list-item:first-child {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    margin-top: 5px;
 }
 
 .v-list-item:last-child {
