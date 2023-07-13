@@ -13,6 +13,7 @@
     "@types/dompurify": "^3.0.2",
     "@types/katex": "^0.16.1",
     "@types/marked": "^5.0.0",
+    "@types/mongodb": "^4.0.7",
     "@types/node": "^18.16.19",
     "@types/node-emoji": "^2.1.0",
     "eslint": "^8.44.0",
@@ -24,6 +25,7 @@
     "katex": "^0.16.8",
     "marked": "^5.1.1",
     "marked-linkify-it": "^3.0.2",
+    "mongodb": "^5.7.0",
     "node-emoji": "^2.1.0"
   }
 }
