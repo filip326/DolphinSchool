@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import markedLinkifyIt from "marked-linkify-it";
@@ -9,16 +10,25 @@ import { emojify } from "node-emoji";
 
 <script lang="ts" >
 export default {
-    name: "Md",
+    name: "Makdown",
     props: {
         md: {
             type: String,
             required: true
         },
     },
-    computed: {
-        rendered_html() {
-            console.log(this.md)
+    data() {
+        const rendered = "";
+
+        onMounted(() => { this.render() });
+
+        return {
+            rendered_html: rendered,
+        }
+    },
+
+    methods: {
+        render() {
             marked.use(markedLinkifyIt());
             const renderer = new marked.Renderer({
                 headerIds: false,
@@ -34,7 +44,7 @@ export default {
                 });
             };
             const mded = marked(this.md, { breaks: true, renderer: renderer });
-            return DOMPurify.sanitize(emojify(mded), {
+            this.rendered_html = DOMPurify.sanitize(emojify(mded), {
                 // ? Maybe doing it later
                 // ALLOWED_ATTR: [],
                 // ALLOWED_TAGS: [],
@@ -42,7 +52,13 @@ export default {
                 USE_PROFILES: { html: true, svg: true, mathMl: true, svgFilters: false }
             });
         }
+    },
+    watch: {
+        md() {
+            this.render();
+        }
     }
+
 }
 
 </script>
@@ -91,4 +107,5 @@ h4,
 h5,
 h6 {
     margin-bottom: 8px;
-}</style>
+}
+</style>
