@@ -17,7 +17,7 @@ export default defineNuxtConfig({
     // '/api/**': { cors: true },
     // Redirects legacy urls
     // '/old-page': { redirect: '/new-page' }
-  }
+  },
   modules: [
     "nuxt-vuetify",
   ],

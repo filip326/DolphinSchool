@@ -1,11 +1,6 @@
 <script lang="ts">
-import Markdown from "./Markdown.vue";
-
 export default {
     name: "MarkdownEditor",
-    components: {
-        Markdown
-    },
     data() {
         return {
             md: "",
