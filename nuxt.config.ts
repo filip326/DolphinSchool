@@ -18,15 +18,6 @@ export default defineNuxtConfig({
     // Redirects legacy urls
     // '/old-page': { redirect: '/new-page' }
   },
-  loadingIndicator: {    
-    name: 'rotating-plane',    
-    color: 'blue',    
-    background: 'red'  
-  },
-  loading: {    
-    color: 'DodgerBlue',    
-    height: '10px'  
-  },
   modules: [
     "nuxt-vuetify",
   ],
