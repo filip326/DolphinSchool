@@ -27,7 +27,7 @@ export default {
 </script>
 
 <template>
-    <v-app>
+    <v-app dark>
 
         <VAppBar>
             <VAppBarNavIcon @click="show_nav_drawer_button = !show_nav_drawer_button">
