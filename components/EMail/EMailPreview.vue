@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+</script>
+
 <script lang="ts">
 export default {
     name: "EMailPreview",
@@ -22,21 +26,20 @@ export default {
         stared: Boolean,
     },
     data() {
+        const width = ref(0);
+        onMounted(() => {
+            width.value = window.innerWidth;
+            window.addEventListener("resize", () => {
+                width.value = window.innerWidth;
+            });
+
+        });
         return {
-            width: window.innerWidth,
-            hover: false
+            width,
+            hover: false,
         };
     },
-    mounted() {
-        window.addEventListener("resize", this.updateWidth);
-    },
-    beforeUnmount() {
-        window.removeEventListener("resize", this.updateWidth);
-    },
     methods: {
-        updateWidth() {
-            this.width = window.innerWidth;
-        },
         markAsRead() {
             return alert(this.id); // todo
         },
@@ -207,4 +210,5 @@ export default {
     .starMail {
         margin-left: auto;
     }
-}</style>
+}
+</style>
