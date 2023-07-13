@@ -21,9 +21,6 @@ export default defineNuxtConfig({
   modules: [
     "nuxt-vuetify",
   ],
-  plugins: [
-    { src: '@/plugins/dolphin-plugin.js', ssr: false }
-  ],
   vuetify: {
     icons: {
       defaultSet: "mdi",
