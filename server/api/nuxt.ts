@@ -9,9 +9,10 @@ export default eventHandler(async (event) => {
                     let user = (await dolphin.users?.findUser({
                         username: event.context.auth.nickname
                     }))?.[0] as User | undefined;
+                    console.log(event.context.auth.nickname)
                     const response = {
                         dolphin: dolphin.ready,
-                        users: user ?? "No user found"
+                        user: user?.fullName ?? "No user found"
                     };
                     resolve(response);
                 } else {
@@ -29,8 +30,8 @@ export default eventHandler(async (event) => {
         }
 
         // Check if users is defined before accessing its properties
-        if (response.users) {
-            console.log(response.users.username);
+        if (response.user) {
+            console.log(response.user.username);
         }
         return response;
     } catch (error) {
