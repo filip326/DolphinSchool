@@ -14,7 +14,7 @@ export default {
                 { title: 'Home', icon: 'mdi-home', link: '/' },
                 { title: 'About', icon: 'mdi-information', link: '/' },
                 { title: 'Mail', icon: 'mdi-email', link: '/mail' },
-                { title: 'Settings', icon: 'mdi-cog', link: '/' }
+                { title: 'Settings', icon: 'mdi-cog', link: '/settings' }
 
             ] as { title: string, icon: `mdi-${string}`, link: string }[]
         }
