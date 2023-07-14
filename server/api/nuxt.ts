@@ -6,18 +6,12 @@ export default eventHandler(async (event) => {
         const response: any = await new Promise((resolve, reject) => {
             new Dolphin("mongodb://127.0.0.1:27017", "DolphinSchool", async (dolphin, success, error) => {
                 if (success) {
-                    let users: string[] = [];
-                    let usersRes = await dolphin.users?.list({})
-                    if (usersRes && usersRes[0]) {
-                        users = usersRes[0].map((user: User) => {
-                            return user.username;
-                        });
-                    } else {
-                        users = ["No users found"];
-                    }
+                    let user = (await dolphin.users?.findUser({
+                        username: event.context.auth.nickname
+                    }))?.[0] as User | undefined;
                     const response = {
                         dolphin: dolphin.ready,
-                        users: users
+                        users: user ?? "No user found"
                     };
                     resolve(response);
                 } else {
@@ -28,6 +22,16 @@ export default eventHandler(async (event) => {
                 }
             });
         });
+
+        // Check if dolphin is defined before accessing its properties
+        if (response.dolphin) {
+            console.log(response.dolphin);
+        }
+
+        // Check if users is defined before accessing its properties
+        if (response.users) {
+            console.log(response.users.username);
+        }
         return response;
     } catch (error) {
         console.error(error);
