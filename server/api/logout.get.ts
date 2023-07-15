@@ -1,8 +1,3 @@
-# API
-
-Here are all files returning JSON. File should look  like:
-
-```ts
 import Dolphin from "@/server/Dolphin/Dolphin";
 
 export default eventHandler(async (event) => {
@@ -10,7 +5,7 @@ export default eventHandler(async (event) => {
         const response: any = await new Promise((resolve, reject) => {
             new Dolphin("mongodb://127.0.0.1:27017", "DolphinSchool", async (dolphin, success, error) => {
                 if (success) {
-                    // todo
+                    // todo logout
                     const response = {
 
                     };
@@ -31,7 +26,3 @@ export default eventHandler(async (event) => {
         };
     }
 });
-```
-
-**/*.get.ts => Get Request handler
-**server/*.post.ts  => Postb Request handler

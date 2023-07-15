@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     // Redirects legacy urls
     // '/old-page': { redirect: '/new-page' }
   },
+  logLevel: "info",
   modules: [
     "nuxt-vuetify",
   ],

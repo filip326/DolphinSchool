@@ -9,10 +9,14 @@ export default {
 <template>
     <div>
         <NuxtLayout>
-            {{ 
-                error?.message || 
-                'An error occurred while trying to access the requested page.'
-             }}
+            <h1>
+                {{ error?.statusCode || 'Error' }}
+                {{  error?.name || 'Error' }}
+            </h1>
+            <p>
+                {{ error?.message }}
+                {{ error?.statusMessage }}
+            </p>
         </NuxtLayout>
     </div>
 </template>
