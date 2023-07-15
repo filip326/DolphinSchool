@@ -17,8 +17,12 @@ export default {
                 <v-card-text>
                     <slot></slot>
                 </v-card-text>
+                <v-card-actions>
+                    <v-btn @click="clearError({
+                        redirect: '/'
+                    })">Zurück zu Startseite</v-btn>
+                </v-card-actions>
             </v-card>
-            <slot />
         </VMain>
     </v-app>
 </template>
