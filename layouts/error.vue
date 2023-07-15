@@ -9,7 +9,7 @@ export default {
         <VMain class="errorWrapper">
             <v-card>
                 <v-card-img>
-                    <VImg src="/img/School/DolphinSchool_light.png" cover />
+                    <VImg src="/img/School/DolphinSchool_light.png" height="250px" />
                 </v-card-img>
                 <v-card-title>
                     Fehler
