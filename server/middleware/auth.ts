@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     try {
         const config = useRuntimeConfig();
         const authObject: any = await new Promise((resolve, _) => {
-            new Dolphin(config.DB_URL, config.DB_URL, async (dolphin, success, error) => {
+            new Dolphin(config.DB_URL, config.DB_NAME, async (dolphin, success, error) => {
                 if (success) {
                     let cookies = parseCookies(event);
                     let token = cookies?.token;
