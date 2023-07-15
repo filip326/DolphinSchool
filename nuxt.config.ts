@@ -20,15 +20,7 @@ export default defineNuxtConfig({
   },
   modules: [
     "nuxt-vuetify",
-    // "nuxt-mongoose",
   ],
-  // mongoose: {
-  //   uri: 'mongodb://127.0.0.1:27017',
-  //   options: {
-  //     dbName: 'DolphinSchool',
-  //   },
-  //   modelsDir: 'models',
-  // },
   vuetify: {
     icons: {
       defaultSet: "mdi",
@@ -53,7 +45,6 @@ export default defineNuxtConfig({
             warning: "#fb8200", // Orange
           }
         }
-
       },
     }
   }
