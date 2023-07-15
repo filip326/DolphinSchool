@@ -6,7 +6,7 @@ import Auth from "../types/auth";
 
 export default defineEventHandler(async (event) => {
     try {
-        const authObject: Auth = await new Promise((resolve, reject) => {
+        const authObject: any = await new Promise((resolve, _) => {
             new Dolphin("mongodb://127.0.0.1:27017", "DolphinSchool", async (dolphin, success, error) => {
                 if (success) {
                     let cookies = parseCookies(event);
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
                         const authObject: Auth = {
                             authenticated: false
                         };
-                        reject(authObject);
+                        return resolve(authObject);
                     }
 
                     // find the user in the sessions
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
                         const authObject: Auth = {
                             authenticated: false
                         };
-                        return reject(authObject);
+                        return resolve(authObject);
                     }
 
                     let sesObj: Session = session[1];
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
                         const authObject: Auth = {
                             authenticated: false
                         };
-                        return reject(authObject);
+                        return resolve(authObject);
                     }
 
                     let usr: User = user[1];
@@ -43,40 +43,38 @@ export default defineEventHandler(async (event) => {
                         authenticated: true,
                         user: usr
                     };
-                    resolve(authObject);
+                    return resolve(authObject);
                 } else {
-                    const authObject: Auth = {
-                        authenticated: false
-                    };
-                    reject(authObject);
+                    throw createError({
+                        statusCode: 500,
+                        message: "Error while loading dolphin",
+                        data: error,
+                    });
                 }
             });
         });
-
         event.context.auth = authObject;
     } catch (error) {
-        console.error(error);
         event.context.auth = {
             authenticated: false,
         };
+        throw createError({
+            statusCode: 503,
+            message: "Error while authenticating",
+            data: error,
+        });
     }
 
-    if ((!event.context.auth.authenticated || !event.context.auth.user)) {
+    if (!event.context.auth.authenticated || !event.context.auth.user) {
         const publicRoutes = [
             "/",
         ];
 
-        if (!publicRoutes.includes(event.path)) {
-            if (event.path.startsWith("/api")) {
-                throw createError({
-                    statusCode: 401,
-                    message: "Unauthorized",
-                });
-            } else {
-                if (!event.path.includes(".")) {
-                    navigateTo("/");
-                }
-            }
+        if (publicRoutes.includes(event.path) == false) {
+            throw createError({
+                statusCode: 401,
+                message: "Unauthorized",
+            });
         }
     }
 });

@@ -1,14 +1,18 @@
-<script setup>
-const props = defineProps({
-  error: Object
-})
+<script lang="ts">
+export default {
+    props: {
+        error: Object
+    }
+}
 </script>
 
 <template>
     <div>
-        <NuxtLayout name="error">
-            {{ error.message }}
+        <NuxtLayout>
+            {{ 
+                error?.message || 
+                'An error occurred while trying to access the requested page.'
+             }}
         </NuxtLayout>
     </div>
 </template>
-  
