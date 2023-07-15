@@ -5,6 +5,23 @@ export default defineNuxtConfig({
   runtimeConfig: {
     DB_NAME: "DolphinSchool",
     DB_URL: "mongodb://127.0.0.1:27017/",
+    public: {
+      DOMAIN: "http://127.0.0.1:3000/",
+    }
+  },
+  app: {
+    head: {
+      charset: 'utf-8',
+      viewport: 'width=device-width, initial-scale=1',
+      noscript: [{ innerHTML: 'This website requires JavaScript.' }],
+      titleTemplate: '%s | DolphinSchool',
+      meta: [
+        // todo @Copilot - add meta tags here (Twitter, Facebook, Google, etc.)
+      ],
+      link: [
+        // todo @Copilot - add link tags here (favicon, etc.)
+      ],
+    }
   },
   devtools: { enabled: true },
   ssr: false,
