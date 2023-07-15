@@ -6,12 +6,8 @@ const props = defineProps({
 
 <template>
     <div>
-        <NuxtLayout>
-            <v-alert :title="`${error.statusCode} Ein Fehler ist aufgetreten!`" :text="error.statusMessage">
-                <v-btn @click="clearError({ redirect: '/' })">
-                    Zurück
-                </v-btn>
-            </v-alert>
+        <NuxtLayout name="error">
+            {{ error.message }}
         </NuxtLayout>
     </div>
 </template>
