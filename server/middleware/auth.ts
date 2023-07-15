@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
                     }
 
                     let sesObj: Session = session[1];
-                    let user = await dolphin.users?.findUser({id: sesObj.userId});
+                    let user = await dolphin.users?.findUser({ id: sesObj.userId });
 
                     if (!user || !user[0] || !user[1]) {
                         const authObject: Auth = {
@@ -61,7 +61,22 @@ export default defineEventHandler(async (event) => {
         };
     }
 
-    if (!event.context.auth.authenticated || !event.context.auth.user) {
-        navigateTo("/");
+    if ((!event.context.auth.authenticated || !event.context.auth.user)) {
+        const publicRoutes = [
+            "/",
+        ];
+
+        if (!publicRoutes.includes(event.path)) {
+            if (event.path.startsWith("/api")) {
+                throw createError({
+                    statusCode: 401,
+                    message: "Unauthorized",
+                });
+            } else {
+                if (!event.path.includes(".")) {
+                    navigateTo("/");
+                }
+            }
+        }
     }
 });
