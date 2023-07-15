@@ -2,8 +2,9 @@ import Dolphin from "@/server/Dolphin/Dolphin";
 
 export default eventHandler(async (event) => {
     try {
+        const config = useRuntimeConfig();
         const response: any = await new Promise((resolve, reject) => {
-            new Dolphin("mongodb://127.0.0.1:27017", "DolphinSchool", async (dolphin, success, error) => {
+            new Dolphin(config.DB_URL, config.DB_NAME, async (dolphin, success, error) => {
                 if (success) {
                     // todo login
                     const response = {

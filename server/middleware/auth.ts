@@ -1,13 +1,13 @@
 import Dolphin from "@/server/Dolphin/Dolphin";
-import { navigateTo } from "nuxt/app";
 import Session from "../Dolphin/Session/Session";
 import User from "../Dolphin/User/User";
 import Auth from "../types/auth";
 
 export default defineEventHandler(async (event) => {
     try {
+        const config = useRuntimeConfig();
         const authObject: any = await new Promise((resolve, _) => {
-            new Dolphin("mongodb://127.0.0.1:27017", "DolphinSchool", async (dolphin, success, error) => {
+            new Dolphin(config.DB_URL, config.DB_URL, async (dolphin, success, error) => {
                 if (success) {
                     let cookies = parseCookies(event);
                     let token = cookies?.token;

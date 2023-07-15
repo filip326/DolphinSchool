@@ -2,6 +2,10 @@ import { aliases, mdi } from "vuetify/iconsets/mdi";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  runtimeConfig: {
+    DB_NAME: "DolphinSchool",
+    DB_URL: "mongodb://127.0.0.1:27017/",
+  },
   devtools: { enabled: true },
   ssr: false,
   routeRules: {
