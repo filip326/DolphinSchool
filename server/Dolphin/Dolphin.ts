@@ -3,36 +3,53 @@ import GlobalUserManager from "./User/GlobalUserManager";
 import SessionManager from "./Session/SessionManager";
 import GlobalCourseManager from "./Course/GlobalCourseManager";
 
+const runtimeConfig = useRuntimeConfig();
+
 class Dolphin {
-    ready: boolean = false;
-    database?: Db;
-    users?: GlobalUserManager;
-    sessions?: SessionManager;
-    courses?: GlobalCourseManager;
+  ready: boolean = false;
+  database: Db;
+  users: GlobalUserManager;
+  sessions: SessionManager;
+  courses: GlobalCourseManager;
 
-    private static connectionPromise: Promise<Db> | null = null;
+  private static _instance?: Dolphin;
 
-    constructor(mongoDbUrl: string, dbName: string, callback: (dolphin: Dolphin, success: boolean, error?: Error) => void) {
-        if (Dolphin.connectionPromise === null) {
-            Dolphin.connectionPromise = MongoClient.connect(mongoDbUrl).then((client) => {
-                console.log("Connected successfully to DB");
-                return client.db(dbName);
-            });
-        }
+  static get instance(): Dolphin | undefined {
+    return Dolphin._instance;
+  };
 
-        Dolphin.connectionPromise
-            .then((db) => {
-                this.database = db;
-                this.users = new GlobalUserManager(this.database);
-                this.sessions = new SessionManager(this.database);
-                this.courses = new GlobalCourseManager(this.database);
-                this.ready = true;
-                callback(this, true);
-            })
-            .catch((error) => {
-                callback(this, false, error);
-            });
-    }
+  private constructor(db: Db, cb: (dolphin: Dolphin) => void) {
+
+    if (Dolphin._instance) throw new Error("Dolphin instance already exists! Class Dolphin is a singleton!");
+
+    this.database = db;
+
+    this.users = new GlobalUserManager(this.database);
+    this.sessions = new SessionManager(this.database);
+    this.courses = new GlobalCourseManager(this.database);
+
+    this.ready = true;
+
+    Dolphin._instance = this;
+
+    cb(this);
+
+  }
+
+  static init(): Promise<Dolphin> {
+    return new Promise(async (resolve: (value: Dolphin) => void, reject) => {
+
+      if (Dolphin.instance) return resolve(Dolphin.instance);
+
+      const db = (await MongoClient.connect(runtimeConfig.DB_URL).catch(reject))?.db(runtimeConfig.DB_NAME);
+      
+      if (!db) return;
+
+      new Dolphin(db, resolve);
+
+    });
+  }
+
 }
 
 export default Dolphin;

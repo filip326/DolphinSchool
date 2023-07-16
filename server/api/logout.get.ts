@@ -1,29 +1,29 @@
 import Dolphin from "@/server/Dolphin/Dolphin";
 
 export default eventHandler(async (event) => {
-    try {
-        const config = useRuntimeConfig();
-        const response: any = await new Promise((resolve, reject) => {
-            new Dolphin(config.DB_URL, config.DB_NAME, async (dolphin, success, error) => {
-                if (success) {
-                    // todo logout
-                    const response = {
-
-                    };
-                    resolve(response);
-                } else {
-                    const response = {
-                        error: error
-                    };
-                    reject(response);
-                }
-            });
-        });
-
-        return response;
-    } catch (error) {
-        return {
-            error: error
-        };
+    const dolphin = Dolphin.instance ?? await Dolphin.init();
+    // find the session by the cookie "token"
+    const token = parseCookies(event).token;
+    if (!token || typeof token !== "string") {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
+
+    const [ session, sessionFindError ] = await dolphin.sessions.findSession(token);
+    if (sessionFindError) {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
+    }
+
+    // disable the session
+    const [ sessionDisableResult, sessionDisableError ] = await session.disable();
+    if (sessionDisableError || sessionDisableResult !== true) {
+        throw createError({ statusCode: 500, message: "Internal server error" });
+    }
+
+    // delete the cookie
+    deleteCookie(event, "token");
+
+    // send response
+    return {
+        message: "Logged out"
+    };
 });

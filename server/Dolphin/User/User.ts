@@ -149,6 +149,16 @@ class User implements WithId<IUser> {
             return [undefined, new Error("Hashing error")];
         }
     }
+    
+    async MFAEnabled(): Promise<MethodResult<false>> {
+        // TODO: implement MFA
+        return [false, null];
+    }
+
+    async checkMFA(code: string): Promise<MethodResult<boolean>> {
+        // TODO: implement MFA
+        return [false, null];
+    }
 }
 
 export default User;

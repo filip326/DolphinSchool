@@ -1,29 +1,53 @@
 import Dolphin from "@/server/Dolphin/Dolphin";
 
 export default eventHandler(async (event) => {
-    try {
-        const config = useRuntimeConfig();
-        const response: any = await new Promise((resolve, reject) => {
-            new Dolphin(config.DB_URL, config.DB_NAME, async (dolphin, success, error) => {
-                if (success) {
-                    // todo login
-                    const response = {
 
-                    };
-                    resolve(response);
-                } else {
-                    const response = {
-                        error: error
-                    };
-                    reject(response);
-                }
-            });
-        });
+    const dolphin = Dolphin.instance ?? await Dolphin.init();
+    const { username, password } = await readBody(event);
 
-        return response;
-    } catch (error) {
-        return {
-            error: error
-        };
+    if (!username || !password || typeof username !== "string" || typeof password !== "string") {
+        throw createError({ statusCode: 400, message: "Invalid body" });
     }
+
+    const [ user, findUserError ] = await dolphin.users.findUser({ username });
+
+    if (findUserError) {
+        throw createError({ statusCode: 401, message: "Invalid username or password" });
+    }
+    
+    const [ passwordCorrect, passwordCheckingError ] = await user.comparePassword(password);
+
+    if (passwordCheckingError) {
+        throw createError({ statusCode: 500, message: "Internal server error" });
+    }
+
+    if (!passwordCorrect) {
+        throw createError({ statusCode: 401, message: "Invalid username or password" });
+    }
+
+    const [ session, sessionCreateError ] = await dolphin.sessions.createSession(user);
+    
+    if (sessionCreateError) {
+        throw createError({ statusCode: 500, message: "Internal server error" });
+    }
+
+    const token = session.token;
+    const expires = session.expires;
+
+    // check if user needs 2fa
+    // TODO: implement 2fa
+
+    setCookie(event, "token", token, {
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        secure: useRuntimeConfig().prod,
+        httpOnly: true,
+        sameSite: "strict",
+    })
+
+    // send response with username
+    return {
+        username,
+        expires
+    };   
+
 });

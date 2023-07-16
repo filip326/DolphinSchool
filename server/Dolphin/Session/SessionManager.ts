@@ -21,13 +21,12 @@ class SessionManager {
         return returnString;
     }
 
-    async createSession(user: User, ip: string, expires?: number, short?: boolean): Promise<MethodResult<Session>> {
+    async createSession(user: User, expires?: number, short?: boolean): Promise<MethodResult<Session>> {
         const session: ISession = {
             type: short ? "ShortSession" : "Session",
             token: this.generateToken(),
             userId: user._id,
             expires: expires ?? Date.now() + 604_800_000, // 7 days
-            ip: ip,
             state: SessionState.INACTIVE,
             lastUsed: Date.now(),
         };
@@ -49,8 +48,8 @@ class SessionManager {
         }
     }
 
-    async createShortSession(user: User, ip: string): Promise<MethodResult<Session>> {
-        return this.createSession(user, ip, Date.now() + 3600_000, true); // 1 hour
+    async createShortSession(user: User): Promise<MethodResult<Session>> {
+        return this.createSession(user, Date.now() + 3600_000, true); // 1 hour
     }
 
     async findSession(token: string): Promise<MethodResult<Session>> {

@@ -1,80 +1,64 @@
 import Dolphin from "@/server/Dolphin/Dolphin";
-import Session from "../Dolphin/Session/Session";
-import User from "../Dolphin/User/User";
-import Auth from "../types/auth";
+import { SessionState } from "../Dolphin/Session/Session";
 
 export default defineEventHandler(async (event) => {
-    try {
-        const config = useRuntimeConfig();
-        const authObject: any = await new Promise((resolve, _) => {
-            new Dolphin(config.DB_URL, config.DB_NAME, async (dolphin, success, error) => {
-                if (success) {
-                    let cookies = parseCookies(event);
-                    let token = cookies?.token;
-                    if (!token) {
-                        const authObject: Auth = {
-                            authenticated: false
-                        };
-                        return resolve(authObject);
-                    }
+    const dolphin = Dolphin.instance ?? await Dolphin.init();
+    // get token from cookies
+    const token = parseCookies(event).token;
 
-                    // find the user in the sessions
-                    const session = await dolphin.sessions?.findSession(token);
-                    if (!session || !session[0] || !session[1]) {
-                        const authObject: Auth = {
-                            authenticated: false
-                        };
-                        return resolve(authObject);
-                    }
+    // no token, event.context.auth = false; do nothing
+    if (!token) {
+        event.context.auth.authenticated = false;
+        event.context.auth.mfa_required = false;
+        event.context.auth.user = undefined;
+        return;
+    };
 
-                    let sesObj: Session = session[1];
-                    let user = await dolphin.users?.findUser({ id: sesObj.userId });
+    // check if token is valid
+    const [session, sessionFindError] = await dolphin.sessions.findSession(token);
 
-                    if (!user || !user[0] || !user[1]) {
-                        const authObject: Auth = {
-                            authenticated: false
-                        };
-                        return resolve(authObject);
-                    }
-
-                    let usr: User = user[1];
-
-                    const authObject: Auth = {
-                        authenticated: true,
-                        user: usr
-                    };
-                    return resolve(authObject);
-                } else {
-                    throw createError({
-                        statusCode: 500,
-                        message: "Error while loading dolphin",
-                        data: error,
-                    });
-                }
-            });
-        });
-        event.context.auth = authObject;
-    } catch (error) {
-        event.context.auth = {
-            authenticated: false,
-        };
-        throw createError({
-            statusCode: 503,
-            message: "Error while authenticating",
-            data: error,
-        });
+    if (sessionFindError) {
+        event.context.auth.authenticated = false;
+        event.context.auth.mfa_required = false;
+        event.context.auth.user = undefined;
+        return;
     }
 
-    if (!event.context.auth.authenticated || !event.context.auth.user) {
-        const publicRoutes = [
-            "/",
-        ];
-
-        if (publicRoutes.includes(event.path) == false) {
-            throw createError({
-                statusCode: 401,
-                message: "Unauthorized",
-            });
-        }
+    // check if session is expired
+    if (session.isExpired) {
+        event.context.auth.authenticated = false;
+        event.context.auth.mfa_required = false;
+        event.context.auth.user = undefined;
+        return;
     }
+
+    // get user from session
+    const [user, userFindError] = await dolphin.users.findUser({ id: session.userId });
+    if (userFindError) {
+        event.context.auth.authenticated = false;
+        event.context.auth.mfa_required = false;
+        event.context.auth.user = undefined;
+        return;
+    }
+
+    // check if user needs 2fa and has not passed yet
+    if (session.state === SessionState.MFA_REQ) {
+        event.context.auth.authenticated = false;
+        event.context.auth.mfa_required = true;
+        event.context.auth.user = user;
+        return;
+    }
+
+    // check if session is active
+    if (session.state === SessionState.ACTIVE) {
+        event.context.auth.authenticated = true;
+        event.context.auth.mfa_required = false;
+        event.context.auth.user = user;
+        return;
+    }
+
+    event.context.auth.authenticated = false;
+    event.context.auth.mfa_required = false;
+    event.context.auth.user = undefined;
+    return;
 });

@@ -4,7 +4,8 @@ import { Collection, ObjectId, WithId } from "mongodb";
 enum SessionState {
     INACTIVE =  0,
     ACTIVE   =  1,
-    DELETED  =  2
+    MFA_REQ  =  2,
+    DELETED  =  3,
 }
 
 interface ISession {
@@ -14,7 +15,6 @@ interface ISession {
     token: string;
     userId: ObjectId;
     expires: number;
-    ip: string;
 
 
     lastUsed: number;
@@ -34,7 +34,6 @@ class Session implements ISession {
     lastUsed: number;
 
     expires: number;
-    ip: string;
     
     state: SessionState;
 
@@ -47,7 +46,6 @@ class Session implements ISession {
         this.userId = session.userId;
         this.state = session.state;
         this.expires = session.expires;
-        this.ip = session.ip;
         this.lastUsed = Date.now();
 
         this.sessionCollection = sessionCollection;
@@ -63,11 +61,10 @@ class Session implements ISession {
         }
     }
 
-    async reportUsage(ip: string): Promise<MethodResult<boolean>> {
+    async reportUsage(): Promise<MethodResult<boolean>> {
         this.lastUsed = Date.now();
-        this.ip = ip;
         try {
-            const dbResult = await this.sessionCollection.updateOne({ _id: this._id }, { $set: { lastUsed: this.lastUsed, ip: this.ip } });
+            const dbResult = await this.sessionCollection.updateOne({ _id: this._id }, { $set: { lastUsed: this.lastUsed } });
             return [ dbResult.modifiedCount === 1, null ];
         } catch {
             return [ undefined, new Error("Failed to report session usage") ];

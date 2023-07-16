@@ -5,6 +5,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     DB_NAME: "DolphinSchool",
     DB_URL: "mongodb://127.0.0.1:27017/",
+    // TODO: change to true for production
+    //! WARNING: use false only in development, since it disables important security features
+    prod: false,
     public: {
       DOMAIN: "http://127.0.0.1:3000/",
     }
