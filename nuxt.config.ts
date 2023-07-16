@@ -23,7 +23,8 @@ export default defineNuxtConfig({
       ],
     }
   },
-  devtools: { enabled: true },
+  css: ['~/assets/base.css'],
+  devtools: { enabled: false },
   ssr: false,
   routeRules: {
     // Homepage pre-rendered at build time
