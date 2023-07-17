@@ -2,6 +2,11 @@ import Dolphin from "@/server/Dolphin/Dolphin";
 import { SessionState } from "../Dolphin/Session/Session";
 
 export default defineEventHandler(async (event) => {
+    event.context.auth = {
+        authenticated: false,	
+        mfa_required: false,
+        user: undefined,
+    };
     const dolphin = Dolphin.instance ?? await Dolphin.init();
     // get token from cookies
     const token = parseCookies(event).token;

@@ -1,7 +1,7 @@
 <template>
     <VCard>
 
-        <VCardTitle>{{ this.$route.params.id }}<span class="author">von Autor</span></VCardTitle>
+        <VCardTitle>{{ $route.params.id }}<span class="author">von Autor</span></VCardTitle>
 
         <VCardText>
             <Markdown md="# Hello World" />
