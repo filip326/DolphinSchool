@@ -6,6 +6,7 @@ import PermissionManager, { Permissions } from "../Permissions/PermissionManager
 import Parent from "./Parent/Parent";
 import { compare, hash } from "bcrypt";
 import { ISubject } from "../Course/Subject";
+import UserMessageManager from "../Messenger/UserMessageManager";
 
 interface IUser {
     type: UserType;
@@ -159,6 +160,7 @@ class User implements WithId<IUser> {
         // TODO: implement MFA
         return [false, null];
     }
+
 }
 
 export default User;

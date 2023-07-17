@@ -2,6 +2,11 @@ import { MongoClient, Db } from "mongodb";
 import GlobalUserManager from "./User/GlobalUserManager";
 import SessionManager from "./Session/SessionManager";
 import GlobalCourseManager from "./Course/GlobalCourseManager";
+import UserMessageManager from "./Messenger/UserMessageManager";
+import User from "./User/User";
+import MethodResult from "./MethodResult";
+import { IMessage } from "./Messenger/Message";
+import { IUserMessage } from "./Messenger/UserMessage";
 
 const runtimeConfig = useRuntimeConfig();
 
@@ -48,6 +53,17 @@ class Dolphin {
       new Dolphin(db, resolve);
 
     });
+  }
+
+  async getMessenger(user: User): Promise<MethodResult<UserMessageManager>> {
+
+    const userMessageManager = new UserMessageManager(this.database.collection<IMessage>("messages"),
+      this.database.collection<IUserMessage>("userMessages"), {
+        userId: user._id,
+      });
+
+    return [ userMessageManager, null ]
+
   }
 
 }

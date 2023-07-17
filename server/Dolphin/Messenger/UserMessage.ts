@@ -7,6 +7,7 @@ interface IUserMessage {
 
     owner: ObjectId;
 
+    subject: string;
     author: ObjectId;
     message: ObjectId;
     read: boolean;
@@ -20,6 +21,7 @@ class UserMessage implements IUserMessage {
     owner: ObjectId;
     author: ObjectId;
 
+    subject: string;
     message: ObjectId;
     read: boolean;
     stared: boolean;
@@ -31,6 +33,7 @@ class UserMessage implements IUserMessage {
     constructor(messageCollection: Collection<IMessage>, userMessageCollection: Collection<IUserMessage>, userMessage: WithId<IUserMessage>) {
         this.owner = userMessage.owner;
         this.author = userMessage.author;
+        this.subject = userMessage.subject;
         this.message = userMessage.message;
         this.read = userMessage.read;
         this.stared = userMessage.stared;
