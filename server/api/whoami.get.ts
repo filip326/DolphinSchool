@@ -1,4 +1,3 @@
-import Dolphin from "@/server/Dolphin/Dolphin";
 import User from "../Dolphin/User/User";
 
 export default eventHandler(async (event) => {
