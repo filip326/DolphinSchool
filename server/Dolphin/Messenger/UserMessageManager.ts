@@ -8,6 +8,7 @@ interface IUserMessageManager {
 }
 
 interface MessageFilterOptions {
+    subject?: string;
     read?: boolean;
     stared?: boolean;
     newsletter?: boolean;
@@ -17,14 +18,12 @@ interface MessageFilterOptions {
 
 class UserMessageManager implements IUserMessageManager {
 
-    id: ObjectId;
     userId: ObjectId;
 
     private readonly userMessageCollection: Collection<IUserMessage>;
     private readonly messageCollection: Collection<IMessage>;
 
-    constructor(messageCollection: Collection<IMessage>, userMessageCollection: Collection<IUserMessage>, messageManager: WithId<IUserMessageManager>) {
-        this.id = messageManager._id;
+    constructor(messageCollection: Collection<IMessage>, userMessageCollection: Collection<IUserMessage>, messageManager: IUserMessageManager) {
         this.userId = messageManager.userId;
         this.messageCollection = messageCollection;
         this.userMessageCollection = userMessageCollection;
@@ -49,7 +48,12 @@ class UserMessageManager implements IUserMessageManager {
             stared: filter.stared,
             read: filter.read,
             newsletter: filter.newsletter
-        }, { limit: filter.limit, skip: filter.skip }).toArray();
+        }, { limit: filter.limit, skip: filter.skip })
+        .sort({
+            // newest first (by id)
+            _id: -1
+        })
+        .toArray();
 
         if (!dbResult) {
             return [undefined, new Error("No messages found")];
@@ -112,7 +116,8 @@ class UserMessageManager implements IUserMessageManager {
             receivers: message.receivers,
             content: message.content,
             anonymous: message.anonymous ?? false,
-            attachments: message.attachments
+            attachments: message.attachments,
+            subject: message.subject
         });
 
         if (!dbResult.acknowledged) {
@@ -122,6 +127,7 @@ class UserMessageManager implements IUserMessageManager {
         const messageId = dbResult.insertedId;
 
         const dbResult2 = await this.userMessageCollection.insertMany(message.receivers.map(receiver => ({
+            subject: message.subject,
             owner: receiver,
             author: this.userId,
             message: messageId,
@@ -140,7 +146,8 @@ class UserMessageManager implements IUserMessageManager {
             receivers: message.receivers,
             content: message.content,
             anonymous: message.anonymous ?? false,
-            attachments: message.attachments
+            attachments: message.attachments,
+            subject: message.subject
         }), null];
 
     }
@@ -149,6 +156,8 @@ class UserMessageManager implements IUserMessageManager {
 interface SendMessageOptions {
 
     receivers: ObjectId[];
+
+    subject: string;
     content: string;
     anonymous?: boolean;
 

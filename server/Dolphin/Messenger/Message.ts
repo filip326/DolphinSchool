@@ -10,6 +10,7 @@ interface IMessageAttachement {
 interface IMessage {
     sender: ObjectId;
     attachments?: IMessageAttachement[];
+    subject: string;
     content: string;
     receivers: ObjectId[];
     anonymous: boolean;
@@ -22,6 +23,7 @@ class Message implements IMessage {
     sender: ObjectId;
     anonymous: boolean;
     attachments?: IMessageAttachement[];
+    subject: string;
     content: string;
     receivers: ObjectId[];
     edited?: number;
@@ -32,6 +34,7 @@ class Message implements IMessage {
         this.id = message._id;
         this.sender = message.sender;
         this.attachments = message.attachments;
+        this.subject = message.subject;
         this.content = message.content;
         this.anonymous = message.anonymous;
         this.receivers = message.receivers;
