@@ -3,8 +3,12 @@
 export default {
     data() {
         return {
-            tab: "ungelesen"
+            tab: "ungelesen",
+            show_floating_action_btn: false
         }
+    },
+    beforeMount() {
+        this.show_floating_action_btn = window.innerWidth < 600;
     }
 }
 
@@ -28,7 +32,8 @@ export default {
             <VSpacer />
             <VBtn
                 prepend-icon="mdi-plus"
-                variant="outlined"
+                href="/mail/write"
+                variant="text"
                 style="margin: 0 10px;"
             >
                 Neue Nachricht
@@ -59,8 +64,14 @@ export default {
             </VWindowItem>
         </VWindow>
     </VCard>
+
+    <v-btn class="floating_action_button" color="primary" icon="mdi-plus" link href="/mail/create" v-if="show_floating_action_btn"></v-btn>
 </template>
 
 <style scoped>
-
+.floating_action_button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
 </style>

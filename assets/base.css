@@ -25,7 +25,7 @@ a {
   color: #50a4ab;
 }
 
-a:hover {
+a:hover:not(.v-btn) {
   color: #34c4d1;
 }
 

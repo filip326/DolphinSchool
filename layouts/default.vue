@@ -28,7 +28,7 @@ export default {
             <VAppBarNavIcon @click="show_nav_drawer_button = !show_nav_drawer_button">
             </VAppBarNavIcon>
 
-            <VImg src="/img/School/DolphinSchool_light.png"/>
+            <VImg src="/img/School/DolphinSchool_light.png" />
 
 
             <VAppBarTitle>
@@ -39,42 +39,16 @@ export default {
 
         <VNavigationDrawer v-model="show_nav_drawer_button" class="navigation__drawer">
             <VList>
-                <VListItem
-                    v-for="item in navigation_items"
-                    :key="item.title"
-                    density="compact"
-                    :to="item.link"
-                    :append-icon="item.icon"
-                    :title="item.title"
-                    rounded
-                    class="navigation__list__item"
-                />
+                <VListItem v-for="item in navigation_items" :key="item.title" density="compact" :to="item.link"
+                    :append-icon="item.icon" :title="item.title" rounded class="navigation__list__item" />
             </VList>
         </VNavigationDrawer>
 
         <VMain>
             <div class="content__wrapper">
-            <slot />
+                <slot />
             </div>
         </VMain>
-
-        <VBottomNavigation
-            mode="shift"
-            grow
-        >
-
-            <VBtn>
-                <VIcon>mdi-home</VIcon>
-                <span>Home</span>
-            </VBtn>
-
-            <VBtn>
-                <VIcon>mdi-information</VIcon>
-                <span>About</span>
-            </VBtn>
-
-        </VBottomNavigation>
-
     </v-app>
 </template>
 
@@ -96,5 +70,4 @@ export default {
     padding: 10px;
     transition: filter 50ms;
 }
-
 </style>
