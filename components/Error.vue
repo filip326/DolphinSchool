@@ -68,18 +68,18 @@ export default {
 </script>
 
 <template>
-    <VCard prepend-avatar="/img/School/DolphinSchool_light.png" :width="width()" :max-width="width()" color="secondary">
+    <VCard border :width="width()" :max-width="width()" color="transparent" elevation="1">
         <VCardTitle>
-            {{ title }}
+            <h2>{{ title }}</h2>
         </VCardTitle>
         <VCardText>
-            {{ text }}
+            <p>{{ text }}</p>
         </VCardText>
         <VCardItem>
-            <VImg :height="250" :src="imgSrc" />
+            <VImg :height="300" :src="imgSrc" />
         </VCardItem>
         <VCardText>
-            If this error persists, please contact the support or try again later.
+            <p>If this error persists, please contact the support or try again later.</p>
         </VCardText>
         <VCVardActions>
             <VBtn variant="tonal" width="100%" @click="clearError({
@@ -91,4 +91,8 @@ export default {
     </VCard>
 </template>
 
-<style scoped></style>
+<style scoped>
+p {
+    font-size: medium;
+}
+</style>

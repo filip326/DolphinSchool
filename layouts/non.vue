@@ -23,7 +23,6 @@ export default {
 
 <template>
     <v-app dark>
-
         <VAppBar>
             <VAppBarNavIcon @click="show_nav_drawer_button = !show_nav_drawer_button">
             </VAppBarNavIcon>
@@ -67,6 +66,11 @@ export default {
 }
 
 .content__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
     padding: 10px;
     transition: filter 50ms;
 }
