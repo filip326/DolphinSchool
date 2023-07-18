@@ -67,6 +67,8 @@ export default defineEventHandler(async (event) => {
     event.context.auth.mfa_required = false;
     event.context.auth.user = undefined;
 
+    console.log(event.path, event.context.auth.authenticated)
+
     if (event.path == "/" && event.context.auth.authenticated) {
         return navigateTo("/home");
     }

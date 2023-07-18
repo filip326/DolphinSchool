@@ -43,6 +43,7 @@ export default eventHandler(async (event) => {
         secure: useRuntimeConfig().prod,
         httpOnly: true,
         sameSite: "strict",
+        path: "/"
     });
 
     // send response with username
