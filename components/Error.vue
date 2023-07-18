@@ -68,7 +68,7 @@ export default {
 </script>
 
 <template>
-    <VCard :width="width()" :max-width="width()" color="secondary">
+    <VCard prepend-avatar="/img/School/DolphinSchool_light.png" :width="width()" :max-width="width()" color="secondary">
         <VCardTitle>
             {{ title }}
         </VCardTitle>
