@@ -1,12 +1,13 @@
-import GlobalCourseManager from "Dolphin/Course/GlobalCourseManager";
-import GlobalSubjectManager from "Dolphin/Course/GlobalSubjectManager";
-import GlobalUserManager from "Dolphin/User/GlobalUserManager";
+import GlobalCourseManager from "../Course/GlobalCourseManager";
+import GlobalSubjectManager from "../Course/GlobalSubjectManager";
+import GlobalUserManager from "../User/GlobalUserManager";
 import { Db } from "mongodb";
 import ASMSQInterpreter, { ASMSQResult } from "./AdvancedSyntaxObject";
-import Course from "Dolphin/Course/Course";
-import User from "Dolphin/User/User";
-import SearchUserOptions from "Dolphin/User/SearchUserOptions";
-import type SearchCourseOptions from "Dolphin/Course/SearchCourseOptions";
+import Course from "../Course/Course";
+import User from "../User/User";
+import SearchUserOptions from "../User/SearchUserOptions";
+import type SearchCourseOptions from "../Course/SearchCourseOptions";
+import Dolphin from "../Dolphin";
 
 export default class ASMSQ {
     asmsq: string;
@@ -17,11 +18,11 @@ export default class ASMSQ {
     result: unknown | null = null;
     parsedResult: ASMSQResult[];
 
-    constructor(asmsq: string, db: Db) {
+    constructor(asmsq: string, dolphin: Dolphin) {
         this.asmsq = asmsq;
-        this.userManager = new GlobalUserManager(db);
-        this.courseManager = new GlobalCourseManager(db);
-        this.subjectManager = new GlobalSubjectManager(db);
+        this.userManager = GlobalUserManager.getInstance(dolphin);
+        this.courseManager = GlobalCourseManager.getInstance(dolphin);
+        this.subjectManager = GlobalSubjectManager.getInstance(dolphin);
         this.parsedResult = new ASMSQInterpreter(asmsq).result;
         this.process();
     }

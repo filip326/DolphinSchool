@@ -8,12 +8,24 @@ import genPassword from "./PasswordGen";
 
 import { hash } from "bcrypt";
 import UserCreated from "./UserCreated";
+import Dolphin from "../Dolphin";
 
 class GlobalUserManager {
     private readonly userCollection: Collection<IUser>;
 
-    constructor(db: Db) {
+    private static instance: GlobalUserManager;
+
+    private constructor(db: Db) {
         this.userCollection = db.collection<IUser>("users");
+    }
+
+    public static getInstance(dolphin: Dolphin): GlobalUserManager {
+        if (GlobalUserManager.instance) {
+            return GlobalUserManager.instance;
+        }
+
+        GlobalUserManager.instance = new GlobalUserManager(dolphin.database);
+        return GlobalUserManager.instance;
     }
 
     /**

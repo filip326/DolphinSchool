@@ -1,7 +1,8 @@
-import MethodResult from "Dolphin/MethodResult";
+import MethodResult from "../MethodResult";
 import { Collection, Db } from "mongodb";
 
 import { randomBytes } from "node:crypto";
+import Dolphin from "../Dolphin";
 
 const FAILED_ATTEMTS_ALLOWED = 5;
 
@@ -10,9 +11,20 @@ class BruteForceProtection {
     private bruteForceProtection: Collection<BruteForceProtectionEntry>;
     private bruteForceProtectionBypass: Collection<BruteForceProtectionBypassEntry>;
 
-    constructor(database: Db) {
+    private static instance: BruteForceProtection;
+
+    private constructor(database: Db) {
         this.bruteForceProtection = database.collection("bruteForceProtection");
         this.bruteForceProtectionBypass = database.collection("bruteForceProtectionBypass");
+    }
+
+    public static getInstance(dolphin: Dolphin): BruteForceProtection {
+        if (BruteForceProtection.instance) {
+            return BruteForceProtection.instance;
+        }
+
+        BruteForceProtection.instance = new BruteForceProtection(dolphin.database);
+        return BruteForceProtection.instance;
     }
 
     async isLoginAllowed(username: string, bypassToken?: string): Promise<MethodResult<boolean>> {
@@ -98,12 +110,12 @@ class BruteForceProtection {
         }
 
         // do the same with username and without deviceToken
-        const dbResult = await this.bruteForceProtection.findOne({ username: username, token: { $exists: false}, expires: { $gt: Date.now() } });
+        const dbResult = await this.bruteForceProtection.findOne({ username: username, token: { $exists: false }, expires: { $gt: Date.now() } });
 
         // if there is a valid BruteForceProtectionEntry, increment failed attempts and exceed expiration to 3 hours
         if (dbResult) {
             try {
-                await this.bruteForceProtection.updateOne({ username: username, token: { $exists: false} }, { $inc: { failedAttemts: 1 }, $set: { expires: Date.now() + 3 * 60 * 60 * 1000 } });
+                await this.bruteForceProtection.updateOne({ username: username, token: { $exists: false } }, { $inc: { failedAttemts: 1 }, $set: { expires: Date.now() + 3 * 60 * 60 * 1000 } });
                 return [true, null];
             } catch {
                 return [undefined, Error("Database error")];
@@ -166,7 +178,7 @@ class BruteForceProtection {
             await this.bruteForceProtection.deleteMany({ expires: { $lt: Date.now() } });
             // clean up expired BruteForceProtectionBypass Tokens
             await this.bruteForceProtectionBypass.deleteMany({ expires: { $lt: Date.now() } });
-        } catch { 
+        } catch {
             // do nothing
         }
     }

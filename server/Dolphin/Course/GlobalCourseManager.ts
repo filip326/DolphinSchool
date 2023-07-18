@@ -4,12 +4,25 @@ import MethodResult from "../MethodResult";
 import FindCourseOptions from "./FindCourseOptions";
 import SearchCourseOptions from "./SearchCourseOptions";
 import CreateCourseOptions from "./CreateCourseOptions";
+import Dolphin from "../Dolphin";
+import User from "../User/User";
 
 class GlobalCourseManager {
     private readonly courseCollection: Collection<ICourse>;
 
-    constructor(db: Db) {
+    private static instance: GlobalCourseManager;
+
+    private constructor(db: Db) {
         this.courseCollection = db.collection<ICourse>("cources");
+    }
+
+    public static getInstance(dolphin: Dolphin): GlobalCourseManager {
+        if (GlobalCourseManager.instance) {
+            return GlobalCourseManager.instance;
+        }
+
+        GlobalCourseManager.instance = new GlobalCourseManager(dolphin.database);
+        return GlobalCourseManager.instance;
     }
 
     /**
@@ -115,6 +128,27 @@ class GlobalCourseManager {
         } catch {
             return [undefined, Error("Database error")];
         }
+    }
+
+    /**
+     * returns all courses where all users are members in it
+     * @param users 
+     */
+    async byMembers(...users: User[]) {
+        const courses = await this.courseCollection.find({
+            $and: [
+                ...users.map(u => ({ $or: [ { userIds: u._id }, { teacherIds: u._id } ]}))
+            ]
+        }).toArray();
+
+        return courses.map(c => new Course(this.courseCollection, c));
+    }
+
+    /**
+     * determines, if there is a course, where all users are members in it or not
+     */
+    async sameCourse(...users: User[]) {
+        return (await this.byMembers(...users)).length > 0
     }
 }
 

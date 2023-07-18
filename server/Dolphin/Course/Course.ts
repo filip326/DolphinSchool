@@ -1,4 +1,6 @@
 import { Collection, ObjectId, WithId } from "mongodb";
+import GlobalCourseManager from "./GlobalCourseManager";
+import Dolphin from "../Dolphin";
 
 interface ICourse {
     name: string;

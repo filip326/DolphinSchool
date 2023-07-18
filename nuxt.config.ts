@@ -27,11 +27,13 @@ export default defineNuxtConfig({
     }
   },
   css: ['~/assets/base.css'],
-  devtools: { enabled: false },
+  // todo Disable this for production
+  //! WARNING: do not use with true in production
+  devtools: { enabled: true },
   ssr: false,
   routeRules: {
     // Homepage pre-rendered at build time
-    // '/': { prerender: true },
+    '/': { prerender: true, static: true },
     // Product page generated on-demand, revalidates in background
     // '/products/**': { swr: true },
     // Blog post generated on-demand once until next deploy
@@ -39,7 +41,7 @@ export default defineNuxtConfig({
     // Admin dashboard renders only on client-side
     // '/admin/**': { ssr: false },
     // Add cors headers on API routes
-    // '/api/**': { cors: true },
+    '/api/**': { cors: true },
     // Redirects legacy urls
     // '/old-page': { redirect: '/new-page' }
   },

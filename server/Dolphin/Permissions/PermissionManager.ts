@@ -20,6 +20,7 @@ enum Permissions {
     CLASS_ASSIGN_HOMEWORK               = 1 << 18,
     CLASS_UPLOAD_DOCUMENTS_FOR_ALL      = 1 << 19,
     CLASS_SEE_FULL_LIST                 = 1 << 20,
+    SEE_ALL_USERS                       = 1 << 21,
 }
 
 class PermissionManager {

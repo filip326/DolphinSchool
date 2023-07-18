@@ -2,16 +2,27 @@ import { Collection, Db, WithId } from "mongodb";
 import Session, { ISession, SessionState } from "./Session";
 import User from "../User/User";
 import MethodResult from "../MethodResult";
+import Dolphin from "../Dolphin";
 
 
 class SessionManager {
     
     private sessionCollection: Collection<ISession>;
 
-    constructor(db: Db) {
+    private static instance: SessionManager;
+
+    private constructor(db: Db) {
         this.sessionCollection = db.collection<ISession>("sessions");
     }
 
+    public static getInstance(dolphin: Dolphin): SessionManager {
+        if (SessionManager.instance) {
+            return SessionManager.instance;
+        }
+        SessionManager.instance = new SessionManager(dolphin.database);
+        return SessionManager.instance;
+    }
+    
     private generateToken(): string {
         let returnString = "";
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

@@ -1,6 +1,7 @@
 import { Collection, Db, ObjectId } from "mongodb";
 import Subject, { ISubject } from "./Subject";
 import MethodResult from "../MethodResult";
+import Dolphin from "../Dolphin";
 
 interface SubjectSearchOptions {
     id?: ObjectId;
@@ -15,9 +16,18 @@ class GlobalSubjectManager {
 
     subjectCollection: Collection<ISubject>;
 
+    private static instance: GlobalSubjectManager;
 
-    constructor(database: Db) {
+    private constructor(database: Db) {
         this.subjectCollection = database.collection<ISubject>("subjects");
+    }
+
+    public static getInstance(dolphin: Dolphin): GlobalSubjectManager {
+        if (GlobalSubjectManager.instance) {
+            return GlobalSubjectManager.instance;
+        }
+        GlobalSubjectManager.instance = new GlobalSubjectManager(dolphin.database);
+        return GlobalSubjectManager.instance;
     }
 
     async list(): Promise<MethodResult<Subject[]>> {

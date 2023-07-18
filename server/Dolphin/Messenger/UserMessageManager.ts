@@ -28,13 +28,25 @@ class UserMessageManager implements IUserMessageManager {
         this.messageCollection = messageCollection;
         this.userMessageCollection = userMessageCollection;
     }
-
+    
+    
     async getUserMessage(messageId: ObjectId): Promise<MethodResult<UserMessage>> {
         const dbResult = await this.userMessageCollection.findOne({ _id: messageId });
         if (!dbResult) {
             return [undefined, new Error("Message not found")];
         }
         return [new UserMessage(this.messageCollection, this.userMessageCollection, dbResult), null];
+    }
+    
+    async getUserMessageByAuthor(authorId: ObjectId): Promise<MethodResult<UserMessage>> {
+        const dbResult = await this.userMessageCollection.findOne({ owner: this.userId, author: authorId });
+
+        if (!dbResult) {
+            return [undefined, new Error("Message not found")];
+        }
+
+        return [new UserMessage(this.messageCollection, this.userMessageCollection, dbResult), null];
+
     }
 
     async getMessages(filter: MessageFilterOptions): Promise<MethodResult<IUserMessage[]>> {

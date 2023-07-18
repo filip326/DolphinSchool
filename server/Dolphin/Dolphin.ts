@@ -13,8 +13,11 @@ const runtimeConfig = useRuntimeConfig();
 class Dolphin {
   ready: boolean = false;
   database: Db;
+  /** @deprecated */
   users: GlobalUserManager;
+  /** @depracted */
   sessions: SessionManager;
+  /** @deprecated */
   courses: GlobalCourseManager;
 
   private static _instance?: Dolphin;
@@ -29,9 +32,9 @@ class Dolphin {
 
     this.database = db;
 
-    this.users = new GlobalUserManager(this.database);
-    this.sessions = new SessionManager(this.database);
-    this.courses = new GlobalCourseManager(this.database);
+    this.users = GlobalUserManager.getInstance(this);
+    this.sessions = SessionManager.getInstance(this);
+    this.courses = GlobalCourseManager.getInstance(this);
 
     this.ready = true;
 
