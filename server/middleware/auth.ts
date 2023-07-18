@@ -1,5 +1,6 @@
 import Dolphin from "@/server/Dolphin/Dolphin";
 import { SessionState } from "../Dolphin/Session/Session";
+import { navigateTo } from "nuxt/app";
 
 export default defineEventHandler(async (event) => {
     event.context.auth = {
@@ -65,5 +66,10 @@ export default defineEventHandler(async (event) => {
     event.context.auth.authenticated = false;
     event.context.auth.mfa_required = false;
     event.context.auth.user = undefined;
+
+    if (event.path == "/" && event.context.auth.authenticated) {
+        return navigateTo("/home");
+    }
+
     return;
 });
