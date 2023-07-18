@@ -3,7 +3,7 @@ import { SessionState } from "../Dolphin/Session/Session";
 
 export default defineEventHandler(async (event) => {
     event.context.auth = {
-        authenticated: false,	
+        authenticated: false,
         mfa_required: false,
         user: undefined,
     };

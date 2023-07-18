@@ -1,17 +1,17 @@
 <script lang="ts">
 export default {
-    name: 'LoginLayout'
+    name: 'ErrorLayout'
 }
 </script>
 
 <template>
     <v-app>
-        <div class="login-wrapper">
+        <div class="error-wrapper">
             <slot></slot>
         </div>
     </v-app>
 </template>
 
 <style scoped>
-@import url("../assets/login.css");
+@import url("../assets/error.css");
 </style>
