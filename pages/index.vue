@@ -16,12 +16,11 @@ export default defineComponent({
             }
         }
     },
-    beforeMount() {
-        useFetch("/api/whoami").then(({ data, error }) => {
-            if (!error && data) {
-                navigateTo("/home");
-            }
-        });
+    async beforeCreate() {
+        const response = useFetch("/api/whoami");
+        if ((!response.error.value || response.error.value.statusCode == 200) && response.data) {
+            navigateTo("/home");
+        }
     },
     methods: {
         async login() {
