@@ -34,7 +34,7 @@ export default {
 
                 <MarkdownEditor />
 
-                <VFileInput label="Anhang (max 5 MB)"  />
+                <VFileInput label="Anhang (max 5 MB)" />
 
             </VForm>
         </VCardText>

@@ -30,12 +30,7 @@ export default {
             </VTab>
             <VTab value="stared" prepend-icon="mdi-star"> Markiert </VTab>
             <VSpacer />
-            <VBtn
-                prepend-icon="mdi-plus"
-                href="/mail/write"
-                variant="text"
-                style="margin: 0 10px;"
-            >
+            <VBtn prepend-icon="mdi-plus" href="/mail/write" variant="text" style="margin: 0 10px;">
                 Neue Nachricht
             </VBtn>
         </VTabs>
@@ -65,7 +60,8 @@ export default {
         </VWindow>
     </VCard>
 
-    <v-btn class="floating_action_button" color="primary" icon="mdi-plus" link href="/mail/create" v-if="show_floating_action_btn"></v-btn>
+    <v-btn class="floating_action_button" color="primary" icon="mdi-plus" link href="/mail/create"
+        v-if="show_floating_action_btn"></v-btn>
 </template>
 
 <style scoped>
