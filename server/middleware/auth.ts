@@ -1,6 +1,7 @@
 import Dolphin from "@/server/Dolphin/Dolphin";
 import { SessionState } from "../Dolphin/Session/Session";
 import { navigateTo } from "nuxt/app";
+import GlobalUserManager from "../Dolphin/User/GlobalUserManager";
 
 export default defineEventHandler(async (event) => {
     event.context.auth = {
@@ -40,8 +41,10 @@ export default defineEventHandler(async (event) => {
         return;
     }
 
+    const users = GlobalUserManager.getInstance(dolphin);
+
     // get user from session
-    const [user, userFindError] = await dolphin.users.findUser({ id: session.userId });
+    const [user, userFindError] = await users.findUser({ id: session.userId });
     if (userFindError) {
         event.context.auth.authenticated = false;
         event.context.auth.mfa_required = false;
@@ -62,6 +65,14 @@ export default defineEventHandler(async (event) => {
         event.context.auth.authenticated = true;
         event.context.auth.mfa_required = false;
         event.context.auth.user = user;
+        // set cookie again to apply new expiration date in case of extension
+        setCookie(event, "token", session.token, {
+            maxAge: session.expires - Date.now(),
+            path: "/",
+            sameSite: "strict",
+            secure: true,
+            httpOnly: true,
+        });
         return;
     }
 
