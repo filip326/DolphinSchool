@@ -6,7 +6,7 @@ import Dolphin from "../Dolphin";
 
 
 class SessionManager {
-    
+
     private sessionCollection: Collection<ISession>;
 
     private static instance: SessionManager;
@@ -22,7 +22,7 @@ class SessionManager {
         SessionManager.instance = new SessionManager(dolphin.database);
         return SessionManager.instance;
     }
-    
+
     private generateToken(): string {
         let returnString = "";
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -50,12 +50,12 @@ class SessionManager {
                     _id: dbResult.insertedId,
                 };
 
-                return [ new Session(sessionWithId, this.sessionCollection), null ];
+                return [new Session(sessionWithId, this.sessionCollection), null];
             } else {
-                return [ undefined, new Error("Failed to create session") ];
+                return [undefined, new Error("Failed to create session")];
             }
         } catch {
-            return [ undefined, new Error("Failed to create session") ];
+            return [undefined, new Error("Failed to create session")];
         }
     }
 
@@ -64,18 +64,18 @@ class SessionManager {
     }
 
     async findSession(token: string): Promise<MethodResult<Session>> {
-    
+
         try {
             const dbResult = await this.sessionCollection.findOne({ token: token });
             if (dbResult) {
-                return [ new Session(dbResult, this.sessionCollection), null ];
+                return [new Session(dbResult, this.sessionCollection), null];
             } else {
-                return [ undefined, new Error("Session not found") ];
+                return [undefined, new Error("Session not found")];
             }
         } catch {
-            return [ undefined, new Error("Failed to find session") ];
+            return [undefined, new Error("Failed to find session")];
         }
-    
+
     }
 
     async tick() {

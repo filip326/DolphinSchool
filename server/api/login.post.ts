@@ -32,6 +32,8 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 500, message: "Internal server error" });
     }
 
+    await session.activate();
+
     const token = session.token;
     const expires = session.expires;
 
