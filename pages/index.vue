@@ -25,7 +25,7 @@ export default defineComponent({
     },
     methods: {
         async login() {
-            const { data, error } = await useFetch("/api/login", {
+            const response = await useFetch("/api/login", {
                 method: "POST",
                 body: JSON.stringify({
                     username: this.username,
@@ -33,14 +33,13 @@ export default defineComponent({
                 })
             });
 
-            if (!error.value && data) {
-                console.log(data);
+            if (!response.error.value && response.data) {
                 navigateTo("/home");
             } else {
-                if (error) {
-                    console.error(error)
+                if (response.error) {
+                    console.error(response.error)
                     this.error.shown = true;
-                    if (error.value?.statusCode == 401) {
+                    if (response.error.value?.statusCode == 401) {
                         this.error.message = "Ungültige Login-Daten";
                     } else {
                         this.error.message = "Beim Login ist ein Fehler aufgetreten";

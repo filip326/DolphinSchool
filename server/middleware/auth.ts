@@ -30,6 +30,8 @@ export default defineEventHandler(async (event) => {
         return;
     }
 
+    await session.reportUsage();
+
     // check if session is expired
     if (session.isExpired) {
         event.context.auth.authenticated = false;
