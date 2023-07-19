@@ -20,6 +20,8 @@ class SessionManager {
             return SessionManager.instance;
         }
         SessionManager.instance = new SessionManager(dolphin.database);
+        // execute tick every minute
+        setInterval(() => SessionManager.instance.tick(), 60_000);
         return SessionManager.instance;
     }
 
@@ -80,24 +82,22 @@ class SessionManager {
 
     async tick() {
 
-        // find all expired session
-        const expiredSessions = (await this.sessionCollection.find({ expires: { $lt: Date.now() }, state: SessionState.ACTIVE }).toArray()).map(session => new Session(session, this.sessionCollection));
+        // set all expired sessions to deleted
+        await this.sessionCollection.updateMany({ expires: { $lt: Date.now() }, state: SessionState.ACTIVE }, { $set: { state: SessionState.DELETED } });
 
-        // set expired session to inactive
-        for await (const session of expiredSessions) {
-            try {
-                await session.disable();
-            } catch {
-                console.error("Failed to disable session");
-            }
-        }
+        // delete all inactive session that are expired for more than 48 hours
+        await this.sessionCollection.deleteMany({ state: SessionState.DELETED, expires: { $lt: Date.now() - 48 * 60 * 60 * 1000 } });
 
-        // delete all inactive session that are older than 48 hours
-        try {
-            await this.sessionCollection.deleteMany({ state: SessionState.DELETED, expires: { $lt: Date.now() - 48 * 60 * 60 * 1000 } });
-        } catch {
-            console.error("Failed to delete inactive sessions");
-        }
+        // extend all non-expired sessions, that will expire in the next hour, and were used in the last 10 minutes by another hour
+        await this.sessionCollection.updateMany(
+            { $and: [
+                { state: SessionState.ACTIVE },                     // active
+                { expires: { $gt: Date.now() } },                   // not expired yet
+                { expires: { $lt: Date.now() + 60 * 60 * 1000 } },  // will expire in the next hour
+                { lastUsed: { $gt: Date.now() - 10 * 60 * 1000 } }, // used in the last 10 minutes
+            ]},
+            { $inc: { expires: 60 * 60 * 1000 } }                   // extend by 1 hour
+        )
 
     }
 
