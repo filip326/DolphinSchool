@@ -11,6 +11,8 @@ export default {
                 'Anwesendheit',
                 'Noten'
             ],
+            search_class: '',
+            timeout: ref<any>()
         }
     },
     methods: {
