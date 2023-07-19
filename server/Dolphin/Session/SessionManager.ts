@@ -10,6 +10,7 @@ class SessionManager {
     private sessionCollection: Collection<ISession>;
 
     private static instance: SessionManager;
+    private static interval?: NodeJS.Timeout;
 
     private constructor(db: Db) {
         this.sessionCollection = db.collection<ISession>("sessions");
@@ -20,8 +21,11 @@ class SessionManager {
             return SessionManager.instance;
         }
         SessionManager.instance = new SessionManager(dolphin.database);
+        if (SessionManager.interval) {
+            clearInterval(SessionManager.interval);
+        }
         // execute tick every minute
-        setInterval(() => SessionManager.instance.tick(), 60_000);
+        SessionManager.interval = setInterval(() => SessionManager.instance.tick(), 60_000);
         return SessionManager.instance;
     }
 
