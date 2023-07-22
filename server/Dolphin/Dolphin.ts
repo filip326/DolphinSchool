@@ -50,7 +50,7 @@ class Dolphin {
       if (Dolphin.instance) return resolve(Dolphin.instance);
 
       const db = (await MongoClient.connect(runtimeConfig.DB_URL).catch(reject))?.db(runtimeConfig.DB_NAME);
-      
+
       if (!db) return;
 
       new Dolphin(db, resolve);
@@ -62,10 +62,10 @@ class Dolphin {
 
     const userMessageManager = new UserMessageManager(this.database.collection<IMessage>("messages"),
       this.database.collection<IUserMessage>("userMessages"), {
-        userId: user._id,
-      });
+      userId: user._id,
+    });
 
-    return [ userMessageManager, null ]
+    return [userMessageManager, null]
 
   }
 
