@@ -17,9 +17,8 @@ export default defineComponent({
         }
     },
     async beforeCreate() {
-        const response = await useFetch("/api/whoami");
-        console.log(response);
-        if ((!response.error.value || response.error.value.statusCode == 200) && response.data) {
+        const user = await checkAuthAndReturnUserOrNull({});
+        if (user) {
             navigateTo("/home");
         }
     },
