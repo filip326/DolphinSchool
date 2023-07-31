@@ -17,7 +17,8 @@ export default defineComponent({
         }
     },
     async beforeCreate() {
-        const response = useFetch("/api/whoami");
+        const response = await useFetch("/api/whoami");
+        console.log(response);
         if ((!response.error.value || response.error.value.statusCode == 200) && response.data) {
             navigateTo("/home");
         }
