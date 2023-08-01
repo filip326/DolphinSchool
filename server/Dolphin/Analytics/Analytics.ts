@@ -1,4 +1,4 @@
-import { UserType } from "../User/UserTypes";
+import { UserType } from "../User/UserTypes"
 
 export default interface IAnalytics {
     date: string;

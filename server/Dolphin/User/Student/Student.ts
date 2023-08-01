@@ -1,7 +1,7 @@
-import User, { IUser } from "../User";
-import Parent from "../Parent/Parent";
-import { Collection, WithId, ObjectId } from "mongodb";
-import MethodResult from "../../MethodResult";
+import User, { IUser } from "../User"
+import Parent from "../Parent/Parent"
+import { Collection, WithId, ObjectId } from "mongodb"
+import MethodResult from "../../MethodResult"
 
 interface IStudent extends IUser {
     parents: ObjectId[];
@@ -9,11 +9,11 @@ interface IStudent extends IUser {
 
 class Student extends User implements IStudent {
 
-    parents: ObjectId[];
+    parents: ObjectId[]
 
     constructor(collection: Collection<IUser>, user: WithId<IStudent>) {
-        super(collection, user);
-        this.parents = user.parents;
+        super(collection, user)
+        this.parents = user.parents
     }
 
     getParents (index: number): Promise<MethodResult<Parent>>;
@@ -21,31 +21,31 @@ class Student extends User implements IStudent {
 
     async getParents (index?: number): Promise<MethodResult<Parent | Parent[]>> {
         if (index && index % 1 === 0 && index < this.parents.length && index >= 0) {
-            const dbResult = await this.userCollection.findOne({ _id: this.parents[index] });
+            const dbResult = await this.userCollection.findOne({ _id: this.parents[index] })
             if (!dbResult) {
-                return [ undefined, new Error("User not found") ]; 
+                return [ undefined, new Error("User not found") ] 
             }
-            const parent = new User(this.userCollection, dbResult);
+            const parent = new User(this.userCollection, dbResult)
             if (parent.isParent()) {
-                return [ parent , null ];
+                return [ parent , null ]
             }
-            return [ undefined, new Error("Parent is not a parent")];
+            return [ undefined, new Error("Parent is not a parent")]
         }
 
-        const dbResult = await this.userCollection.find({ $or: this.parents.map(id => ({ _id: id }))}).toArray();
+        const dbResult = await this.userCollection.find({ $or: this.parents.map(id => ({ _id: id }))}).toArray()
         if (!dbResult || dbResult.length === 0) {
-            return [ undefined, new Error("Users not found") ];
+            return [ undefined, new Error("Users not found") ]
         }
-        const parents = dbResult.map(id => new User(this.userCollection, id)) as Parent[];
+        const parents = dbResult.map(id => new User(this.userCollection, id)) as Parent[]
         for (const parent of parents) {
             if (!parent.isStudent()) {
-                return [ undefined, new Error("Parent is not a parent")];
+                return [ undefined, new Error("Parent is not a parent")]
             }
         }
-        return [ parents, null ];
+        return [ parents, null ]
     }
 
 }
 
-export default Student;
-export { IStudent };
+export default Student
+export { IStudent }

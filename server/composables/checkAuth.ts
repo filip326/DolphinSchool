@@ -1,5 +1,5 @@
-import { H3Event } from "h3";
-import { Permissions } from "../Dolphin/Permissions/PermissionManager";
+import { H3Event } from "h3"
+import { Permissions } from "../Dolphin/Permissions/PermissionManager"
 
 interface IOptions {
     authRequired: boolean;
@@ -11,24 +11,24 @@ export default async (event: H3Event, options: IOptions): Promise<boolean> => {
     if (event.context.auth.authenticated && event.context.auth.user) {
         if (options.requirePerm) {
             if (event.context.auth.user.hasPermission(options.requirePerm)) {
-                return true;
+                return true
             } else {
                 if (options.throwErrOnAuthFail) {
-                    throw throw403();
+                    throw throw403()
                 }
-                return false;
+                return false
             }
         } else {
-            return true;
+            return true
         }
     } else {
         if (options.authRequired) {
             if (options.throwErrOnAuthFail) {
-                throw throw401();
+                throw throw401()
             }
-            return false;
+            return false
         } else {
-            return true;
+            return true
         }
     }
 }
@@ -37,12 +37,12 @@ function throw401() {
     return createError({
         statusCode: 401,
         statusMessage: "Unauthorized",
-    });
+    })
 }
 
 function throw403() {
     return createError({
         statusCode: 403,
         statusMessage: "Forbidden",
-    });
+    })
 }

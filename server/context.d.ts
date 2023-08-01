@@ -1,4 +1,4 @@
-import Auth from "./types/auth";
+import Auth from "./types/auth"
 
 declare module "h3" {
     interface H3EventContext {
@@ -6,4 +6,4 @@ declare module "h3" {
     }
 }
 
-export { };
+export { }

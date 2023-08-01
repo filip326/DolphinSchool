@@ -1,6 +1,6 @@
-import MethodResult from "../MethodResult";
-import Teacher from "../User/Teacher/Teacher";
-import { Collection, ObjectId, WithId } from "mongodb";
+import MethodResult from "../MethodResult"
+import Teacher from "../User/Teacher/Teacher"
+import { Collection, ObjectId, WithId } from "mongodb"
 
 interface ISubject {
     longName: string;
@@ -12,23 +12,23 @@ interface ISubject {
 
 class Subject implements ISubject {
 
-    _id: ObjectId;
-    longName: string;
-    short: string;
-    color: { r: number, g: number, b: number };
-    teachers: ObjectId[];
-    main: boolean;
+    _id: ObjectId
+    longName: string
+    short: string
+    color: { r: number, g: number, b: number }
+    teachers: ObjectId[]
+    main: boolean
 
-    private readonly subjectCollection: Collection<ISubject>;
+    private readonly subjectCollection: Collection<ISubject>
 
     constructor(subjectColletion: Collection<ISubject>, subject: WithId<ISubject>) {
-        this.subjectCollection = subjectColletion;
-        this._id = subject._id;
-        this.longName = subject.longName;
-        this.short = subject.short;
-        this.color = subject.color;
-        this.teachers = subject.teachers;
-        this.main = subject.main;
+        this.subjectCollection = subjectColletion
+        this._id = subject._id
+        this.longName = subject.longName
+        this.short = subject.short
+        this.color = subject.color
+        this.teachers = subject.teachers
+        this.main = subject.main
     }
 
     /**
@@ -36,17 +36,17 @@ class Subject implements ISubject {
      * @param teacher Teacher
      */
     async addTeacher(teacher: Teacher): Promise<MethodResult<boolean>> {
-        this.teachers.push(teacher._id);
+        this.teachers.push(teacher._id)
 
         try {
-            const dbResult = await this.subjectCollection.updateOne({ _id: this._id }, { $push: { teachers: teacher._id } });
+            const dbResult = await this.subjectCollection.updateOne({ _id: this._id }, { $push: { teachers: teacher._id } })
             if (dbResult.acknowledged) {
-                return [true, null];
+                return [true, null]
             } else {
-                return [undefined, Error("Failed to add teacher")];
+                return [undefined, Error("Failed to add teacher")]
             }
         } catch {
-            return [undefined, Error("Failed to add teacher")];
+            return [undefined, Error("Failed to add teacher")]
         }
 
     }
@@ -56,17 +56,17 @@ class Subject implements ISubject {
      * @param teacher Teacher
      */
     async removeTeacher(teacher: Teacher): Promise<MethodResult<boolean>> {
-        this.teachers = this.teachers.filter(t => t !== teacher._id);
+        this.teachers = this.teachers.filter(t => t !== teacher._id)
 
         try {
-            const dbResult = await this.subjectCollection.updateOne({ _id: this._id }, { $pull: { teachers: teacher._id } });
+            const dbResult = await this.subjectCollection.updateOne({ _id: this._id }, { $pull: { teachers: teacher._id } })
             if (dbResult.acknowledged) {
-                return [true, null];
+                return [true, null]
             } else {
-                return [undefined, Error("Failed to remove teacher")];
+                return [undefined, Error("Failed to remove teacher")]
             }
         } catch {
-            return [undefined, Error("Failed to remove teacher")];
+            return [undefined, Error("Failed to remove teacher")]
         }
     }
 
@@ -76,19 +76,19 @@ class Subject implements ISubject {
      */
     async delete(): Promise<MethodResult<boolean>> {
         try {
-            const dbResult = await this.subjectCollection.deleteOne({ _id: this._id });
+            const dbResult = await this.subjectCollection.deleteOne({ _id: this._id })
             if (dbResult.acknowledged) {
-                return [true, null];
+                return [true, null]
             } else {
-                return [undefined, Error("Failed to delete subject")];
+                return [undefined, Error("Failed to delete subject")]
             }
         } catch {
-            return [undefined, Error("Failed to delete subject")];
+            return [undefined, Error("Failed to delete subject")]
         }
     }
 
 
 }
 
-export default Subject;
-export { ISubject };
+export default Subject
+export { ISubject }

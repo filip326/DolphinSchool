@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from "mongodb"
 
 interface SearchUserOptions {
     nameQuery?: string;
@@ -10,4 +10,4 @@ interface SearchUserOptions {
     skip?: number;
 }
 
-export default SearchUserOptions;
+export default SearchUserOptions

@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from "mongodb"
 
 
 interface CreateCourseOptions {
@@ -7,4 +7,4 @@ interface CreateCourseOptions {
     subject: ObjectId;
 }
 
-export default CreateCourseOptions;
+export default CreateCourseOptions

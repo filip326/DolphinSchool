@@ -1,12 +1,14 @@
 {
-  "name": "nuxt-app",
+  "name": "dolphinschool",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
+    "build": "yarn run lint; nuxt build",
+    "dev": "yarn run lint; nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint --ignore-path .eslintignore --ext .js,.ts .",
+    "lint-fix": "eslint --ignore-path .eslintignore --ext .js,.ts . --fix"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
@@ -17,7 +19,10 @@
     "@types/mongodb": "^4.0.7",
     "@types/node": "^18.16.19",
     "@types/node-emoji": "^2.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
     "eslint": "^8.44.0",
+    "eslint-plugin-vue": "^9.16.1",
     "nuxt": "^3.6.2",
     "nuxt-vuetify": "^1.0.1"
   },
@@ -31,6 +36,7 @@
     "marked": "^5.1.1",
     "marked-linkify-it": "^3.0.2",
     "mongodb": "^5.7.0",
-    "node-emoji": "^2.1.0"
+    "node-emoji": "^2.1.0",
+    "typescript": "^5.1.6"
   }
 }

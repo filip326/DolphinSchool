@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from "mongodb"
 
 interface Options {
     id?: ObjectId;
@@ -10,4 +10,4 @@ type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U]
 
 type FindUserOptions = AtLeastOne<Options>
 
-export default FindUserOptions;
+export default FindUserOptions

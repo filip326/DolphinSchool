@@ -1,4 +1,4 @@
-import { UserType } from "./UserTypes";
+import { UserType } from "./UserTypes"
 
 interface CreateUserOptions {
 
@@ -10,4 +10,4 @@ interface CreateUserOptions {
 
 }
 
-export default CreateUserOptions;
+export default CreateUserOptions
