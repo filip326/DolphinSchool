@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref } from "vue"
 </script>
 
 <script lang="ts">
@@ -26,31 +26,31 @@ export default {
         stared: Boolean,
     },
     data() {
-        const width = ref(0);
+        const width = ref(0)
         onMounted(() => {
-            width.value = window.innerWidth;
+            width.value = window.innerWidth
             window.addEventListener("resize", () => {
-                width.value = window.innerWidth;
-            });
+                width.value = window.innerWidth
+            })
 
-        });
+        })
         return {
             width,
             hover: false,
-        };
+        }
     },
     methods: {
         markAsRead() {
-            return alert(this.id); // todo
+            return alert(this.id) // todo
         },
         deleteMail() {
-            return alert(this.id); // todo
+            return alert(this.id) // todo
         },
         onEmailSelected(email: string) {
-            this.$emit("email_clicked", email);
+            this.$emit("email_clicked", email)
         },
     },
-};
+}
 </script>
 
 <template>

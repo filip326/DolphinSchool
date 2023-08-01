@@ -20,9 +20,9 @@ export default {
     methods: {
         width(): string {
             if (window.innerWidth < 600) {
-                return "100%";
+                return "100%"
             } else {
-                return "50%";
+                return "50%"
             }
         },
         valError(): {
@@ -32,35 +32,35 @@ export default {
             return {
                 statusCode: this.error.statusCode ?? 500,
                 statusMessage: this.error.statusMessage ?? "Unknown Error. Please contact the support."
-            };
+            }
         }
     },
     computed: {
         title(): string {
             switch (this.type) {
                 case "http":
-                    return `${this.valError().statusCode} - ${this.valError().statusMessage}`;
+                    return `${this.valError().statusCode} - ${this.valError().statusMessage}`
                 case "api":
-                    return `${this.valError().statusCode} - ${this.valError().statusMessage}`;
+                    return `${this.valError().statusCode} - ${this.valError().statusMessage}`
                 default:
-                    return this.valError().statusMessage;
+                    return this.valError().statusMessage
             }
         },
         text(): string {
             switch (this.type) {
                 case "http":
-                    return `HTTP Error: ${this.valError().statusMessage}}`;
+                    return `HTTP Error: ${this.valError().statusMessage}}`
                 case "api":
-                    return `API Error: ${this.valError().statusMessage}`;
+                    return `API Error: ${this.valError().statusMessage}`
                 default:
-                    return "Unknown Error Text";
+                    return "Unknown Error Text"
             }
         },
         imgSrc(): string {
             if (this.error.statusCode) {
-                return `https://http.cat/images/${this.error.statusCode}.jpg`;
+                return `https://http.cat/images/${this.error.statusCode}.jpg`
             } else {
-                return `https://http.cat/images/500.jpg`;
+                return "https://http.cat/images/500.jpg"
             }
         }
     }

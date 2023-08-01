@@ -21,7 +21,7 @@ export default {
     },
     methods: {
         onEmailSelected(email: string) {
-            this.$emit("email_selected", email);
+            this.$emit("email_selected", email)
         },
         loadMore() {
             // todo

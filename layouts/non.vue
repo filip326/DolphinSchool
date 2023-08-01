@@ -1,21 +1,21 @@
 <script lang="ts">
 export default {
-    name: 'nonAuthLayout',
+    name: "nonAuthLayout",
     data() {
         return {
             show_nav_drawer_button: false,
             navigation_items: [
 
-                { title: 'Home', icon: 'mdi-home', link: '/' },
-                { title: 'About', icon: 'mdi-information', link: '/' },
-                { title: 'Impress', icon: 'mdi-at', link: '/' },
-                { title: 'Policy', icon: 'mdi-security', link: '/' }
+                { title: "Home", icon: "mdi-home", link: "/" },
+                { title: "About", icon: "mdi-information", link: "/" },
+                { title: "Impress", icon: "mdi-at", link: "/" },
+                { title: "Policy", icon: "mdi-security", link: "/" }
 
             ] as { title: string, icon: `mdi-${string}`, link: string }[]
         }
     },
     beforeMount() {
-        this.show_nav_drawer_button = window.innerWidth > 1200;
+        this.show_nav_drawer_button = window.innerWidth > 1200
     }
 }
 

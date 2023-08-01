@@ -5,9 +5,9 @@ export default {
         return {
             md: "",
             tab: null
-        };
+        }
     }
-};
+}
 </script>
 
 <template>

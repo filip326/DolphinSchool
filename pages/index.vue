@@ -1,25 +1,25 @@
 <script setup lang="ts">
 definePageMeta({
-    layout: 'login'
-});
+    layout: "login"
+})
 </script>
 
 <script lang="ts">
 export default defineComponent({
     data() {
         return {
-            username: '',
-            pwd: '',
+            username: "",
+            pwd: "",
             error: {
                 shown: false,
-                message: ''
+                message: ""
             }
         }
     },
     async beforeCreate() {
-        const user = await checkAuthAndReturnUserOrNull({});
+        const user = await checkAuthAndReturnUserOrNull({})
         if (user) {
-            navigateTo("/home");
+            navigateTo("/home")
         }
     },
     methods: {
@@ -30,24 +30,24 @@ export default defineComponent({
                     username: this.username,
                     password: this.pwd
                 })
-            });
+            })
 
             if (!response.error.value && response.data) {
-                navigateTo("/home");
+                navigateTo("/home")
             } else {
                 if (response.error) {
                     console.error(response.error)
-                    this.error.shown = true;
+                    this.error.shown = true
                     if (response.error.value?.statusCode == 401) {
-                        this.error.message = "Ungültige Login-Daten";
+                        this.error.message = "Ungültige Login-Daten"
                     } else {
-                        this.error.message = "Beim Login ist ein Fehler aufgetreten";
+                        this.error.message = "Beim Login ist ein Fehler aufgetreten"
                     }
                 }
             }
         }
     }
-});
+})
 </script>
 
 <template>

@@ -1,33 +1,33 @@
 <script lang="ts">
 export default {
-    name: 'nonAuthLayout',
+    name: "nonAuthLayout",
     data() {
         return {
             show_nav_drawer_button: false,
-            searchItemLink: '',
+            searchItemLink: "",
             searchWidth: false,
             items: [
 
-                { title: 'Start', icon: 'mdi-home', link: '/' },
+                { title: "Start", icon: "mdi-home", link: "/" },
                 // add routes for docs
-                { title: 'Login', icon: 'mdi-login', link: '/docs/' },
-                { title: 'Admin', icon: 'mdi-security', link: '/docs/' }
+                { title: "Login", icon: "mdi-login", link: "/docs/" },
+                { title: "Admin", icon: "mdi-security", link: "/docs/" }
 
             ] as { title: string, icon: `mdi-${string}`, link: string }[],
         }
     },
     beforeMount() {
-        this.show_nav_drawer_button = window.innerWidth > 1200;
-        this.searchWidth = window.innerWidth > 1200;
+        this.show_nav_drawer_button = window.innerWidth > 1200
+        this.searchWidth = window.innerWidth > 1200
     },
     computed: {
         filterOutDefaultURLs() {
             return this.items.filter(item => {
                 const filterOut = [
-                    '/'
-                ];
+                    "/"
+                ]
                 filterOut.includes(item.link) === false
-            });
+            })
         }
     },
 }

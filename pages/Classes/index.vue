@@ -3,7 +3,7 @@
 export default {
     data() {
         return {
-            search_class: '',
+            search_class: "",
             timeout: null as NodeJS.Timeout | null,
         }
     },

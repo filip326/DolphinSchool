@@ -8,7 +8,7 @@ export default {
         }
     },
     beforeMount() {
-        this.show_floating_action_btn = window.innerWidth < 600;
+        this.show_floating_action_btn = window.innerWidth < 600
     }
 }
 

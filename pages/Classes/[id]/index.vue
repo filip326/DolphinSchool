@@ -5,13 +5,13 @@ export default {
         return {
             tab: null,
             tabs: [
-                'Mitglieder',
-                'Stundenplan',
-                'Verlauf',
-                'Anwesendheit',
-                'Noten'
+                "Mitglieder",
+                "Stundenplan",
+                "Verlauf",
+                "Anwesendheit",
+                "Noten"
             ],
-            search_class: '',
+            search_class: "",
             timeout: ref<any>()
         }
     },

@@ -1,8 +1,8 @@
 
 <script setup lang="ts">
 definePageMeta({
-    layout: 'docs'
-});
+    layout: "docs"
+})
 </script>
 
 <script lang="ts">
