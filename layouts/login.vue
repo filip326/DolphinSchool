@@ -1,15 +1,15 @@
 <script lang="ts">
 export default {
-  name: "LoginLayout"
+    name: "LoginLayout"
 };
 </script>
 
 <template>
-  <v-app>
-    <div class="login-wrapper">
-      <slot></slot>
-    </div>
-  </v-app>
+    <v-app>
+        <div class="login-wrapper">
+            <slot></slot>
+        </div>
+    </v-app>
 </template>
 
 <style scoped>

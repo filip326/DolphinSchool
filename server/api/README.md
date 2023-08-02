@@ -6,9 +6,9 @@ Here are all files returning JSON. File should look like:
 import Dolphin from "@/server/Dolphin/Dolphin";
 
 export default eventHandler(async (event) => {
-  const dolphin = Dolphin.instance ?? (await Dolphin.init());
-  // find the session by the cookie "token"
-  const token = parseCookies(event).token;
+    const dolphin = Dolphin.instance ?? (await Dolphin.init());
+    // find the session by the cookie "token"
+    const token = parseCookies(event).token;
 });
 ```
 

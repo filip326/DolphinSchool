@@ -1,7 +1,7 @@
 import { IUser } from "./User";
 
 interface UserCreated extends IUser {
-  clearPassword: string;
+    clearPassword: string;
 }
 
 export default UserCreated;
