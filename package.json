@@ -22,9 +22,11 @@
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
     "eslint": "^8.44.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-vue": "^9.16.1",
     "nuxt": "^3.6.2",
-    "nuxt-vuetify": "^1.0.1"
+    "nuxt-vuetify": "^1.0.1",
+    "prettier": "^3.0.0"
   },
   "dependencies": {
     "@nuxt/types": "^2.17.0",
