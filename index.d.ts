@@ -1,12 +1,12 @@
 declare module "nuxt/schema" {
     interface RuntimeConfig {
-        DB_NAME: string;
-        DB_URL: string;
-        prod: boolean;
+        DB_NAME: string
+        DB_URL: string
+        prod: boolean
         public: {
-            DOMAIN: string;
+            DOMAIN: string
         }
     }
 }
 
-export { }
+export { };

@@ -6,13 +6,13 @@
 
 export default {
 
-    data() {
-        return {
-            absender: "Du",
-            empfaenger: "",
-        }
-    }
-}
+  data() {
+    return {
+      absender: "Du",
+      empfaenger: "",
+    };
+  }
+};
 
 </script>
 

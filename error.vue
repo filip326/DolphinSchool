@@ -1,9 +1,9 @@
 <script lang="ts">
 export default {
-    props: {
-        error: Object
-    }
-}
+  props: {
+    error: Object
+  }
+};
 </script>
 
 <template>

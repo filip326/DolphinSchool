@@ -1,34 +1,34 @@
 <script lang="ts">
 
 export default {
-    data() {
-        return {
-            tab: null,
-            tabs: [
-                "Mitglieder",
-                "Stundenplan",
-                "Verlauf",
-                "Anwesendheit",
-                "Noten"
-            ],
-            search_class: "",
-            timeout: ref<any>()
-        }
+  data() {
+    return {
+      tab: null,
+      tabs: [
+        "Mitglieder",
+        "Stundenplan",
+        "Verlauf",
+        "Anwesendheit",
+        "Noten"
+      ],
+      search_class: "",
+      timeout: ref<any>()
+    };
+  },
+  methods: {
+    search() {
+      console.log(this.search_class);
     },
-    methods: {
-        search() {
-            console.log(this.search_class)
-        },
-        searchTimer() {
-            if (this.timeout) {
-                clearTimeout(this.timeout)
-            }
-            this.timeout = setTimeout(() => {
-                this.search()
-            }, 500)
-        }
+    searchTimer() {
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+      }
+      this.timeout = setTimeout(() => {
+        this.search();
+      }, 500);
     }
-}
+  }
+};
 
 </script>
 

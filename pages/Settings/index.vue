@@ -1,21 +1,21 @@
 <script lang="ts">
 
 export default {
-    data() {
-        return {
-            settings: [
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-            ]
-        }
-    }
-}
+  data() {
+    return {
+      settings: [
+        { name: "Persönliche Einstellungen", link: "/settings/me" },
+        { name: "Persönliche Einstellungen", link: "/settings/me" },
+        { name: "Persönliche Einstellungen", link: "/settings/me" },
+        { name: "Persönliche Einstellungen", link: "/settings/me" },
+        { name: "Persönliche Einstellungen", link: "/settings/me" },
+        { name: "Persönliche Einstellungen", link: "/settings/me" },
+        { name: "Persönliche Einstellungen", link: "/settings/me" },
+        { name: "Persönliche Einstellungen", link: "/settings/me" },
+      ]
+    };
+  }
+};
 
 </script>
 

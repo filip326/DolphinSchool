@@ -1,12 +1,14 @@
-import { UserType } from "../User/UserTypes"
+import { UserType } from "../User/UserTypes";
 
-export default interface IAnalytics {
-    date: string;
-    globalUserCount: number;
-    globalRequestCount: number;
+interface IAnalytics {
+    date: string
+    globalUserCount: number
+    globalRequestCount: number
     details: {
         userCountByType: {
             [key in UserType]: number;
-        };
+        }
     }
-}
+};
+
+export default IAnalytics;

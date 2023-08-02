@@ -1,56 +1,56 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue"
+import { onMounted, ref } from "vue";
 </script>
 
 <script lang="ts">
 export default {
-    name: "EMailPreview",
-    props: {
-        id: {
-            type: String,
-            required: true,
-        },
-        subject: {
-            type: String,
-            required: true,
-        },
-        sendby: {
-            type: String,
-            required: true,
-        },
-        timestamp: {
-            type: String,
-            required: true,
-        },
-        unread: Boolean,
-        stared: Boolean,
+  name: "EMailPreview",
+  props: {
+    id: {
+      type: String,
+      required: true,
     },
-    data() {
-        const width = ref(0)
-        onMounted(() => {
-            width.value = window.innerWidth
-            window.addEventListener("resize", () => {
-                width.value = window.innerWidth
-            })
+    subject: {
+      type: String,
+      required: true,
+    },
+    sendby: {
+      type: String,
+      required: true,
+    },
+    timestamp: {
+      type: String,
+      required: true,
+    },
+    unread: Boolean,
+    stared: Boolean,
+  },
+  data() {
+    const width = ref(0);
+    onMounted(() => {
+      width.value = window.innerWidth;
+      window.addEventListener("resize", () => {
+        width.value = window.innerWidth;
+      });
 
-        })
-        return {
-            width,
-            hover: false,
-        }
+    });
+    return {
+      width,
+      hover: false,
+    };
+  },
+  methods: {
+    markAsRead() {
+      return alert(this.id); // todo
     },
-    methods: {
-        markAsRead() {
-            return alert(this.id) // todo
-        },
-        deleteMail() {
-            return alert(this.id) // todo
-        },
-        onEmailSelected(email: string) {
-            this.$emit("email_clicked", email)
-        },
+    deleteMail() {
+      return alert(this.id); // todo
     },
-}
+    onEmailSelected(email: string) {
+      this.$emit("email_clicked", email);
+    },
+  },
+};
 </script>
 
 <template>
