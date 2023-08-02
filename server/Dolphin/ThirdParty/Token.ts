@@ -54,74 +54,74 @@ interface IToken {
 }
 
 class Token implements IToken {
-  public token: string;
-  public created: string;
-  public expires: string;
-  public reason: string;
-  public userId: ObjectId;
-  public createdBy: ObjectId;
-  public useFor: TokenUseTypes;
-  public permissions: number;
-  public publicKey?: string;
+    public token: string;
+    public created: string;
+    public expires: string;
+    public reason: string;
+    public userId: ObjectId;
+    public createdBy: ObjectId;
+    public useFor: TokenUseTypes;
+    public permissions: number;
+    public publicKey?: string;
 
-  constructor(token: IToken) {
-    this.token = token.token;
-    this.created = token.created;
-    this.expires = token.expires;
-    this.reason = token.reason;
-    this.userId = token.userId;
-    this.createdBy = token.createdBy;
-    this.useFor = token.useFor;
-    this.permissions = token.permissions;
-  }
-
-  public genKeys(): MethodResult<string> {
-    try {
-      if (this.publicKey) {
-        throw new Error("Public key already exists.");
-      }
-
-      const { publicKey, privateKey } = generateKeyPairSync("rsa", {
-        modulusLength: 2048,
-      });
-
-      // Save the public key
-      this.publicKey = publicKey.export({ format: "pem", type: "spki" }).toString("base64");
-
-      // Export the private key as a string
-      const privateKeyString = privateKey.export({ format: "pem", type: "pkcs8" }).toString("base64");
-
-      return [privateKeyString, null];
-    } catch (err: any) {
-      return [undefined, err as Error];
+    constructor(token: IToken) {
+        this.token = token.token;
+        this.created = token.created;
+        this.expires = token.expires;
+        this.reason = token.reason;
+        this.userId = token.userId;
+        this.createdBy = token.createdBy;
+        this.useFor = token.useFor;
+        this.permissions = token.permissions;
     }
-  }
 
-  public encryptString(plainText: string): MethodResult<string> {
-    try {
-      if (!this.publicKey) {
-        throw new Error("Public key is not available.");
-      }
+    public genKeys(): MethodResult<string> {
+        try {
+            if (this.publicKey) {
+                throw new Error("Public key already exists.");
+            }
 
-      const buffer = Buffer.from(plainText, "utf-8");
-      const encryptedData = publicEncrypt(this.publicKey, buffer);
-      const encryptedString = encryptedData.toString("base64");
+            const { publicKey, privateKey } = generateKeyPairSync("rsa", {
+                modulusLength: 2048,
+            });
 
-      return [encryptedString, null];
-    } catch (err) {
-      return [undefined, err as Error];
+            // Save the public key
+            this.publicKey = publicKey.export({ format: "pem", type: "spki" }).toString("base64");
+
+            // Export the private key as a string
+            const privateKeyString = privateKey.export({ format: "pem", type: "pkcs8" }).toString("base64");
+
+            return [privateKeyString, null];
+        } catch (err: any) {
+            return [undefined, err as Error];
+        }
     }
-  }
+
+    public encryptString(plainText: string): MethodResult<string> {
+        try {
+            if (!this.publicKey) {
+                throw new Error("Public key is not available.");
+            }
+
+            const buffer = Buffer.from(plainText, "utf-8");
+            const encryptedData = publicEncrypt(this.publicKey, buffer);
+            const encryptedString = encryptedData.toString("base64");
+
+            return [encryptedString, null];
+        } catch (err) {
+            return [undefined, err as Error];
+        }
+    }
 
 
-  public hasPermission(permission: TokenPermissionFlagBits): boolean {
-    return (this.permissions & permission) === permission;
-  }
+    public hasPermission(permission: TokenPermissionFlagBits): boolean {
+        return (this.permissions & permission) === permission;
+    }
 }
 
 export default Token;
 export {
-  TokenUseTypes,
-  TokenPermissionFlagBits,
-  IToken
+    TokenUseTypes,
+    TokenPermissionFlagBits,
+    IToken
 };

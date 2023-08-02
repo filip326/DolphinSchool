@@ -1,52 +1,52 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: "login"
+    layout: "login"
 });
 </script>
 
 <script lang="ts">
 export default defineComponent({
-  data() {
-    return {
-      username: "",
-      pwd: "",
-      error: {
-        shown: false,
-        message: ""
-      }
-    };
-  },
-  async beforeCreate() {
-    const user = await checkAuthAndReturnUserOrNull({});
-    if (user) {
-      navigateTo("/home");
-    }
-  },
-  methods: {
-    async login() {
-      const response = await useFetch("/api/login", {
-        method: "POST",
-        body: JSON.stringify({
-          username: this.username,
-          password: this.pwd
-        })
-      });
-
-      if (!response.error.value && response.data) {
-        navigateTo("/home");
-      } else {
-        if (response.error) {
-          console.error(response.error);
-          this.error.shown = true;
-          if (response.error.value?.statusCode == 401) {
-            this.error.message = "Ungültige Login-Daten";
-          } else {
-            this.error.message = "Beim Login ist ein Fehler aufgetreten";
-          }
+    data() {
+        return {
+            username: "",
+            pwd: "",
+            error: {
+                shown: false,
+                message: ""
+            }
+        };
+    },
+    async beforeCreate() {
+        const user = await checkAuthAndReturnUserOrNull({});
+        if (user) {
+            navigateTo("/home");
         }
-      }
+    },
+    methods: {
+        async login() {
+            const response = await useFetch("/api/login", {
+                method: "POST",
+                body: JSON.stringify({
+                    username: this.username,
+                    password: this.pwd
+                })
+            });
+
+            if (!response.error.value && response.data) {
+                navigateTo("/home");
+            } else {
+                if (response.error) {
+                    console.error(response.error);
+                    this.error.shown = true;
+                    if (response.error.value?.statusCode == 401) {
+                        this.error.message = "Ungültige Login-Daten";
+                    } else {
+                        this.error.message = "Beim Login ist ein Fehler aufgetreten";
+                    }
+                }
+            }
+        }
     }
-  }
 });
 </script>
 

@@ -1,32 +1,32 @@
 <script lang="ts">
 export default {
-  name: "EMailList",
-  props: {
-    url: {
-      type: String,
-      required: true
-    }
-  },
-  data() {
-    return {
-      emails: [
-        { id: "1", subject: "Bug", sendby: "1234567890123456789", timestamp: "2023-05-05", read: true, stared: false },
-        { id: "2", subject: "Testo Pestoq", sendby: "langer Name - wirklich sehr lang", timestamp: "2023-05-05", read: true, stared: false },
-        { id: "3", subject: "lorem100", sendby: "heeecker", timestamp: "2023-05-05", read: false, stared: false },
-        { id: "4", subject: "lorem100", sendby: "heeecker", timestamp: "2023-05-05", read: true, stared: false },
-        { id: "5", subject: "lorem100", sendby: "heeecker", timestamp: "2023-05-05", read: false, stared: false },
-        { id: "6", subject: "lorem100abcdefghijklmnopqrstuvw", sendby: "heeecker", timestamp: "2023-05-05", read: false, stared: false }
-      ]
-    };
-  },
-  methods: {
-    onEmailSelected(email: string) {
-      this.$emit("email_selected", email);
+    name: "EMailList",
+    props: {
+        url: {
+            type: String,
+            required: true
+        }
     },
-    loadMore() {
-      // todo
+    data() {
+        return {
+            emails: [
+                { id: "1", subject: "Bug", sendby: "1234567890123456789", timestamp: "2023-05-05", read: true, stared: false },
+                { id: "2", subject: "Testo Pestoq", sendby: "langer Name - wirklich sehr lang", timestamp: "2023-05-05", read: true, stared: false },
+                { id: "3", subject: "lorem100", sendby: "heeecker", timestamp: "2023-05-05", read: false, stared: false },
+                { id: "4", subject: "lorem100", sendby: "heeecker", timestamp: "2023-05-05", read: true, stared: false },
+                { id: "5", subject: "lorem100", sendby: "heeecker", timestamp: "2023-05-05", read: false, stared: false },
+                { id: "6", subject: "lorem100abcdefghijklmnopqrstuvw", sendby: "heeecker", timestamp: "2023-05-05", read: false, stared: false }
+            ]
+        };
+    },
+    methods: {
+        onEmailSelected(email: string) {
+            this.$emit("email_selected", email);
+        },
+        loadMore() {
+            // todo
+        }
     }
-  }
 };
 </script>
 

@@ -1,12 +1,12 @@
 <script lang="ts">
 export default {
-  name: "MarkdownEditor",
-  data() {
-    return {
-      md: "",
-      tab: null
-    };
-  }
+    name: "MarkdownEditor",
+    data() {
+        return {
+            md: "",
+            tab: null
+        };
+    }
 };
 </script>
 

@@ -4,52 +4,52 @@ import { onMounted, ref } from "vue";
 
 <script lang="ts">
 export default {
-  name: "EMailPreview",
-  props: {
-    id: {
-      type: String,
-      required: true,
+    name: "EMailPreview",
+    props: {
+        id: {
+            type: String,
+            required: true,
+        },
+        subject: {
+            type: String,
+            required: true,
+        },
+        sendby: {
+            type: String,
+            required: true,
+        },
+        timestamp: {
+            type: String,
+            required: true,
+        },
+        unread: Boolean,
+        stared: Boolean,
     },
-    subject: {
-      type: String,
-      required: true,
-    },
-    sendby: {
-      type: String,
-      required: true,
-    },
-    timestamp: {
-      type: String,
-      required: true,
-    },
-    unread: Boolean,
-    stared: Boolean,
-  },
-  data() {
-    const width = ref(0);
-    onMounted(() => {
-      width.value = window.innerWidth;
-      window.addEventListener("resize", () => {
-        width.value = window.innerWidth;
-      });
+    data() {
+        const width = ref(0);
+        onMounted(() => {
+            width.value = window.innerWidth;
+            window.addEventListener("resize", () => {
+                width.value = window.innerWidth;
+            });
 
-    });
-    return {
-      width,
-      hover: false,
-    };
-  },
-  methods: {
-    markAsRead() {
-      return alert(this.id); // todo
+        });
+        return {
+            width,
+            hover: false,
+        };
     },
-    deleteMail() {
-      return alert(this.id); // todo
+    methods: {
+        markAsRead() {
+            return alert(this.id); // todo
+        },
+        deleteMail() {
+            return alert(this.id); // todo
+        },
+        onEmailSelected(email: string) {
+            this.$emit("email_clicked", email);
+        },
     },
-    onEmailSelected(email: string) {
-      this.$emit("email_clicked", email);
-    },
-  },
 };
 </script>
 

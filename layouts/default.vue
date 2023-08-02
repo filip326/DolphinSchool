@@ -1,22 +1,22 @@
 <script lang="ts">
 export default {
-  name: "DefaultLayout",
-  data() {
-    return {
-      show_nav_drawer_button: false,
-      navigation_items: [
+    name: "DefaultLayout",
+    data() {
+        return {
+            show_nav_drawer_button: false,
+            navigation_items: [
 
-        { title: "Home", icon: "mdi-home", link: "/" },
-        { title: "About", icon: "mdi-information", link: "/" },
-        { title: "Mail", icon: "mdi-email", link: "/mail" },
-        { title: "Settings", icon: "mdi-cog", link: "/settings" }
+                { title: "Home", icon: "mdi-home", link: "/" },
+                { title: "About", icon: "mdi-information", link: "/" },
+                { title: "Mail", icon: "mdi-email", link: "/mail" },
+                { title: "Settings", icon: "mdi-cog", link: "/settings" }
 
-      ] as { title: string; icon: `mdi-${string}`; link: string }[]
-    };
-  },
-  beforeMount() {
-    this.show_nav_drawer_button = window.innerWidth > 1200;
-  }
+            ] as { title: string; icon: `mdi-${string}`; link: string }[]
+        };
+    },
+    beforeMount() {
+        this.show_nav_drawer_button = window.innerWidth > 1200;
+    }
 };
 
 </script>

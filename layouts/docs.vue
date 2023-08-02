@@ -1,31 +1,31 @@
 <script lang="ts">
 export default {
-  name: "nonAuthLayout",
-  data() {
-    return {
-      show_nav_drawer_button: false,
-      searchItemLink: "",
-      searchWidth: false,
-      items: [
-        { title: "Start", icon: "mdi-home", link: "/" },
-        // add routes for docs
-      ] as { title: string; icon: `mdi-${string}`; link: string }[],
-    };
-  },
-  beforeMount() {
-    this.show_nav_drawer_button = window.innerWidth > 1200;
-    this.searchWidth = window.innerWidth > 1200;
-  },
-  computed: {
-    filterOutDefaultURLs() {
-      return this.items.filter(item => {
-        const filterOut = [
-          "/"
-        ];
-        filterOut.includes(item.link) === false;
-      });
-    }
-  },
+    name: "nonAuthLayout",
+    data() {
+        return {
+            show_nav_drawer_button: false,
+            searchItemLink: "",
+            searchWidth: false,
+            items: [
+                { title: "Start", icon: "mdi-home", link: "/" },
+                // add routes for docs
+            ] as { title: string; icon: `mdi-${string}`; link: string }[],
+        };
+    },
+    beforeMount() {
+        this.show_nav_drawer_button = window.innerWidth > 1200;
+        this.searchWidth = window.innerWidth > 1200;
+    },
+    computed: {
+        filterOutDefaultURLs() {
+            return this.items.filter(item => {
+                const filterOut = [
+                    "/"
+                ];
+                filterOut.includes(item.link) === false;
+            });
+        }
+    },
 };
 
 </script>

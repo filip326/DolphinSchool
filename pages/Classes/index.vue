@@ -1,25 +1,25 @@
 <script lang="ts">
 
 export default {
-  data() {
-    return {
-      search_class: "",
-      timeout: null as NodeJS.Timeout | null,
-    };
-  },
-  methods: {
-    search() {
-      console.log(this.search_class);
+    data() {
+        return {
+            search_class: "",
+            timeout: null as NodeJS.Timeout | null,
+        };
     },
-    searchTimer() {
-      if (this.timeout) {
-        clearTimeout(this.timeout);
-      }
-      this.timeout = setTimeout(() => {
-        this.search();
-      }, 500);
+    methods: {
+        search() {
+            console.log(this.search_class);
+        },
+        searchTimer() {
+            if (this.timeout) {
+                clearTimeout(this.timeout);
+            }
+            this.timeout = setTimeout(() => {
+                this.search();
+            }, 500);
+        }
     }
-  }
 };
 
 </script>
