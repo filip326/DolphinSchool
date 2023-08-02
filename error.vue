@@ -1,13 +1,13 @@
 <script lang="ts">
 export default {
-    props: {
-        error: Object
-    }
+  props: {
+    error: Object
+  }
 };
 </script>
 
 <template>
-    <NuxtLayout name="non">
-        <Error fix="/" :error="error ?? {}" type="http" />
-    </NuxtLayout>
+  <NuxtLayout name="non">
+    <Error fix="/" :error="error ?? {}" type="http" />
+  </NuxtLayout>
 </template>
