@@ -34,13 +34,13 @@ export default {
                 this.profile.data = {
                     name: res.data.value?.fullName ?? "",
                     username: res.data.value?.username ?? ""
-                }
+                };
 
                 if (this.profile.data.name !== "" && this.profile.data.username !== "") {
                     this.profile.loaded = true;
-                }
+                };
             }
-        })
+        });
     }
 };
 </script>
