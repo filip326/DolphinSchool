@@ -32,18 +32,26 @@ export default defineComponent({
                 })
             });
 
-            if (!response.error.value && response.data) {
-                navigateTo("/home");
-            } else {
-                if (response.error) {
-                    console.error(response.error);
+            if (response.status.value === "error") {
+                this.error.shown = true;
+                this.error.message = "Login fehlgeschlagen";
+                return;
+            }
+
+            switch (response.data.value) {
+                case "Login successful":
+                    navigateTo("/home");
+                    break;
+                case "continue with 2fa":
+                    navigateTo("/totp");
+                    break;
+                case "continue with 2fa setup":
+                    navigateTo("/setup/2fa");
+                    break;
+                default:
                     this.error.shown = true;
-                    if (response.error.value?.statusCode == 401) {
-                        this.error.message = "Ungültige Login-Daten";
-                    } else {
-                        this.error.message = "Beim Login ist ein Fehler aufgetreten";
-                    }
-                }
+                    this.error.message = "Login fehlgeschlagen";
+                    break;
             }
         }
     }
@@ -59,14 +67,14 @@ export default defineComponent({
             label="Benutzername"
             v-model="username"
             placeholder="max.mustermann"
-            hint="Dein Benutzername besteht aus deinem Vor- und Nachnamen, durch einen Punkt getrennt."
+            hint="Ihr Benutzername besteht aus Ihrem Vor- und Nachnamen, durch einen Punkt getrennt."
         ></VTextField>
         <VTextField
             label="Passwort"
             v-model="pwd"
             type="password"
             placeholder="P@55w0rt"
-            hint="Gebe hier dein Passwort ein."
+            hint="Geben Sie hier Ihr Passwort ein."
         ></VTextField>
         <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
         <NuxtLink to="">Zugangsdaten vergessen</NuxtLink>

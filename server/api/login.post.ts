@@ -42,9 +42,6 @@ export default eventHandler(async (event) => {
     const token = session.token;
     const expires = session.expires;
 
-    // check if user needs 2fa
-    // TODO: implement 2fa
-
     setCookie(event, "token", token, {
         maxAge: 30 * 24 * 60 * 60, // 30 days
         secure: useRuntimeConfig().prod,
@@ -53,9 +50,14 @@ export default eventHandler(async (event) => {
         path: "/"
     });
 
+    if (user.mfaEnabled) {
+        return "continue with 2fa";
+    }
+    
+    if (user.askForMFASetup) {
+        return "continue with 2fa setup";
+    }
+
     // send response with username
-    return {
-        username,
-        expires
-    };
+    return "Login successful";
 });
