@@ -33,14 +33,23 @@ class GlobalCourseManager {
     async searchCourses(options: SearchCourseOptions): Promise<MethodResult<Course[]>> {
         if (options.nameQuery) {
             try {
-                const dbResult = await this.courseCollection.find({
-                    name: { $regex: options.nameQuery ?? "" },
-                }).skip(options.skip ?? 0);
+                const dbResult = await this.courseCollection
+                    .find({
+                        name: {
+                            $regex: options.nameQuery ?? ""
+                        }
+                    })
+                    .skip(options.skip ?? 0);
 
                 if (options.max) {
                     dbResult.limit(options.max);
                 }
-                return [(await dbResult.toArray()).map((cource) => new Course(this.courseCollection, cource)), null];
+                return [
+                    (await dbResult.toArray()).map(
+                        (cource) => new Course(this.courseCollection, cource)
+                    ),
+                    null
+                ];
             } catch {
                 return [undefined, Error("Database error")];
             }
@@ -57,7 +66,9 @@ class GlobalCourseManager {
     async findCourse(options: FindCourseOptions): Promise<MethodResult<Course>> {
         if (options.id) {
             try {
-                const dbResult = await this.courseCollection.findOne({ _id: options.id });
+                const dbResult = await this.courseCollection.findOne({
+                    _id: options.id
+                });
                 if (dbResult) {
                     const cource = new Course(this.courseCollection, dbResult);
                     return [cource, null];
@@ -70,7 +81,9 @@ class GlobalCourseManager {
 
         if (options.name) {
             try {
-                const dbResult = await this.courseCollection.findOne({ name: options.name });
+                const dbResult = await this.courseCollection.findOne({
+                    name: options.name
+                });
                 if (dbResult) {
                     const cource = new Course(this.courseCollection, dbResult);
                     return [cource, null];
@@ -95,7 +108,7 @@ class GlobalCourseManager {
                 name: options.name,
                 subject: options.subject,
                 teacherIds: [options.teacher],
-                userIds: [],
+                userIds: []
             });
 
             if (!newCourse.acknowledged) {
@@ -107,7 +120,7 @@ class GlobalCourseManager {
                 name: options.name,
                 subject: options.subject,
                 teacherIds: [options.teacher],
-                userIds: [],
+                userIds: []
             });
 
             return [course, null];
@@ -121,9 +134,17 @@ class GlobalCourseManager {
      * @param options limit, skip
      * @returns Array of Courses | undefined
      */
-    async list(options: { limit?: number, skip?: number }): Promise<MethodResult<Course[]>> {
+    async list(options: { limit?: number; skip?: number }): Promise<MethodResult<Course[]>> {
         try {
-            const courses = await this.courseCollection.find({}, { skip: options.skip, limit: options.limit || 10 }).toArray();
+            const courses = await this.courseCollection
+                .find(
+                    {},
+                    {
+                        skip: options.skip,
+                        limit: options.limit || 10
+                    }
+                )
+                .toArray();
             return [courses.map((course) => new Course(this.courseCollection, course)), null];
         } catch {
             return [undefined, Error("Database error")];
@@ -132,23 +153,34 @@ class GlobalCourseManager {
 
     /**
      * returns all courses where all users are members in it
-     * @param users 
+     * @param users
      */
     async byMembers(...users: User[]) {
-        const courses = await this.courseCollection.find({
-            $and: [
-                ...users.map(u => ({ $or: [ { userIds: u._id }, { teacherIds: u._id } ]}))
-            ]
-        }).toArray();
+        const courses = await this.courseCollection
+            .find({
+                $and: [
+                    ...users.map((u) => ({
+                        $or: [
+                            {
+                                userIds: u._id
+                            },
+                            {
+                                teacherIds: u._id
+                            }
+                        ]
+                    }))
+                ]
+            })
+            .toArray();
 
-        return courses.map(c => new Course(this.courseCollection, c));
+        return courses.map((c) => new Course(this.courseCollection, c));
     }
 
     /**
      * determines, if there is a course, where all users are members in it or not
      */
     async sameCourse(...users: User[]) {
-        return (await this.byMembers(...users)).length > 0
+        return (await this.byMembers(...users)).length > 0;
     }
 }
 

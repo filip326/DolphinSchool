@@ -1,62 +1,58 @@
 .login-wrapper {
-  background-image: linear-gradient(
-      90deg,
-      rgba(0, 0, 0, 0.4) 40%,
-      rgba(0, 0, 0, 1) 100%
-    ),
-    url("/img/other/GymnasiumRiedberg.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+    background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 1) 100%),
+        url("/img/other/GymnasiumRiedberg.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 #loginform {
-  max-width: 400px;
-  background-color: #111111;
-  padding: 20px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  position: absolute;
-  right: 10%;
-  top: 50%;
-  transform: translate(0, -50%);
-  gap: 10px;
+    max-width: 400px;
+    background-color: #111111;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    transform: translate(0, -50%);
+    gap: 10px;
 }
 
 #loginform > *:not(a) {
-  width: 100%;
+    width: 100%;
 }
 
 @media (max-width: 500px) {
-  #loginform {
-    width: 100%;
-    position: absolute;
-    right: 0;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
+    #loginform {
+        width: 100%;
+        position: absolute;
+        right: 0;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
 }
 
 #loginform img {
-  height: 100px;
-  width: 100px;
+    height: 100px;
+    width: 100px;
 }
 
 #loginform > a {
-  font-size: 12px;
-  margin: 10px 0px 0px 0px;
-  text-decoration: none;
-  color: white;
+    font-size: 12px;
+    margin: 10px 0px 0px 0px;
+    text-decoration: none;
+    color: white;
 }
 
 button[type="submit"] {
-  margin-top: 10px;
-  width: 100%;
+    margin-top: 10px;
+    width: 100%;
 }

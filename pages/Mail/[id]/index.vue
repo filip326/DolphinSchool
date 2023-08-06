@@ -1,12 +1,10 @@
 <template>
     <VCard>
-
         <VCardTitle>{{ $route.params.id }}<span class="author">von Autor</span></VCardTitle>
 
         <VCardText>
             <Markdown md="# Hello World" />
         </VCardText>
-
     </VCard>
 </template>
 
@@ -16,7 +14,7 @@
 }
 
 .author {
-    font-size: .5em;
+    font-size: 0.5em;
     margin: 0 20px;
 }
 </style>

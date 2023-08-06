@@ -3,7 +3,7 @@ export default {
     props: {
         error: Object
     }
-}
+};
 </script>
 
 <template>

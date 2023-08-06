@@ -1,25 +1,45 @@
 <script lang="ts">
-
 export default {
     data() {
         return {
             settings: [
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
-                { name: "Persönliche Einstellungen", link: "/settings/me" },
+                {
+                    name: "Persönliche Einstellungen",
+                    link: "/settings/me"
+                },
+                {
+                    name: "Persönliche Einstellungen",
+                    link: "/settings/me"
+                },
+                {
+                    name: "Persönliche Einstellungen",
+                    link: "/settings/me"
+                },
+                {
+                    name: "Persönliche Einstellungen",
+                    link: "/settings/me"
+                },
+                {
+                    name: "Persönliche Einstellungen",
+                    link: "/settings/me"
+                },
+                {
+                    name: "Persönliche Einstellungen",
+                    link: "/settings/me"
+                },
+                {
+                    name: "Persönliche Einstellungen",
+                    link: "/settings/me"
+                },
+                {
+                    name: "Persönliche Einstellungen",
+                    link: "/settings/me"
+                }
             ]
-        }
+        };
     }
-}
-
+};
 </script>
-
-
 
 <template>
     <h2><VIcon>mdi-cogs</VIcon>Einstellungen</h2>
@@ -30,16 +50,13 @@ export default {
             </VCardTitle>
             <VCardActions>
                 <VSpacer />
-                <VBtn prepend-icon="mdi-open-in-new" variant="outlined">
-                    Aufrufen
-                </VBtn>
+                <VBtn prepend-icon="mdi-open-in-new" variant="outlined"> Aufrufen </VBtn>
             </VCardActions>
         </VCard>
     </div>
 </template>
 
 <style scoped>
-
 .settings__wrapper {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 500px));
@@ -49,5 +66,4 @@ export default {
 .v-icon {
     margin: 12px;
 }
-
 </style>

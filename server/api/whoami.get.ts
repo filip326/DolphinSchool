@@ -12,8 +12,9 @@ export default eventHandler(async (event) => {
     }
 
     return {
+        statusCode: 200,
         username: user.username,
         fullName: user.fullName,
-        type: user.type,
+        type: user.type
     };
 });

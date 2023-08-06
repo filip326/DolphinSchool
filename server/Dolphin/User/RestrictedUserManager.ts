@@ -22,7 +22,7 @@ class RestrictedUserManager {
         return this.manager.searchUsers(options);
     }
 
-    async list(options: { amount?: number, skip?: number }): Promise<MethodResult<User[]>> {
+    async list(options: { amount?: number; skip?: number }): Promise<MethodResult<User[]>> {
         // list students where class same as me
         return this.manager.list(options);
     }

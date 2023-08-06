@@ -1,55 +1,53 @@
 <script lang="ts">
-
 export default {
     data() {
         return {
-            search_class: '',
-            timeout: null as NodeJS.Timeout | null,
-        }
+            search_class: "",
+            timeout: null as NodeJS.Timeout | null
+        };
     },
     methods: {
         search() {
-            console.log(this.search_class)
+            console.log(this.search_class);
         },
         searchTimer() {
             if (this.timeout) {
-                clearTimeout(this.timeout)
+                clearTimeout(this.timeout);
             }
             this.timeout = setTimeout(() => {
-                this.search()
-            }, 500)
+                this.search();
+            }, 500);
         }
     }
-}
-
+};
 </script>
 
 <template>
     <VCard>
+        <VCardTitle> Klassen- und Kursmappen </VCardTitle>
 
-        <VCardTitle>
-            Klassen- und Kursmappen
-        </VCardTitle>
-
-        <VCardSubtitle>
-            Klassen- und Kursmappen einsehen und verwalten
-        </VCardSubtitle>
+        <VCardSubtitle> Klassen- und Kursmappen einsehen und verwalten </VCardSubtitle>
 
         <VCardText>
-
-            <VTextField v-model="search_class" append-inner-icon="mdi-magnify" @click:append-inner="search()"
-                @update:model-value="searchTimer()" label="Suche" single-line hide-details />
+            <VTextField
+                v-model="search_class"
+                append-inner-icon="mdi-magnify"
+                @click:append-inner="search()"
+                @update:model-value="searchTimer()"
+                label="Suche"
+                single-line
+                hide-details
+            />
 
             <VList>
-
                 <VListItem to="/classes/id">
-
                     <div class="identifier-wrapper">
                         <VIcon>mdi-identifier</VIcon><span class="identifier">9-D-Kra-9a</span>
                     </div>
                     <div class="details-wrapper">
                         <div class="grade_level-wrapper">
-                            <div class="grade_level-title">Jahrgang:</div><span class="grade_level">9</span>
+                            <div class="grade_level-title">Jahrgang:</div>
+                            <span class="grade_level">9</span>
                         </div>
                         <div class="teacher-wrapper">
                             <VIcon>mdi-human-male-board</VIcon><span class="teacher">Kra</span>
@@ -70,13 +68,9 @@ export default {
                             <span class="absences">3 unentschuldigte Fehlstunden</span>
                         </div>
                     </div>
-
                 </VListItem>
-
             </VList>
-
         </VCardText>
-
     </VCard>
 </template>
 
@@ -106,10 +100,9 @@ export default {
     gap: 15px;
     align-items: center;
     justify-content: left;
-
 }
 
-.details-wrapper>* {
+.details-wrapper > * {
     display: flex;
     align-items: center;
     gap: 5px;

@@ -1,31 +1,22 @@
-
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <script lang="ts">
-
 export default {
-
     data() {
         return {
             absender: "Du",
-            empfaenger: "",
-        }
+            empfaenger: ""
+        };
     }
-}
-
+};
 </script>
 
 <template>
     <VCard>
-
-        <VCardTitle>
-            Nachricht schreiben
-        </VCardTitle>
+        <VCardTitle> Nachricht schreiben </VCardTitle>
 
         <VCardText>
             <VForm>
-
                 <VTextField label="Absender" readonly v-model="absender" />
 
                 <VTextField label="Empfänger" v-model="empfaenger" />
@@ -34,22 +25,15 @@ export default {
 
                 <MarkdownEditor />
 
-                <VFileInput label="Anhang (max 5 MB)"  />
-
+                <VFileInput label="Anhang (max 5 MB)" />
             </VForm>
         </VCardText>
 
         <VCardActions>
-            <VBtn prepend-icon="mdi-trash-can" variant="outlined">
-                Verwerfen
-            </VBtn>
+            <VBtn prepend-icon="mdi-trash-can" variant="outlined"> Verwerfen </VBtn>
             <VSpacer />
-            <VBtn prepend-icon="mdi-content-save" variant="outlined">
-                Speichern
-            </VBtn>
-            <VBtn prepend-icon="mdi-send" variant="outlined">
-                Senden
-            </VBtn>
+            <VBtn prepend-icon="mdi-content-save" variant="outlined"> Speichern </VBtn>
+            <VBtn prepend-icon="mdi-send" variant="outlined"> Senden </VBtn>
         </VCardActions>
     </VCard>
 </template>

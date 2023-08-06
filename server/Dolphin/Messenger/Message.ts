@@ -18,7 +18,6 @@ interface IMessage {
 }
 
 class Message implements IMessage {
-
     id: ObjectId;
     sender: ObjectId;
     anonymous: boolean;
@@ -30,7 +29,11 @@ class Message implements IMessage {
     private readonly messageCollection: Collection<IMessage>;
     private readonly userMessageCollection: Collection<IUserMessage>;
 
-    constructor(messageCollection: Collection<IMessage>, userMessageCollection: Collection<IUserMessage>, message: WithId<IMessage>) {
+    constructor(
+        messageCollection: Collection<IMessage>,
+        userMessageCollection: Collection<IUserMessage>,
+        message: WithId<IMessage>
+    ) {
         this.id = message._id;
         this.sender = message.sender;
         this.attachments = message.attachments;
@@ -45,41 +48,41 @@ class Message implements IMessage {
 
     async deleteForAll(): Promise<MethodResult<boolean>> {
         try {
-            const deleteResult = await this.messageCollection.deleteOne({ _id: this.id });
+            const deleteResult = await this.messageCollection.deleteOne({
+                _id: this.id
+            });
             const deleteAllResult = await this.userMessageCollection.deleteMany({
                 message: { $eq: this.id }
             });
             return [deleteAllResult.acknowledged && deleteResult.acknowledged, null];
         } catch {
-            return [ undefined, new Error("DB error") ];
+            return [undefined, new Error("DB error")];
         }
     }
 
     async updateContent(newContent: string): Promise<MethodResult<boolean>> {
-    
         this.edited = Date.now();
         this.content = newContent;
 
         try {
-            const updateResult = await this.messageCollection.updateOne({ _id: this.id }, {
-                $set: {
-                    content: newContent,
-                    edited: this.edited
+            const updateResult = await this.messageCollection.updateOne(
+                { _id: this.id },
+                {
+                    $set: {
+                        content: newContent,
+                        edited: this.edited
+                    }
                 }
-            });
+            );
             return [updateResult.acknowledged, null];
-        }
-        catch {
+        } catch {
             return [undefined, new Error("DB error")];
         }
-    
     }
-
 
     get time() {
         return this.id.getTimestamp();
     }
-    
 }
 
 export default Message;

@@ -1,12 +1,14 @@
-
 // get all mails
 
 import Dolphin from "../../Dolphin/Dolphin";
 
 export default defineEventHandler(async (event) => {
-
     // check authentication
-    if (!event.context.auth.authenticated || event.context.auth.mfa_required || !event.context.auth.user) {
+    if (
+        !event.context.auth.authenticated ||
+        event.context.auth.mfa_required ||
+        !event.context.auth.user
+    ) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
@@ -20,10 +22,10 @@ export default defineEventHandler(async (event) => {
     const skip = parseInt(query.skip as string) || 0;
 
     // get dolphin
-    const dolphin = Dolphin.instance ?? await Dolphin.init();
-    
+    const dolphin = Dolphin.instance ?? (await Dolphin.init());
+
     // get mailbox
-    const [ userMessageManager, userMessageManagerError ] = await dolphin.getMessenger(user);
+    const [userMessageManager, userMessageManagerError] = await dolphin.getMessenger(user);
     if (userMessageManagerError) {
         throw createError({ statusCode: 500, message: "Internal server error" });
     }
@@ -31,19 +33,17 @@ export default defineEventHandler(async (event) => {
     // get mails
     const [mails, mailsError] = await userMessageManager.getMessages({
         limit,
-        skip,
-    })
+        skip
+    });
 
     if (mailsError) {
         throw createError({ statusCode: 500, message: "Internal server error" });
     }
 
     // return mails
-    return mails.map(mail => ({
+    return mails.map((mail) => ({
         id: mail.message.toHexString(),
         subject: mail.subject,
-        author: mail.author.toHexString(),
+        author: mail.author.toHexString()
     }));
-
-
 });

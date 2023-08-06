@@ -8,6 +8,6 @@ interface Options {
 
 type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U];
 
-type FindUserOptions = AtLeastOne<Options>
+type FindUserOptions = AtLeastOne<Options>;
 
 export default FindUserOptions;

@@ -11,8 +11,8 @@ enum TokenPermissionFlagBits {
     APIGetUserNames = 1 << 1, // Can get a list of usernames
     // OAuth Permissions
     OAuthVerifyUser = 1 << 2, // Can verify a user when they used the OAuth Login method on a third party site
-    OAuthGetUser = 1 << 3, // Can get this user's information
-};
+    OAuthGetUser = 1 << 3 // Can get this user's information
+}
 
 interface IToken {
     /*
@@ -51,7 +51,7 @@ interface IToken {
     Public key of the token (Server -> Client)
     */
     publicKey?: string;
-};
+}
 
 class Token implements IToken {
     public token: string;
@@ -82,14 +82,16 @@ class Token implements IToken {
             }
 
             const { publicKey, privateKey } = generateKeyPairSync("rsa", {
-                modulusLength: 2048,
+                modulusLength: 2048
             });
 
             // Save the public key
             this.publicKey = publicKey.export({ format: "pem", type: "spki" }).toString("base64");
 
             // Export the private key as a string
-            const privateKeyString = privateKey.export({ format: "pem", type: "pkcs8" }).toString("base64");
+            const privateKeyString = privateKey
+                .export({ format: "pem", type: "pkcs8" })
+                .toString("base64");
 
             return [privateKeyString, null];
         } catch (err: any) {
@@ -113,15 +115,10 @@ class Token implements IToken {
         }
     }
 
-
     public hasPermission(permission: TokenPermissionFlagBits): boolean {
         return (this.permissions & permission) === permission;
     }
 }
 
 export default Token;
-export {
-    TokenUseTypes,
-    TokenPermissionFlagBits,
-    IToken
-};
+export { TokenUseTypes, TokenPermissionFlagBits, IToken };

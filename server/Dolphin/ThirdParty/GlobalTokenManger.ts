@@ -23,7 +23,9 @@ class GlobalTokenManger {
 
     public async findToken(token: string): Promise<MethodResult<Token>> {
         try {
-            const tokenObj = await this.tokenCollection.findOne({ token: token });
+            const tokenObj = await this.tokenCollection.findOne({
+                token: token
+            });
 
             if (!tokenObj) {
                 return [undefined, new Error("Token not found")];
@@ -32,7 +34,9 @@ class GlobalTokenManger {
             // check if token is expired
             if (new Date(tokenObj.expires) < new Date()) {
                 // delete the token
-                await this.tokenCollection.deleteOne({ token: token });
+                await this.tokenCollection.deleteOne({
+                    token: token
+                });
                 return [undefined, new Error("Token expired")];
             }
 
@@ -44,7 +48,9 @@ class GlobalTokenManger {
 
     public async deleteToken(token: string): Promise<MethodResult<boolean>> {
         try {
-            const result = await this.tokenCollection.deleteOne({ token: token });
+            const result = await this.tokenCollection.deleteOne({
+                token: token
+            });
 
             if (result.deletedCount === 0) {
                 return [false, null];

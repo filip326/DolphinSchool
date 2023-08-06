@@ -1,15 +1,14 @@
 import Dolphin from "@/server/Dolphin/Dolphin";
 import { SessionState } from "../Dolphin/Session/Session";
-import { navigateTo } from "nuxt/app";
 import GlobalUserManager from "../Dolphin/User/GlobalUserManager";
 
 export default defineEventHandler(async (event) => {
     event.context.auth = {
         authenticated: false,
         mfa_required: false,
-        user: undefined,
+        user: undefined
     };
-    const dolphin = Dolphin.instance ?? await Dolphin.init();
+    const dolphin = Dolphin.instance ?? (await Dolphin.init());
     // get token from cookies
     const token = parseCookies(event).token;
 
@@ -19,7 +18,7 @@ export default defineEventHandler(async (event) => {
         event.context.auth.mfa_required = false;
         event.context.auth.user = undefined;
         return;
-    };
+    }
 
     // check if token is valid
     const [session, sessionFindError] = await dolphin.sessions.findSession(token);
@@ -71,7 +70,7 @@ export default defineEventHandler(async (event) => {
             path: "/",
             sameSite: "strict",
             secure: true,
-            httpOnly: true,
+            httpOnly: true
         });
         return;
     }

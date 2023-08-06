@@ -1,24 +1,25 @@
 <script lang="ts">
 export default {
-    name: 'nonAuthLayout',
+    name: "nonAuthLayout",
     data() {
         return {
             show_nav_drawer_button: false,
             navigation_items: [
-
-                { title: 'Home', icon: 'mdi-home', link: '/' },
-                { title: 'About', icon: 'mdi-information', link: '/' },
-                { title: 'Impress', icon: 'mdi-at', link: '/' },
-                { title: 'Policy', icon: 'mdi-security', link: '/' }
-
-            ] as { title: string, icon: `mdi-${string}`, link: string }[]
-        }
+                { title: "Home", icon: "mdi-home", link: "/" },
+                {
+                    title: "About",
+                    icon: "mdi-information",
+                    link: "/"
+                },
+                { title: "Impress", icon: "mdi-at", link: "/" },
+                { title: "Policy", icon: "mdi-security", link: "/" }
+            ] as { title: string; icon: `mdi-${string}`; link: string }[]
+        };
     },
     beforeMount() {
         this.show_nav_drawer_button = window.innerWidth > 1200;
     }
-}
-
+};
 </script>
 
 <template>
@@ -29,17 +30,21 @@ export default {
 
             <VImg src="/img/School/DolphinSchool_light.png" />
 
-
-            <VAppBarTitle>
-                DolphinSchool
-            </VAppBarTitle>
-
+            <VAppBarTitle> DolphinSchool </VAppBarTitle>
         </VAppBar>
 
         <VNavigationDrawer v-model="show_nav_drawer_button" class="navigation__drawer">
             <VList>
-                <VListItem v-for="item in navigation_items" :key="item.title" density="compact" :to="item.link"
-                    :append-icon="item.icon" :title="item.title" rounded class="navigation__list__item" />
+                <VListItem
+                    v-for="item in navigation_items"
+                    :key="item.title"
+                    density="compact"
+                    :to="item.link"
+                    :append-icon="item.icon"
+                    :title="item.title"
+                    rounded
+                    class="navigation__list__item"
+                />
             </VList>
         </VNavigationDrawer>
 

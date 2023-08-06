@@ -1,33 +1,27 @@
 <script lang="ts">
-
 export default {
     data() {
         return {
             tab: null,
-            tabs: [
-                'Mitglieder',
-                'Stundenplan',
-                'Verlauf',
-                'Anwesendheit',
-                'Noten'
-            ],
-        }
+            tabs: ["Mitglieder", "Stundenplan", "Verlauf", "Anwesendheit", "Noten"],
+            search_class: "",
+            timeout: ref<any>()
+        };
     },
     methods: {
         search() {
-            console.log(this.search_class)
+            console.log(this.search_class);
         },
         searchTimer() {
             if (this.timeout) {
-                clearTimeout(this.timeout)
+                clearTimeout(this.timeout);
             }
             this.timeout = setTimeout(() => {
-                this.search()
-            }, 500)
+                this.search();
+            }, 500);
         }
     }
-}
-
+};
 </script>
 
 <template>
@@ -35,14 +29,16 @@ export default {
         <VCardTitle>
             {{ $route.params.id }}
         </VCardTitle>
-        <VCardSubtitle>
-            bei {{ $route.params.id }}
-        </VCardSubtitle>
+        <VCardSubtitle> bei {{ $route.params.id }} </VCardSubtitle>
 
         <VCardText>
-
             <!-- tabs -->
-            <VTabs v-model="tab" background-color="transparent" color="secondary" slider-color="secondary">
+            <VTabs
+                v-model="tab"
+                background-color="transparent"
+                color="secondary"
+                slider-color="secondary"
+            >
                 <VTab v-for="tab in tabs" :key="tab">
                     {{ tab }}
                 </VTab>
@@ -50,9 +46,7 @@ export default {
 
             <!-- tab content -->
             <VWindow v-model="tab">
-
                 <VWindowItem value="Mitglieder">
-
                     <VCard>
                         <VCardTitle>Lehrkräfte</VCardTitle>
                         <VCardText>
@@ -80,11 +74,8 @@ export default {
                             </VList>
                         </VCardText>
                     </VCard>
-
                 </VWindowItem>
-
             </VWindow>
-
         </VCardText>
     </VCard>
 </template>

@@ -8,48 +8,64 @@ import "katex/dist/katex.min.css";
 import { emojify } from "node-emoji";
 </script>
 
-<script lang="ts" >
+<script lang="ts">
 export default {
     name: "Makdown",
     props: {
         md: {
             type: String,
             required: true
-        },
+        }
     },
     data() {
         const rendered = "";
 
-        onMounted(() => { this.render() });
+        onMounted(() => {
+            this.render();
+        });
 
         return {
-            rendered_html: rendered,
-        }
+            rendered_html: rendered
+        };
     },
 
     methods: {
         render() {
             marked.use(markedLinkifyIt());
             const renderer = new marked.Renderer({
-                headerIds: false,
+                headerIds: false
             });
             renderer.text = (text: string) => {
                 return text.replace(/\${2}([\s\S]*?)\${2}/g, (match, code) => {
                     try {
                         // eslint-disable-next-line quotes
-                        return '<span class="katex-margin">' + katex.renderToString(code, { throwOnError: false }) + "</span>";
+                        return (
+                            "<span class=\"katex-margin\">" +
+                            katex.renderToString(code, {
+                                throwOnError: false
+                            }) +
+                            "</span>"
+                        );
                     } catch (err) {
                         return match;
                     }
                 });
             };
-            const mded = marked(this.md, { breaks: true, renderer: renderer });
+            const mded = marked(this.md, {
+                breaks: true,
+                renderer: renderer
+            });
             this.rendered_html = DOMPurify.sanitize(emojify(mded), {
                 // ? Maybe doing it later
                 // ALLOWED_ATTR: [],
                 // ALLOWED_TAGS: [],
                 // ownly allow html
-                USE_PROFILES: { html: true, svg: true, mathMl: true, svgFilters: false }
+                USE_PROFILES: {
+                    html: true,
+                    svg: true,
+                    mathMl: true,
+                    svgFilters: false
+                }
             });
         }
     },
@@ -58,9 +74,7 @@ export default {
             this.render();
         }
     }
-
-}
-
+};
 </script>
 
 <template>

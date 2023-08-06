@@ -1,7 +1,9 @@
 <script lang="ts">
-export default {}
+export default {};
 </script>
 
-<template></template>
+<template>
+    <h1>Home</h1>
+</template>
 
 <style scoped></style>

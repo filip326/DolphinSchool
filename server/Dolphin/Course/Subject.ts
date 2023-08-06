@@ -5,17 +5,16 @@ import { Collection, ObjectId, WithId } from "mongodb";
 interface ISubject {
     longName: string;
     short: string;
-    color: { r: number, g: number, b: number };
+    color: { r: number; g: number; b: number };
     teachers: ObjectId[];
     main: boolean; // Hauptfach ja/nein
 }
 
 class Subject implements ISubject {
-
     _id: ObjectId;
     longName: string;
     short: string;
-    color: { r: number, g: number, b: number };
+    color: { r: number; g: number; b: number };
     teachers: ObjectId[];
     main: boolean;
 
@@ -39,7 +38,10 @@ class Subject implements ISubject {
         this.teachers.push(teacher._id);
 
         try {
-            const dbResult = await this.subjectCollection.updateOne({ _id: this._id }, { $push: { teachers: teacher._id } });
+            const dbResult = await this.subjectCollection.updateOne(
+                { _id: this._id },
+                { $push: { teachers: teacher._id } }
+            );
             if (dbResult.acknowledged) {
                 return [true, null];
             } else {
@@ -48,18 +50,20 @@ class Subject implements ISubject {
         } catch {
             return [undefined, Error("Failed to add teacher")];
         }
-
     }
-    
+
     /**
      * Remove a teacher from the subject
      * @param teacher Teacher
      */
     async removeTeacher(teacher: Teacher): Promise<MethodResult<boolean>> {
-        this.teachers = this.teachers.filter(t => t !== teacher._id);
+        this.teachers = this.teachers.filter((t) => t !== teacher._id);
 
         try {
-            const dbResult = await this.subjectCollection.updateOne({ _id: this._id }, { $pull: { teachers: teacher._id } });
+            const dbResult = await this.subjectCollection.updateOne(
+                { _id: this._id },
+                { $pull: { teachers: teacher._id } }
+            );
             if (dbResult.acknowledged) {
                 return [true, null];
             } else {
@@ -76,7 +80,9 @@ class Subject implements ISubject {
      */
     async delete(): Promise<MethodResult<boolean>> {
         try {
-            const dbResult = await this.subjectCollection.deleteOne({ _id: this._id });
+            const dbResult = await this.subjectCollection.deleteOne({
+                _id: this._id
+            });
             if (dbResult.acknowledged) {
                 return [true, null];
             } else {
@@ -86,8 +92,6 @@ class Subject implements ISubject {
             return [undefined, Error("Failed to delete subject")];
         }
     }
-
-
 }
 
 export default Subject;

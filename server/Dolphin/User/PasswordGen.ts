@@ -1,4 +1,3 @@
-
 function genPassword(length: number): string {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy";
     const numbers = "0123456789";

@@ -1,10 +1,9 @@
 import Dolphin from "@/server/Dolphin/Dolphin";
 
 export default eventHandler(async (event) => {
-
-    const dolphin = Dolphin.instance ?? await Dolphin.init();
+    const dolphin = Dolphin.instance ?? (await Dolphin.init());
     const { username, password } = await readBody(event);
-    console.log(await readBody(event))
+    console.log(await readBody(event));
 
     if (!username || !password || typeof username !== "string" || typeof password !== "string") {
         throw createError({ statusCode: 400, message: "Invalid body" });
@@ -13,7 +12,10 @@ export default eventHandler(async (event) => {
     const [user, findUserError] = await dolphin.users.findUser({ username });
 
     if (findUserError) {
-        throw createError({ statusCode: 401, message: "Invalid username or password" });
+        throw createError({
+            statusCode: 401,
+            message: "Invalid username or password"
+        });
     }
 
     const [passwordCorrect, passwordCheckingError] = await user.comparePassword(password);
@@ -23,7 +25,10 @@ export default eventHandler(async (event) => {
     }
 
     if (!passwordCorrect) {
-        throw createError({ statusCode: 401, message: "Invalid username or password" });
+        throw createError({
+            statusCode: 401,
+            message: "Invalid username or password"
+        });
     }
 
     const [session, sessionCreateError] = await dolphin.sessions.createSession(user);
@@ -53,5 +58,4 @@ export default eventHandler(async (event) => {
         username,
         expires
     };
-
 });

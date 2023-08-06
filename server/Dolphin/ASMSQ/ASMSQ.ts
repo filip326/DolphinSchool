@@ -1,7 +1,6 @@
 import GlobalCourseManager from "../Course/GlobalCourseManager";
 import GlobalSubjectManager from "../Course/GlobalSubjectManager";
 import GlobalUserManager from "../User/GlobalUserManager";
-import { Db } from "mongodb";
 import ASMSQInterpreter, { ASMSQResult } from "./AdvancedSyntaxObject";
 import Course from "../Course/Course";
 import User from "../User/User";
@@ -40,7 +39,6 @@ export default class ASMSQ {
             const users = await this.userManager.searchUsers(query as SearchUserOptions);
             if (!users[0] || users[1] != null) continue;
             output[0].concat(users[0]);
-
 
             const courses = await this.courseManager.searchCourses(query as SearchCourseOptions);
             if (!courses[0] || courses[1] != null) continue;

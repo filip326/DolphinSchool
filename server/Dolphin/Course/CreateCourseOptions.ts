@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb";
 
-
 interface CreateCourseOptions {
     name: string;
     teacher: ObjectId;

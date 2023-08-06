@@ -34,20 +34,33 @@ class GlobalUserManager {
      * @returns Array of users
      */
     async searchUsers(options: SearchUserOptions): Promise<MethodResult<User[]>> {
-        if (options.nameQuery || options.cources || options.class || options.parent || options.child) {
+        if (
+            options.nameQuery ||
+            options.cources ||
+            options.class ||
+            options.parent ||
+            options.child
+        ) {
             try {
-                const dbResult = await this.userCollection.find({
-                    fullName: { $regex: options.nameQuery ?? "" },
-                    cources: options.cources ?? null,
-                    class: options.class ?? null,
-                    parent: options.parent ?? null,
-                    child: options.child ?? null
-                }).skip(options.skip ?? 0);
+                const dbResult = await this.userCollection
+                    .find({
+                        fullName: {
+                            $regex: options.nameQuery ?? ""
+                        },
+                        cources: options.cources ?? null,
+                        class: options.class ?? null,
+                        parent: options.parent ?? null,
+                        child: options.child ?? null
+                    })
+                    .skip(options.skip ?? 0);
 
                 if (options.max) {
                     dbResult.limit(options.max);
                 }
-                return [(await dbResult.toArray()).map((user) => new User(this.userCollection, user)), null];
+                return [
+                    (await dbResult.toArray()).map((user) => new User(this.userCollection, user)),
+                    null
+                ];
             } catch {
                 return [undefined, Error("Database error")];
             }
@@ -64,7 +77,9 @@ class GlobalUserManager {
     async findUser(options: FindUserOptions): Promise<MethodResult<User>> {
         if (options.id) {
             try {
-                const dbResult = await this.userCollection.findOne({ _id: options.id });
+                const dbResult = await this.userCollection.findOne({
+                    _id: options.id
+                });
                 if (dbResult) {
                     const user = new User(this.userCollection, dbResult);
                     return [user, null];
@@ -77,7 +92,9 @@ class GlobalUserManager {
 
         if (options.fullName) {
             try {
-                const dbResult = await this.userCollection.findOne({ fullName: options.fullName });
+                const dbResult = await this.userCollection.findOne({
+                    fullName: options.fullName
+                });
                 if (dbResult) {
                     const user = new User(this.userCollection, dbResult);
                     return [user, null];
@@ -90,7 +107,9 @@ class GlobalUserManager {
 
         if (options.username) {
             try {
-                const dbResult = await this.userCollection.findOne({ username: options.username });
+                const dbResult = await this.userCollection.findOne({
+                    username: options.username
+                });
                 if (dbResult) {
                     const user = new User(this.userCollection, dbResult);
                     return [user, null];
@@ -110,9 +129,9 @@ class GlobalUserManager {
      * @returns UserCreated
      */
     async createUser(options: CreateUserOptions): Promise<MethodResult<UserCreated>> {
-        const alreadyExists = await this.userCollection.findOne(
-            { fullName: options.fullName }
-        );
+        const alreadyExists = await this.userCollection.findOne({
+            fullName: options.fullName
+        });
 
         if (alreadyExists) {
             return [undefined, Error("User already exists")];
@@ -134,7 +153,9 @@ class GlobalUserManager {
         if (!dbResult.acknowledged) {
             return [undefined, new Error("Database error")];
         }
-        const userSearchResult = await this.userCollection.findOne({ _id: dbResult.insertedId });
+        const userSearchResult = await this.userCollection.findOne({
+            _id: dbResult.insertedId
+        });
         if (!userSearchResult) {
             return [undefined, new Error("Database error")];
         }
@@ -147,8 +168,12 @@ class GlobalUserManager {
      * @param options amount and skip
      * @returns Array of users
      */
-    async list(options: { amount?: number, skip?: number }): Promise<MethodResult<User[]>> {
-        const users = await this.userCollection.find().skip(options.skip ?? 0).limit(options.amount ?? 10).toArray();
+    async list(options: { amount?: number; skip?: number }): Promise<MethodResult<User[]>> {
+        const users = await this.userCollection
+            .find()
+            .skip(options.skip ?? 0)
+            .limit(options.amount ?? 10)
+            .toArray();
         return [users.map((user) => new User(this.userCollection, user)), null];
     }
 }

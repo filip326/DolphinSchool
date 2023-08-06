@@ -1,8 +1,10 @@
 // Schueler in Klasse 5a
-const pattern1 = /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (K|k)lasse (?<class>[0-9]+[a-z]?)$/;
+const pattern1 =
+    /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (K|k)lasse (?<class>[0-9]+[a-z]?)$/;
 
 // Schueler in Kurs [jahrgang] [fach] [optional LK + Nummer oder GK + Nummer] [lehrkraft]
-const pattern2 = /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (K|k)urs (?<grade>[0-9]+|(E|Q)[1-4]) (?<subject>[a-zA-Z]+) ((?<courseType>(LK|GK)) (?<courseNumber>[0-9]+) )?(?<teacher>[a-zA-Z]+)$/;
+const pattern2 =
+    /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (K|k)urs (?<grade>[0-9]+|(E|Q)[1-4]) (?<subject>[a-zA-Z]+) ((?<courseType>(LK|GK)) (?<courseNumber>[0-9]+) )?(?<teacher>[a-zA-Z]+)$/;
 
 // Schueler von [Lehrkraft]
 // Eltern von [Lehrkraft]
@@ -10,16 +12,17 @@ const pattern2 = /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (K|k)urs 
 const pattern3 = /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (von|vom) (?<userOf>[a-zA-Z ]+)$/;
 
 // Schueler im TUT-Kurs [jahrgang] [lehrkraft]
-const pattern4 = /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (T|t)(ut|UT)-(K|k)urs (?<grade>(E|Q)[1-4]) (?<teacher>[a-zA-Z ]+)$/;
+const pattern4 =
+    /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (T|t)(ut|UT)-(K|k)urs (?<grade>(E|Q)[1-4]) (?<teacher>[a-zA-Z ]+)$/;
 
 // Alle [?: Schueler|Eltern|Lehrer]
 const pattern5 = /^Alle (?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern)?$/;
 
 // Schueler im Jahrgang 5
-const pattern6 = /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (J|j)ahrgang (?<grade>([0-9]+)|(Q|E)[1-4])$/;
+const pattern6 =
+    /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (J|j)ahrgang (?<grade>([0-9]+)|(Q|E)[1-4])$/;
 
 interface ASMSQResult {
-
     type?: "teacher" | "student" | "parent" | "all";
     subtype?: "class" | "course" | "tut-course" | "userOf" | "grade";
 
@@ -32,22 +35,18 @@ interface ASMSQResult {
         courseType?: "LK" | "GK";
         courseNumber?: string;
         teacher?: string;
-    }
+    };
 
     userOf?: string;
-
 }
 
 class ASMSQInterpreter {
-
     result: ASMSQResult[] = [];
 
     constructor(asmsq: string) {
-
         // split by ,
         const parts = asmsq.split(",");
         for (const part of parts) {
-
             let subresult: ASMSQResult = new Object();
 
             // trim
@@ -63,18 +62,18 @@ class ASMSQInterpreter {
 
             if (match1) {
                 switch (match1.groups?.type) {
-                case "Lehrer":
-                case "lehrer":
-                    subresult.type = "teacher";
-                    break;
-                case "Schüler":
-                case "schüler":
-                    subresult.type = "student";
-                    break;
-                case "Eltern":
-                case "eltern":
-                    subresult.type = "parent";
-                    break;
+                    case "Lehrer":
+                    case "lehrer":
+                        subresult.type = "teacher";
+                        break;
+                    case "Schüler":
+                    case "schüler":
+                        subresult.type = "student";
+                        break;
+                    case "Eltern":
+                    case "eltern":
+                        subresult.type = "parent";
+                        break;
                 }
                 subresult.subtype = "class";
                 subresult.class = match1.groups?.class;
@@ -85,18 +84,18 @@ class ASMSQInterpreter {
 
             if (match2) {
                 switch (match2.groups?.type) {
-                case "Lehrer":
-                case "lehrer":
-                    subresult.type = "teacher";
-                    break;
-                case "Schüler":
-                case "schüler":
-                    subresult.type = "student";
-                    break;
-                case "Eltern":
-                case "eltern":
-                    subresult.type = "parent";
-                    break;
+                    case "Lehrer":
+                    case "lehrer":
+                        subresult.type = "teacher";
+                        break;
+                    case "Schüler":
+                    case "schüler":
+                        subresult.type = "student";
+                        break;
+                    case "Eltern":
+                    case "eltern":
+                        subresult.type = "parent";
+                        break;
                 }
                 subresult.subtype = "course";
 
@@ -114,18 +113,18 @@ class ASMSQInterpreter {
 
             if (match3) {
                 switch (match3.groups?.type) {
-                case "Lehrer":
-                case "lehrer":
-                    subresult.type = "teacher";
-                    break;
-                case "Schüler":
-                case "schüler":
-                    subresult.type = "student";
-                    break;
-                case "Eltern":
-                case "eltern":
-                    subresult.type = "parent";
-                    break;
+                    case "Lehrer":
+                    case "lehrer":
+                        subresult.type = "teacher";
+                        break;
+                    case "Schüler":
+                    case "schüler":
+                        subresult.type = "student";
+                        break;
+                    case "Eltern":
+                    case "eltern":
+                        subresult.type = "parent";
+                        break;
                 }
                 subresult.subtype = "userOf";
                 subresult.userOf = match3.groups?.userOf;
@@ -135,18 +134,18 @@ class ASMSQInterpreter {
 
             if (match4) {
                 switch (match4.groups?.type) {
-                case "Lehrer":
-                case "lehrer":
-                    subresult.type = "teacher";
-                    break;
-                case "Schüler":
-                case "schüler":
-                    subresult.type = "student";
-                    break;
-                case "Eltern":
-                case "eltern":
-                    subresult.type = "parent";
-                    break;
+                    case "Lehrer":
+                    case "lehrer":
+                        subresult.type = "teacher";
+                        break;
+                    case "Schüler":
+                    case "schüler":
+                        subresult.type = "student";
+                        break;
+                    case "Eltern":
+                    case "eltern":
+                        subresult.type = "parent";
+                        break;
                 }
                 subresult.subtype = "tut-course";
 
@@ -160,20 +159,20 @@ class ASMSQInterpreter {
 
             if (match5) {
                 switch (match5.groups?.type) {
-                case "Lehrer":
-                case "lehrer":
-                    subresult.type = "teacher";
-                    break;
-                case "Schüler":
-                case "schüler":
-                    subresult.type = "student";
-                    break;
-                case "Eltern":
-                case "eltern":
-                    subresult.type = "parent";
-                    break;
-                default:
-                    subresult.type = "all";
+                    case "Lehrer":
+                    case "lehrer":
+                        subresult.type = "teacher";
+                        break;
+                    case "Schüler":
+                    case "schüler":
+                        subresult.type = "student";
+                        break;
+                    case "Eltern":
+                    case "eltern":
+                        subresult.type = "parent";
+                        break;
+                    default:
+                        subresult.type = "all";
                 }
                 this.result.push(subresult);
                 subresult = new Object();
@@ -181,29 +180,25 @@ class ASMSQInterpreter {
 
             if (match6) {
                 switch (match6.groups?.type) {
-                case "Lehrer":
-                case "lehrer":
-                    subresult.type = "teacher";
-                    break;
-                case "Schüler":
-                case "schüler":
-                    subresult.type = "student";
-                    break;
-                case "Eltern":
-                case "eltern":
-                    subresult.type = "parent";
-                    break;
+                    case "Lehrer":
+                    case "lehrer":
+                        subresult.type = "teacher";
+                        break;
+                    case "Schüler":
+                    case "schüler":
+                        subresult.type = "student";
+                        break;
+                    case "Eltern":
+                    case "eltern":
+                        subresult.type = "parent";
+                        break;
                 }
                 subresult.subtype = "grade";
                 subresult.grade = match6.groups?.grade;
                 this.result.push(subresult);
                 subresult = new Object();
             }
-
         }
-
-
-
     }
 }
 

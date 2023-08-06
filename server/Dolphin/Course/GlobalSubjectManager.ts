@@ -11,9 +11,7 @@ interface SubjectSearchOptions {
     main?: boolean;
 }
 
-
 class GlobalSubjectManager {
-
     subjectCollection: Collection<ISubject>;
 
     private static instance: GlobalSubjectManager;
@@ -33,7 +31,12 @@ class GlobalSubjectManager {
     async list(): Promise<MethodResult<Subject[]>> {
         try {
             const dbResult = await this.subjectCollection.find();
-            return [(await dbResult.toArray()).map(subject => new Subject(this.subjectCollection, subject)), null];
+            return [
+                (await dbResult.toArray()).map(
+                    (subject) => new Subject(this.subjectCollection, subject)
+                ),
+                null
+            ];
         } catch {
             return [undefined, Error("Database error")];
         }
@@ -58,10 +61,13 @@ class GlobalSubjectManager {
         try {
             const dbResult = await this.subjectCollection.insertOne(subject);
             if (dbResult.acknowledged) {
-                return [new Subject(this.subjectCollection, {
-                    ...subject,
-                    _id: dbResult.insertedId
-                }), null];
+                return [
+                    new Subject(this.subjectCollection, {
+                        ...subject,
+                        _id: dbResult.insertedId
+                    }),
+                    null
+                ];
             } else {
                 return [undefined, Error("Failed to create subject")];
             }
@@ -69,7 +75,6 @@ class GlobalSubjectManager {
             return [undefined, Error("Failed to create subject")];
         }
     }
-
 }
 
 export default GlobalSubjectManager;

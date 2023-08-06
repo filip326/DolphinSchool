@@ -6,7 +6,6 @@ import PermissionManager, { Permissions } from "../Permissions/PermissionManager
 import Parent from "./Parent/Parent";
 import { compare, hash } from "bcrypt";
 import { ISubject } from "../Course/Subject";
-import UserMessageManager from "../Messenger/UserMessageManager";
 
 interface IUser {
     type: UserType;
@@ -27,7 +26,6 @@ interface IUser {
 }
 
 class User implements WithId<IUser> {
-
     _id: ObjectId;
     type: UserType;
     fullName: string;
@@ -82,7 +80,10 @@ class User implements WithId<IUser> {
         this._permissionManager.allow(perm);
         this.permissions = this._permissionManager.permissions;
         try {
-            const updateResult = await this.userCollection.findOneAndUpdate({ _id: this._id }, { $set: { permissions: this.permissions } });
+            const updateResult = await this.userCollection.findOneAndUpdate(
+                { _id: this._id },
+                { $set: { permissions: this.permissions } }
+            );
             return [updateResult.ok === 1, null];
         } catch {
             return [undefined, new Error("Database error")];
@@ -97,7 +98,10 @@ class User implements WithId<IUser> {
         this._permissionManager.deny(perm);
         this.permissions = this._permissionManager.permissions;
         try {
-            const updateResult = await this.userCollection.findOneAndUpdate({ _id: this._id }, { $set: { permissions: this.permissions } });
+            const updateResult = await this.userCollection.findOneAndUpdate(
+                { _id: this._id },
+                { $set: { permissions: this.permissions } }
+            );
             return [updateResult.ok === 1, null];
         } catch {
             return [undefined, new Error("Database error")];
@@ -125,9 +129,12 @@ class User implements WithId<IUser> {
         }
         this.password = passwordHash;
         try {
-            const dbResult = await this.userCollection.findOneAndUpdate({
-                _id: this._id
-            }, { $set: { password: this.password } });
+            const dbResult = await this.userCollection.findOneAndUpdate(
+                {
+                    _id: this._id
+                },
+                { $set: { password: this.password } }
+            );
             if (dbResult.ok === 1) {
                 return [true, null];
             } else {
@@ -145,22 +152,21 @@ class User implements WithId<IUser> {
     async comparePassword(password: string): Promise<MethodResult<boolean>> {
         try {
             const hashResult = await compare(password, this.password);
-            return [ hashResult, null ];
+            return [hashResult, null];
         } catch {
             return [undefined, new Error("Hashing error")];
         }
     }
-    
+
     async MFAEnabled(): Promise<MethodResult<false>> {
         // TODO: implement MFA
         return [false, null];
     }
 
-    async checkMFA(code: string): Promise<MethodResult<boolean>> {
+    async checkMFA(/* code: string */): Promise<MethodResult<boolean>> {
         // TODO: implement MFA
         return [false, null];
     }
-
 }
 
 export default User;

@@ -28,10 +28,11 @@ export default {
         valError(): {
             statusCode: number;
             statusMessage: string;
-        } {
+            } {
             return {
                 statusCode: this.error.statusCode ?? 500,
-                statusMessage: this.error.statusMessage ?? "Unknown Error. Please contact the support."
+                statusMessage:
+                    this.error.statusMessage ?? "Unknown Error. Please contact the support."
             };
         }
     },
@@ -60,11 +61,11 @@ export default {
             if (this.error.statusCode) {
                 return `https://http.cat/images/${this.error.statusCode}.jpg`;
             } else {
-                return `https://http.cat/images/500.jpg`;
+                return "https://http.cat/images/500.jpg";
             }
         }
     }
-}
+};
 </script>
 
 <template>
@@ -82,9 +83,11 @@ export default {
             <p>If this error persists, please contact the support or try again later.</p>
         </VCardText>
         <VCVardActions>
-            <VBtn variant="tonal" width="100%" @click="clearError({
-                redirect: fix
-            })">
+            <VBtn variant="tonal" width="100%" @click="
+                clearError({
+                    redirect: fix
+                })
+                ">
                 Zurück
             </VBtn>
         </VCVardActions>
