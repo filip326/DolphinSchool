@@ -69,7 +69,7 @@ export default defineEventHandler(async (event) => {
             maxAge: session.expires - Date.now(),
             path: "/",
             sameSite: "strict",
-            secure: true,
+            secure: useRuntimeConfig().prod,
             httpOnly: true
         });
         return;
