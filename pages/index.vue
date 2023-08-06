@@ -51,27 +51,27 @@ export default defineComponent({
 </script>
 
 <template>
-    <v-form id="loginform" @submit.prevent="login">
+    <VForm id="loginform" @submit.prevent="login">
         <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
         <img src="/img/School/DolphinSchool_light.png" alt="Dolphin School" />
         <h1>Login</h1>
-        <v-text-field
+        <VTextField
             label="Benutzername"
             v-model="username"
             placeholder="max.mustermann"
             hint="Dein Benutzername besteht aus deinem Vor- und Nachnamen, durch einen Punkt getrennt."
-        ></v-text-field>
-        <v-text-field
+        ></VTextField>
+        <VTextField
             label="Passwort"
             v-model="pwd"
             type="password"
             placeholder="P@55w0rt"
             hint="Gebe hier dein Passwort ein."
-        ></v-text-field>
-        <v-btn type="submit" size="large" variant="outlined">Einloggen</v-btn>
+        ></VTextField>
+        <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
         <NuxtLink to="">Zugangsdaten vergessen</NuxtLink>
         <NuxtLink to="/support">Hilfe und Support</NuxtLink>
-    </v-form>
+    </VForm>
 </template>
 
 <style scoped>
