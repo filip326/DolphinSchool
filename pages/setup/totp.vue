@@ -17,9 +17,6 @@ export default {
             userInfo: ref<{
                 fullName: string | undefined;
                 username: string | undefined;
-                type: string | undefined;
-                is2faRequired: boolean;
-                is2faSetup: boolean;
             }>(),
             error: {
                 shown: false,
@@ -46,18 +43,24 @@ export default {
             }
         },
         async updateUser() {
-            const res = await checkAuthAndReturnUserOrNull({
-                throwErrorOnFailure: true
-            });
+            const res = await checkAuthAndReturnUserOrNull();
 
-            if (res) {
-                this.userInfo = res;
-            } else {
-                this.error = {
-                    shown: true,
-                    message: "Sie sind nicht eingeloggt!"
-                };
+            if (res === "/") {
+                navigateTo("/");
+                return;
             }
+
+            if (res === "/totp") {
+                navigateTo("/totp");
+                return;
+            }
+
+            if (res === "failed") {
+                navigateTo("/");
+                return;
+            }
+
+            this.userInfo = res;
         }
     },
     async mounted() {

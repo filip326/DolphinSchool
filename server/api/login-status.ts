@@ -13,12 +13,7 @@ export default defineEventHandler(async (event) => {
     if (event.context.auth.mfa_required && event.context.auth.user.mfaEnabled) {
         return "2fa required";
     }
-
-    if (event.context.auth.mfa_required && !event.context.auth.user.mfaEnabled) {
-        return "2fa not set up";
-    }
-
-    return "2fa not required";
-
+    
+    return "Logged in";
 
 });
