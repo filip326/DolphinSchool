@@ -1,15 +1,18 @@
 import { aliases, mdi } from "vuetify/iconsets/mdi";
 
+import { config } from "dotenv";
+config();
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     runtimeConfig: {
-        DB_NAME: "DolphinSchool",
-        DB_URL: "mongodb://127.0.0.1:27017/",
+        DB_NAME: process.env.DB_NAME ?? "DolphinSchool",
+        DB_URL: process.env.DB_URL ?? "mongodb://127.0.0.1:27017/",
         // TODO: change to true for production
         //! WARNING: use false only in development, since it disables important security features
-        prod: false,
+        prod: process.env.ENVIRONMENT === "production" ? true : false,
         public: {
-            DOMAIN: "http://127.0.0.1:3000/"
+            DOMAIN: process.env.DOMAIN ?? "http://127.0.0.1:3000/"
         }
     },
     app: {
@@ -29,7 +32,7 @@ export default defineNuxtConfig({
     css: ["~/assets/base.css"],
     // todo Disable this for production
     //! WARNING: do not use with true in production
-    devtools: { enabled: true },
+    devtools: { enabled: process.env.ENVIRONMENT === "production" ? false : true },
     ssr: false,
     routeRules: {
         // Homepage pre-rendered at build time
@@ -45,7 +48,7 @@ export default defineNuxtConfig({
         // Redirects legacy urls
         // '/old-page': { redirect: '/new-page' }
     },
-    logLevel: "info",
+    logLevel: process.env.ENVIRONMENT === "production" ? "silent" : "verbose",
     modules: ["nuxt-vuetify"],
     vuetify: {
         icons: {
