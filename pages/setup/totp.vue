@@ -16,16 +16,7 @@ export default {
             userInfo: {
                 fullName: "" | undefined,
                 username: "" | undefined,
-                is2faRequired: false,
-                is2faSetup: false,
             },
-            userInfo: ref<{
-                fullName: string | undefined;
-                username: string | undefined;
-                type: string | undefined;
-                is2faRequired: boolean;
-                is2faSetup: boolean;
-            }>(),
             error: {
                 shown: false,
                 message: ""

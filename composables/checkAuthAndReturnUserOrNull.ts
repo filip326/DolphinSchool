@@ -3,40 +3,31 @@ type CheckAuthResult =
     { username: string, fullName: string } |
     "failed";
 
-    // todo return null, if statusCode is not 200
-    if (whoamiResponse.error.value?.statusCode !== 200) {
-        if (options.throwErrorOnFailure) {
-            throw createError({
-                statusCode: whoamiResponse.error.value?.statusCode,
-                message: whoamiResponse.error.value?.message
-            });
-        } else {
-            return null;
+export default async function checkAuth(): Promise<CheckAuthResult> {
+    // check login status
+    const loginStatus = await useFetch("/api/login-status", { method: "GET"});
+    if (loginStatus.status.value === "success") {
+        if (loginStatus.data.value === "Logged in") {
+            // return data from /api/whoami
+            const whoami = await useFetch("/api/whoami", { method: "GET"});
+            if (whoami.status.value === "success") {
+                return whoami.data.value ?? "failed";
+            } else {
+                return "failed";
+            }
         }
 
         if (loginStatus.data.value === "2fa required") {
             return "/totp";
         }
 
-    // todo return null, if statusCode is not 200
-    if (totpResponse.error.value?.statusCode !== 200) {
-        if (options.throwErrorOnFailure) {
-            throw createError({
-                statusCode: totpResponse.error.value?.statusCode,
-                message: totpResponse.error.value?.message
-            });
-        } else {
-            return null;
+        if (loginStatus.data.value === "Login required") {
+            return "/";
         }
 
         return "failed";
     }
 
-    return {
-        fullName: whoamiResponse.data.value?.fullName,
-        username: whoamiResponse.data.value?.username,
-        type: whoamiResponse.data.value?.type,
-        is2faRequired: totpResponse.data.value == "2fa required",
-        is2faSetup: totpResponse.data.value == "2fa not set up"
-    };
+    return "failed";
+
 }
