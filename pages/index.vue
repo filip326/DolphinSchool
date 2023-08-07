@@ -16,8 +16,11 @@ export default defineComponent({
             }
         };
     },
-    async beforeCreate() {
-        const user = await checkAuthAndReturnUserOrNull({});
+    async beforeMount() {
+        const user = await checkAuthAndReturnUserOrNull({
+            throwErrorOnFailure: false
+        });
+        console.log(user);
         if (user) {
             navigateTo("/home");
         }
