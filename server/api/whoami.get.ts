@@ -1,20 +1,23 @@
-import User from "../Dolphin/User/User";
+import checkAuth from "../composables/checkAuth";
 
 export default eventHandler(async (event) => {
-    const user: User | undefined = event.context.auth.user;
+    
+    const {success, usr} = await checkAuth(event, {
+        authRequired: true,
+        throwErrOnAuthFail: true
+    });
 
-    if (!user) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
-    }
-
-    if (!event.context.auth.authenticated) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
+    if (!success) {
+        throw createError({
+            statusCode: 401,
+            statusMessage: "Unauthorized"
+        });
     }
 
     return {
         statusCode: 200,
-        username: user.username,
-        fullName: user.fullName,
-        type: user.type
+        username: usr!.username,
+        fullName: usr!.fullName,
+        type: usr!.type
     };
 });
