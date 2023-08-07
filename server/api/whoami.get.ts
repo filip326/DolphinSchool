@@ -2,12 +2,11 @@ import checkAuth from "../composables/checkAuth";
 
 export default eventHandler(async (event) => {
     
-    const {success, usr} = await checkAuth(event, {
-        authRequired: true,
-        throwErrOnAuthFail: true
+    const [ user, error ] = await checkAuth(event, {
+        throwErrOnAuthFail: false
     });
 
-    if (!success) {
+    if (error) {
         throw createError({
             statusCode: 401,
             statusMessage: "Unauthorized"
@@ -15,9 +14,7 @@ export default eventHandler(async (event) => {
     }
 
     return {
-        statusCode: 200,
-        username: usr!.username,
-        fullName: usr!.fullName,
-        type: usr!.type
+        username: user.username,
+        fullName: user.fullName,
     };
 });
