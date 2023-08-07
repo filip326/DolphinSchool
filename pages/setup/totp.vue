@@ -4,19 +4,27 @@ definePageMeta({
 });
 </script>
 
-<script lang="ts">
-import { ref } from "vue";
-
+<script>
 export default {
     data() {
         return {
             code: "",
+            totpSec: "",
             rules: {
-                required: (v: string) => !!v || "Dieses Feld ist erforderlich!"
+                required: (v) => !!v || "Dieses Feld ist erforderlich!"
+            },
+            userInfo: {
+                fullName: "" | undefined,
+                username: "" | undefined,
+                is2faRequired: false,
+                is2faSetup: false,
             },
             userInfo: ref<{
                 fullName: string | undefined;
                 username: string | undefined;
+                type: string | undefined;
+                is2faRequired: boolean;
+                is2faSetup: boolean;
             }>(),
             error: {
                 shown: false,
@@ -43,36 +51,26 @@ export default {
             }
         },
         async updateUser() {
-            const res = await checkAuthAndReturnUserOrNull();
-
-            if (res === "/") {
-                navigateTo("/");
-                return;
-            }
-
-            if (res === "/totp") {
-                navigateTo("/totp");
-                return;
-            }
+            const res = await checkAuthAndReturnUserOrNull({
+                throwErrorOnFailure: true
+            });
 
             if (res === "failed") {
                 navigateTo("/");
                 return;
             }
-
-            this.userInfo = res;
         }
     },
     async mounted() {
-        this.updateUser();
-    }
+        await this.updateUser();
+        this.totpSec = await this.totpSecret();
+    },
 };
 </script>
 
 <template>
-    <VForm v-if="!userInfo?.is2faSetup" id="loginform">
+    <VForm id="loginform">
         <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
-
         <img src="/img/School/DolphinSchool_light.png" alt="Dolphin School" />
         <h1>2-Faktor Authentizierung</h1>
         <p>
@@ -81,21 +79,16 @@ export default {
         </p>
 
         <div class="qr-code">
-            <img src="" alt="QR-Code" />
+            <!-- todo -->
+            <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=otpauth://totp/DolphinSchool?secret=${totpSec}`" />
         </div>
 
         <VTextField v-model="code" label="Code" name="code" type="text" :rules="[rules.required]" />
 
         <VBtn type="submit" color="primary" class="mr-4">2FA-Aktivieren</VBtn>
     </VForm>
-
-    <VCard v-if="userInfo?.is2faSetup" id="loginform">
-        <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
-
-        <img src="/img/School/DolphinSchool_light.png" alt="Dolphin School" />
-        <h1>2-Faktor Authentizierung</h1>
-        <strong>
-            2-Faktor Authentizierung ist bereits aktiviert!
-        </strong>
-    </VCard>
 </template>
+
+<style scoped>
+@import url(../../assets/login.css);
+</style>

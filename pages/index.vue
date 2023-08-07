@@ -5,7 +5,7 @@ definePageMeta({
 </script>
 
 <script lang="ts">
-export default defineComponent({
+export default {
     data() {
         return {
             username: "",
@@ -16,8 +16,11 @@ export default defineComponent({
             }
         };
     },
-    async beforeCreate() {
-        const user = await checkAuthAndReturnUserOrNull({});
+    async beforeMount() {
+        const user = await checkAuthAndReturnUserOrNull({
+            throwErrorOnFailure: false
+        });
+        console.log(user);
         if (user) {
             navigateTo("/home");
         }
@@ -55,7 +58,7 @@ export default defineComponent({
             }
         }
     }
-});
+};
 </script>
 
 <template>

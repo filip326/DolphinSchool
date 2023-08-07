@@ -25,6 +25,5 @@ export default defineEventHandler(async (event) => {
     }
 
     // send response with secret to client
-    return { secret };
-
+    return {secret: secret};
 });

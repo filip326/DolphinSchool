@@ -8,6 +8,6 @@ export default {
 
 <template>
     <NuxtLayout name="non">
-        <Error fix="/" :error="error ?? {}" type="http" />
+        <Error fix="/" :error="!error ? {} : error" type="http" />
     </NuxtLayout>
 </template>
