@@ -45,6 +45,9 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 401, message: "TOTP Token invalid" });
     }
 
+    // activate session
+    session.activate();
+
     return "Ok";
 
 
