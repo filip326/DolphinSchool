@@ -29,7 +29,9 @@ export default async function checkAuthAndReturnUserOrNull(options: {
     }
 
     return {
-        user: whoamiResponse.data.value,
+        fullName: whoamiResponse.data.value?.fullName,
+        username: whoamiResponse.data.value?.username,
+        type: whoamiResponse.data.value?.type,
         is2faRequired: totpResponse.data.value == "2fa required",
         is2faSetup: totpResponse.data.value == "2fa not set up"
     };

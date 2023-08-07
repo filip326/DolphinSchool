@@ -48,7 +48,8 @@ export default defineEventHandler(async (event) => {
     // activate session
     session.activate();
 
-    return "Ok";
-
-
+    return {
+        statusCode: 200,
+        statusMessage: "OK",
+    };
 });
