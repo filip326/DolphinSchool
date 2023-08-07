@@ -6,7 +6,10 @@
         <img src="/img/School/DolphinSchool_light.png" alt="Dolphin School" />
         <h1>2-Faktor Authentizierung</h1>
         <p>Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App im Smartphone ein.</p>
-        <VTextField label="2FA-Code" v-model="totp" type="password" placeholder="123456" hint="Geben Sie hier den Code ein."
+        <!--
+            TODO: make text field a otp field when released in vuetify
+        -->
+        <VTextField label="2FA-Code" v-model="totp" placeholder="123456" hint="Geben Sie hier den Code ein."
             :rules="[rules.required, rules.totpLength, rules.totpNumbers]"></VTextField>
 
         <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
@@ -39,7 +42,7 @@ export default {
                 message: ""
             },
             totp: "",
-        }
+        };
     },
 
     methods: {
@@ -68,7 +71,7 @@ export default {
                 switch (res.data.value) {
                     case "Login required":
                         // if the user is not logged in, redirect to the login page
-                        navigateTo("/");
+                        // navigateTo("/");
                         return;
                     case "2fa not required":
                         navigateTo("/home");
@@ -81,9 +84,9 @@ export default {
 
                 }
             }
-        })
+        });
     }
-}
+};
 
 </script>
 

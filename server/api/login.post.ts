@@ -40,7 +40,6 @@ export default eventHandler(async (event) => {
     await session.activate();
 
     const token = session.token;
-    const expires = session.expires;
 
     setCookie(event, "token", token, {
         maxAge: 30 * 24 * 60 * 60, // 30 days

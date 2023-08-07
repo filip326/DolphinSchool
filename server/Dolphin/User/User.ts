@@ -10,7 +10,6 @@ import { ISubject } from "../Course/Subject";
 import { randomBytes } from "node:crypto";
 
 import * as OTPAuth from "otpauth";
-import { random } from "node-emoji";
 
 interface IUser {
     type: UserType;
@@ -202,6 +201,10 @@ class User implements WithId<IUser> {
         return this.mfa_secret !== undefined;
     }
 
+    get isSettingUp2fa(): boolean {
+        return this.mfa_setup_secret !== undefined;
+    }
+
     checkMFA(code: string): boolean {
         if (useRuntimeConfig().prod === false && code === "123456") {
             // in development mode, allow 123456 as a valid code for testing purposes
@@ -277,7 +280,7 @@ class User implements WithId<IUser> {
 
         // 2. check if code is valid
         if (!this._setupTotp.validate({ token: code, window: 10 })) {
-            return [undefined, Error("Code is invalid")];
+            return [false, null];
         }
 
         // 3. save this.mfa_secret to database
@@ -343,6 +346,35 @@ class User implements WithId<IUser> {
         }
 
         this.doNotAskForMFASetupUntil = undefined;
+        return [undefined, Error("Database error")];
+
+    }
+
+    async disableMFA() {
+
+        if (!this.mfaEnabled) {
+            return [undefined, Error("MFA is not enabled")];
+        }
+
+        const tempMFASecret = this.mfa_secret,
+            tempTOTP = this._totp;
+
+        this.mfa_secret = undefined;
+        this.mfa_setup_secret = undefined;
+        this._totp = undefined;
+        this._setupTotp = undefined;
+
+        const dbResult = await this.userCollection.findOneAndUpdate(
+            { _id: this._id },
+            { $unset: { mfa_secret: "", mfa_setup_secret: "" } }
+        );
+
+        if (dbResult.ok === 1) {
+            return [true, null];
+        }
+
+        this.mfa_secret = tempMFASecret;
+        this._totp = tempTOTP;
         return [undefined, Error("Database error")];
 
     }

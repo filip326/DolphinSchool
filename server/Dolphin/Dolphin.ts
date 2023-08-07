@@ -48,7 +48,7 @@ class Dolphin {
             if (Dolphin.instance) return resolve(Dolphin.instance);
 
             const db = (await MongoClient.connect(runtimeConfig.DB_URL).catch(reject))?.db(
-                runtimeConfig.DB_NAME
+                runtimeConfig.DB_NAME + (runtimeConfig.prod ? "" : "--DEV")
             );
 
             if (!db) return;
