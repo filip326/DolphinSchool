@@ -1,26 +1,24 @@
-<script setup lang="ts">
+<script setup>
 definePageMeta({
     layout: "login"
 });
 </script>
 
-<script lang="ts">
-import { ref } from "vue";
-
+<script>
 export default {
     data() {
         return {
             code: "",
+            totpSec: "",
             rules: {
-                required: (v: string) => !!v || "Dieses Feld ist erforderlich!"
+                required: (v) => !!v || "Dieses Feld ist erforderlich!"
             },
-            userInfo: ref<{
-                fullName: string | undefined;
-                username: string | undefined;
-                type: string | undefined;
-                is2faRequired: boolean;
-                is2faSetup: boolean;
-            }>(),
+            userInfo: {
+                fullName: "" | undefined,
+                username: "" | undefined,
+                is2faRequired: false,
+                is2faSetup: false,
+            },
             error: {
                 shown: false,
                 message: ""
@@ -47,7 +45,7 @@ export default {
         },
         async updateUser() {
             const res = await checkAuthAndReturnUserOrNull({
-                throwErrorOnFailure: true
+                throwErrorOnFailure: false
             });
 
             if (res) {
@@ -58,38 +56,39 @@ export default {
                     message: "Sie sind nicht eingeloggt!"
                 };
             }
-        }
-    },
-    async mounted() {
-        this.updateUser();
-    },
-    computed: {
+        },
         async totpSecret() {
-            const res = await useFetch("/setup/2fa/secret", {
+            const res = await useFetch("/api/setup/2fa/secret", {
                 method: "GET"
             });
 
-            if (res.error.value?.statusCode != 200) throw createError({
-                statusCode: res.error.value?.statusCode,
-                message: res.error.value?.message,
-                statusMessage: "Fehler beim Abrufen des TOTP-Secrets!"
-            });
+            if (res.status.value != "success")
+                throw createError({
+                    statusCode: res.error.value?.statusCode,
+                    message: res.error.value?.message,
+                    statusMessage: "Fehler beim Abrufen des TOTP-Secrets!"
+                });
 
-            if (!res.data.value) throw createError({
-                statusCode: 500,
-                statusMessage: "Fehler beim Abrufen des TOTP-Secrets!"
-            });
+            if (!res.data.value)
+                throw createError({
+                    statusCode: 500,
+                    statusMessage: "Fehler beim Abrufen des TOTP-Secrets!"
+                });
 
-            return res.data.value;
+            console.log(res.data.value);
+            return res.data.value.secret ?? "";
         }
-    }
+    },
+    async mounted() {
+        await this.updateUser();
+        this.totpSec = await this.totpSecret();
+    },
 };
 </script>
 
 <template>
-    <VForm v-if="!userInfo?.is2faSetup" id="loginform">
+    <VForm id="loginform">
         <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
-
         <img src="/img/School/DolphinSchool_light.png" alt="Dolphin School" />
         <h1>2-Faktor Authentizierung</h1>
         <p>
@@ -98,21 +97,16 @@ export default {
         </p>
 
         <div class="qr-code">
-            <QRCodeDisplay :color="'#000'" :bg-color="'#fff'" :size="100" :text="`otpauth://totp/DolphinSchool?secret=${totpSecret}`" />
+            <!-- todo -->
+            <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=otpauth://totp/DolphinSchool?secret=${totpSec}`" />
         </div>
 
         <VTextField v-model="code" label="Code" name="code" type="text" :rules="[rules.required]" />
 
         <VBtn type="submit" color="primary" class="mr-4">2FA-Aktivieren</VBtn>
     </VForm>
-
-    <VCard v-if="userInfo?.is2faSetup" id="loginform">
-        <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
-
-        <img src="/img/School/DolphinSchool_light.png" alt="Dolphin School" />
-        <h1>2-Faktor Authentizierung</h1>
-        <strong>
-            2-Faktor Authentizierung ist bereits aktiviert!
-        </strong>
-    </VCard>
 </template>
+
+<style scoped>
+@import url(../../assets/login.css);
+</style>

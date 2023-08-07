@@ -82,7 +82,7 @@ export default {
         <VCardText>
             <p>If this error persists, please contact the support or try again later.</p>
         </VCardText>
-        <VCVardActions>
+        <VCardActions>
             <VBtn variant="tonal" width="100%" @click="
                 clearError({
                     redirect: fix
@@ -90,7 +90,7 @@ export default {
                 ">
                 Zurück
             </VBtn>
-        </VCVardActions>
+        </VCardActions>
     </VCard>
 </template>
 

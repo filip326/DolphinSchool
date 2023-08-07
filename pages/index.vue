@@ -5,7 +5,7 @@ definePageMeta({
 </script>
 
 <script lang="ts">
-export default defineComponent({
+export default {
     data() {
         return {
             username: "",
@@ -58,7 +58,7 @@ export default defineComponent({
             }
         }
     }
-});
+};
 </script>
 
 <template>
