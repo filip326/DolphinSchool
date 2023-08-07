@@ -1,36 +1,34 @@
 import { H3Event } from "h3";
 import { Permissions } from "../Dolphin/Permissions/PermissionManager";
 import User from "../Dolphin/User/User";
+import MethodResult from "../Dolphin/MethodResult";
 
 interface IOptions {
-    authRequired: boolean;
     throwErrOnAuthFail: boolean;
     requirePerm?: Permissions;
+    skipMFA?: boolean;
 }
 
-export default async (event: H3Event, options: IOptions): Promise<{success: boolean, usr: User | null}> => {
-    if (event.context.auth.authenticated && event.context.auth.user) {
+export default async (event: H3Event, options: IOptions): Promise<MethodResult<User>> => {
+    if (event.context.auth.authenticated && event.context.auth.user &&
+        (event.context.auth.mfa_required === false || options.skipMFA)) {
         if (options.requirePerm) {
             if (event.context.auth.user.hasPermission(options.requirePerm)) {
-                return {success: true, usr: event.context.auth.user!};
+                return [event.context.auth.user, null];
             } else {
                 if (options.throwErrOnAuthFail) {
                     throw throw403();
                 }
-                return {success: false, usr: null};
+                return [undefined, Error("Permission denied")];
             }
         } else {
-            return {success: true, usr: event.context.auth.user!};
+            return [event.context.auth.user, null];
         }
     } else {
-        if (options.authRequired) {
-            if (options.throwErrOnAuthFail) {
-                throw throw401();
-            }
-            return {success: false, usr: null};
-        } else {
-            return {success: true, usr: event.context.auth.user!};
+        if (options.throwErrOnAuthFail) {
+            throw throw401();
         }
+        return [undefined, Error("Login required")];
     }
 };
 
