@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
     layout: "login"
 });
@@ -62,6 +62,26 @@ export default {
     },
     async mounted() {
         this.updateUser();
+    },
+    computed: {
+        async totpSecret() {
+            const res = await useFetch("/setup/2fa/secret", {
+                method: "GET"
+            });
+
+            if (res.error.value?.statusCode != 200) throw createError({
+                statusCode: res.error.value?.statusCode,
+                message: res.error.value?.message,
+                statusMessage: "Fehler beim Abrufen des TOTP-Secrets!"
+            });
+
+            if (!res.data.value) throw createError({
+                statusCode: 500,
+                statusMessage: "Fehler beim Abrufen des TOTP-Secrets!"
+            });
+
+            return res.data.value;
+        }
     }
 };
 </script>
@@ -78,7 +98,7 @@ export default {
         </p>
 
         <div class="qr-code">
-            <img src="" alt="QR-Code" />
+            <QRCodeDisplay :color="'#000'" :bg-color="'#fff'" :size="100" :text="`otpauth://totp/DolphinSchool?secret=${totpSecret}`" />
         </div>
 
         <VTextField v-model="code" label="Code" name="code" type="text" :rules="[rules.required]" />

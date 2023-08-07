@@ -9,7 +9,7 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 400, message: "Invalid body" });
     }
 
-    const [user, findUserError] = await dolphin.users.findUser({ username });
+    const [user, findUserError] = await dolphin.users.findUser({ username: username });
 
     if (findUserError) {
         throw createError({
