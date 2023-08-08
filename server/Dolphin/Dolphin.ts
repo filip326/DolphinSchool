@@ -1,5 +1,4 @@
 import { MongoClient, Db } from "mongodb";
-import GlobalUserManager from "./User/GlobalUserManager";
 import SessionManager from "./Session/SessionManager";
 import GlobalCourseManager from "./Course/GlobalCourseManager";
 import UserMessageManager from "./Messenger/UserMessageManager";
@@ -13,8 +12,6 @@ const runtimeConfig = useRuntimeConfig();
 class Dolphin {
     ready: boolean = false;
     database: Db;
-    /** @deprecated */
-    users: GlobalUserManager;
     /** @depracted */
     sessions: SessionManager;
     /** @deprecated */
@@ -31,8 +28,6 @@ class Dolphin {
             throw new Error("Dolphin instance already exists! Class Dolphin is a singleton!");
 
         this.database = db;
-
-        this.users = GlobalUserManager.getInstance(this);
         this.sessions = SessionManager.getInstance(this);
         this.courses = GlobalCourseManager.getInstance(this);
 
@@ -43,12 +38,12 @@ class Dolphin {
         cb(this);
     }
 
-    static init(): Promise<Dolphin> {
+    static init(dbName?: string): Promise<Dolphin> {
         return new Promise(async (resolve: (value: Dolphin) => void, reject) => {
             if (Dolphin.instance) return resolve(Dolphin.instance);
 
             const db = (await MongoClient.connect(runtimeConfig.DB_URL).catch(reject))?.db(
-                runtimeConfig.DB_NAME + (runtimeConfig.prod ? "" : "--DEV")
+                dbName ?? runtimeConfig.DB_NAME + (runtimeConfig.prod ? "" : "--DEV")
             );
 
             if (!db) return;

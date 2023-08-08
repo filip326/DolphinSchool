@@ -1,3 +1,4 @@
+import Dolphin from "../Dolphin";
 import { Collection, ObjectId, WithId } from "mongodb";
 import { UserType } from "./UserTypes";
 import MethodResult from "../MethodResult";
@@ -10,6 +11,7 @@ import { ISubject } from "../Course/Subject";
 import { randomBytes } from "node:crypto";
 
 import * as OTPAuth from "otpauth";
+import CreateUserOptions from "./CreateUserOptions";
 
 interface IUser {
     type: UserType;
@@ -33,6 +35,82 @@ interface IUser {
 }
 
 class User implements WithId<IUser> {
+
+    // static methods to create, find, get or delete users
+
+    static async getUserById(id: ObjectId): Promise<MethodResult<User>> {
+        const dolphin = Dolphin.instance ?? await Dolphin.init();
+        const userCollection = dolphin.database.collection<IUser>("users");
+        const user = await userCollection.findOne({ _id: id });
+        if (!user) {
+            return [undefined, Error("User not found")];
+        }
+        return [new User(userCollection, user), null];
+    }
+
+    static async getUserByUsername(username: string): Promise<MethodResult<User>> {
+        const dolphin = Dolphin.instance ?? await Dolphin.init();
+        const userCollection = dolphin.database.collection<IUser>("users");
+        const user = await userCollection.findOne({ username });
+        if (!user) {
+            return [undefined, Error("User not found")];
+        }
+        return [new User(userCollection, user), null];
+    }
+
+    static async searchUsersByName(query: string): Promise<MethodResult<User[]>> {
+        const dolphin = Dolphin.instance ?? await Dolphin.init();
+        const userCollection = dolphin.database.collection<IUser>("users");
+        const users = await userCollection.find({ fullName: { $regex: query, $options: "i" } }).toArray();
+        return [users.map(user => new User(userCollection, user)), null];
+    }
+
+    static async listUsers(options: { limit?: number, skip?: number}): Promise<MethodResult<User[]>> {
+        const dolphin = Dolphin.instance ?? await Dolphin.init();
+        const userCollection = dolphin.database.collection<IUser>("users");
+        const users = await userCollection.find({}, { ...options }).toArray();
+        return [users.map(user => new User(userCollection, user)), null];
+    }
+
+    static async createUser(options: CreateUserOptions): Promise<MethodResult<{ id: ObjectId, username: string, password: string }>> {
+        const dolphin = Dolphin.instance ?? await Dolphin.init();
+        const userCollection = dolphin.database.collection<IUser>("users");
+
+        const password = this.generatePassword();
+        const passwordHash = await hash(password, 12);
+
+        const user: IUser = {
+            type: options.type,
+            fullName: options.fullName,
+            username: options.username,
+            password: passwordHash,
+            permissions: options.permissions ?? 0,
+        };
+
+        // check if user with same username exists
+        const existingUser = await userCollection.findOne({ username: options.username });
+        if (existingUser) {
+            return [undefined, Error("User with same username already exists")];
+        }
+
+        const result = await userCollection.insertOne(user);
+
+        if (!result.acknowledged) {
+            return [undefined, Error("Failed to create user")];
+        }
+
+        return [ { id: result.insertedId, username: options.username, password } , null];
+    }
+
+    private static generatePassword(): string {
+        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:!?@#$%^&*()_+-=";
+        let password = "";
+        for (let i = 0; i < 12; i++) {
+            password += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return password;
+    }
+
     _id: ObjectId;
     type: UserType;
     fullName: string;
@@ -58,7 +136,7 @@ class User implements WithId<IUser> {
     private _totp?: OTPAuth.TOTP;
     private _setupTotp?: OTPAuth.TOTP;
 
-    constructor(collection: Collection<IUser>, user: WithId<IUser>) {
+    private constructor(collection: Collection<IUser>, user: WithId<IUser>) {
         this._id = user._id;
         this.type = user.type;
         this.fullName = user.fullName;
