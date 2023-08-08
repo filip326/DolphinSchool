@@ -49,6 +49,10 @@ Tests for the classes.
 -   The classes must be static!
 -   all methods have to return a MethodResult
 
+### non-static classes
+
+-   permissions
+
 ## LICENSE
 
 [LICENSE.md](License)

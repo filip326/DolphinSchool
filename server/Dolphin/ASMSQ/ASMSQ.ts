@@ -1,6 +1,5 @@
 import GlobalCourseManager from "../Course/GlobalCourseManager";
 import GlobalSubjectManager from "../Course/GlobalSubjectManager";
-import GlobalUserManager from "../User/GlobalUserManager";
 import ASMSQInterpreter, { ASMSQResult } from "./AdvancedSyntaxObject";
 import Course from "../Course/Course";
 import User from "../User/User";
@@ -10,7 +9,6 @@ import Dolphin from "../Dolphin";
 
 export default class ASMSQ {
     asmsq: string;
-    userManager: GlobalUserManager;
     courseManager: GlobalCourseManager;
     subjectManager: GlobalSubjectManager;
 
@@ -19,7 +17,6 @@ export default class ASMSQ {
 
     constructor(asmsq: string, dolphin: Dolphin) {
         this.asmsq = asmsq;
-        this.userManager = GlobalUserManager.getInstance(dolphin);
         this.courseManager = GlobalCourseManager.getInstance(dolphin);
         this.subjectManager = GlobalSubjectManager.getInstance(dolphin);
         this.parsedResult = new ASMSQInterpreter(asmsq).result;
@@ -36,7 +33,7 @@ export default class ASMSQ {
         for (let i = 0; i < this.parsedResult.length; i++) {
             const query = this.parsedResult[i];
 
-            const users = await this.userManager.searchUsers(query as SearchUserOptions);
+            const users = await User.searchUsers(query as SearchUserOptions);
             if (!users[0] || users[1] != null) continue;
             output[0].concat(users[0]);
 
