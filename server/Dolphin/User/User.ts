@@ -12,6 +12,7 @@ import { randomBytes } from "node:crypto";
 
 import * as OTPAuth from "otpauth";
 import CreateUserOptions from "./CreateUserOptions";
+import SearchUserOptions from "./SearchUserOptions";
 
 interface IUser {
     type: UserType;
@@ -36,6 +37,46 @@ interface IUser {
 
 class User implements WithId<IUser> {
     // static methods to create, find, get or delete users
+
+    static async searchUsers(options: SearchUserOptions): Promise<MethodResult<User[]>> {
+        if (
+            options.nameQuery ||
+            options.cources ||
+            options.class ||
+            options.parent ||
+            options.child
+        ) {
+            try {
+                const userCollection = Dolphin.instance?.database.collection<IUser>("users");
+                if (!userCollection) throw new Error("User collection not found");
+                const dbResult = await userCollection
+                    .find({
+                        fullName: {
+                            $regex: options.nameQuery ?? ""
+                        },
+                        cources: options.cources ?? null,
+                        class: options.class ?? null,
+                        parent: options.parent ?? null,
+                        child: options.child ?? null
+                    })
+                    .skip(options.skip ?? 0);
+
+                if (options.max) {
+                    dbResult.limit(options.max);
+                }
+                return [
+                    (await dbResult.toArray()).map(
+                        (user: WithId<IUser>) => new User(userCollection, user)
+                    ),
+                    null
+                ];
+            } catch {
+                return [undefined, Error("Database error")];
+            }
+        }
+
+        return [undefined, Error("SearchUserOptions invalid")];
+    }
 
     static async getUserById(id: ObjectId): Promise<MethodResult<User>> {
         const dolphin = Dolphin.instance;
