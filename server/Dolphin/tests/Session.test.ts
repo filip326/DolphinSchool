@@ -58,6 +58,28 @@ describe("Session class", () => {
         expect(sessionFound).toHaveProperty("userId", user._id);
     });
 
+    it("should delete a session", async () => {
+        const [usr, userCreateError] = await User.createUser({
+            username: "testUser",
+            fullName: "Test User",
+            type: "student",
+            password: "testPassword"
+        });
+        if (userCreateError || !usr) throw userCreateError;
+        const [user, userByidError] = await User.getUserById(usr.id);
+        if (userByidError || !user) throw userByidError;
+        const [session, sessionCreateError] = await Session.createSession(user);
+        if (sessionCreateError || !session) throw sessionCreateError;
+
+        const [destroyed, destroyedError] = await session.destroy();
+        expect(destroyedError).toBeNull();
+        expect(destroyed).toBe(true);
+
+        const [sessionFound, sessionFoundError] = await Session.findSession(session!.token);
+        expect(sessionFoundError).toBeNull();
+        expect(sessionFound).toBeNull();
+    });
+
     afterAll(async () => {
         await Dolphin.instance!.database.dropDatabase();
         Dolphin.destroy();
