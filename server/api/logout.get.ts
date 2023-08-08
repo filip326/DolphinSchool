@@ -1,14 +1,13 @@
-import Dolphin from "@/server/Dolphin/Dolphin";
+import Session from "../Dolphin/Session/Session";
 
 export default eventHandler(async (event) => {
-    const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
     // find the session by the cookie "token"
     const token = parseCookies(event).token;
     if (!token || typeof token !== "string") {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
-    const [session, sessionFindError] = await dolphin.sessions.findSession(token);
+    const [session, sessionFindError] = await Session.findSession(token);
     if (sessionFindError) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }

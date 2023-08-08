@@ -1,5 +1,4 @@
 import { MongoClient, Db } from "mongodb";
-import SessionManager from "./Session/SessionManager";
 import GlobalCourseManager from "./Course/GlobalCourseManager";
 import UserMessageManager from "./Messenger/UserMessageManager";
 import User from "./User/User";
@@ -11,8 +10,6 @@ class Dolphin {
     ready: boolean = false;
     private readonly client: MongoClient;
     readonly database: Db;
-    /** @deprecated */
-    sessions: SessionManager;
     /** @deprecated */
     courses: GlobalCourseManager;
 
@@ -28,7 +25,6 @@ class Dolphin {
 
         this.database = db;
         this.client = client;
-        this.sessions = SessionManager.getInstance(this);
         this.courses = GlobalCourseManager.getInstance(this);
 
         this.ready = true;

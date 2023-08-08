@@ -1,5 +1,4 @@
-import Dolphin from "@/server/Dolphin/Dolphin";
-import { SessionState } from "../Dolphin/Session/Session";
+import Session, { SessionState } from "../Dolphin/Session/Session";
 import User from "@/server/Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {
@@ -8,7 +7,6 @@ export default defineEventHandler(async (event) => {
         mfa_required: false,
         user: undefined
     };
-    const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
     // get token from cookies
     const token = parseCookies(event).token;
 
@@ -21,7 +19,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // check if token is valid
-    const [session, sessionFindError] = await dolphin.sessions.findSession(token);
+    const [session, sessionFindError] = await Session.findSession(token);
 
     if (sessionFindError) {
         event.context.auth.authenticated = false;

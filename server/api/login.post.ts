@@ -1,9 +1,7 @@
-import Dolphin from "@/server/Dolphin/Dolphin";
 import User from "../Dolphin/User/User";
 import Session from "../Dolphin/Session/Session";
 
 export default eventHandler(async (event) => {
-    const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
     const { username, password } = await readBody(event);
     console.log(await readBody(event));
 
@@ -33,7 +31,7 @@ export default eventHandler(async (event) => {
         });
     }
 
-    const [session, sessionCreateError] = await Session().createSession(user);
+    const [session, sessionCreateError] = await Session.createSession(user);
 
     if (sessionCreateError) {
         throw createError({ statusCode: 500, message: "Internal server error" });
