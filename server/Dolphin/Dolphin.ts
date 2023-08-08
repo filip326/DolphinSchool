@@ -38,24 +38,24 @@ class Dolphin {
         cb(this);
     }
 
-    static init(config: {
-        prod: boolean;
-        DB_URL: string;
-        DB_NAME: string;
-    }): Promise<Dolphin> {
+    static init(config: { prod: boolean; DB_URL: string; DB_NAME: string }): Promise<Dolphin> {
         return new Promise(async (resolve: (value: Dolphin) => void, reject) => {
             if (Dolphin.instance) return resolve(Dolphin.instance);
 
             try {
                 const client = await MongoClient.connect(config.DB_URL);
                 const db = client.db(
-                    config.DB_NAME + (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV")
+                    config.DB_NAME +
+                        (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV")
                 );
 
                 if (!db) return;
 
                 new Dolphin(db, client, resolve);
-            } catch (err) { reject(err); return; }
+            } catch (err) {
+                reject(err);
+                return;
+            }
         });
     }
 

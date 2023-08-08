@@ -35,7 +35,6 @@ interface IUser {
 }
 
 class User implements WithId<IUser> {
-
     // static methods to create, find, get or delete users
 
     static async getUserById(id: ObjectId): Promise<MethodResult<User>> {
@@ -64,19 +63,26 @@ class User implements WithId<IUser> {
         const dolphin = Dolphin.instance;
         if (!dolphin) throw new Error("Dolphin not initialized");
         const userCollection = dolphin.database.collection<IUser>("users");
-        const users = await userCollection.find({ fullName: { $regex: query, $options: "i" } }).toArray();
-        return [users.map(user => new User(userCollection, user)), null];
+        const users = await userCollection
+            .find({ fullName: { $regex: query, $options: "i" } })
+            .toArray();
+        return [users.map((user) => new User(userCollection, user)), null];
     }
 
-    static async listUsers(options: { limit?: number, skip?: number}): Promise<MethodResult<User[]>> {
+    static async listUsers(options: {
+        limit?: number;
+        skip?: number;
+    }): Promise<MethodResult<User[]>> {
         const dolphin = Dolphin.instance;
         if (!dolphin) throw new Error("Dolphin not initialized");
         const userCollection = dolphin.database.collection<IUser>("users");
         const users = await userCollection.find({}, { ...options }).toArray();
-        return [users.map(user => new User(userCollection, user)), null];
+        return [users.map((user) => new User(userCollection, user)), null];
     }
 
-    static async createUser(options: CreateUserOptions): Promise<MethodResult<{ id: ObjectId, username: string, password: string }>> {
+    static async createUser(
+        options: CreateUserOptions
+    ): Promise<MethodResult<{ id: ObjectId; username: string; password: string }>> {
         const dolphin = Dolphin.instance;
         if (!dolphin) throw new Error("Dolphin not initialized");
         const userCollection = dolphin.database.collection<IUser>("users");
@@ -89,7 +95,7 @@ class User implements WithId<IUser> {
             fullName: options.fullName,
             username: options.username,
             password: passwordHash,
-            permissions: options.permissions ?? 0,
+            permissions: options.permissions ?? 0
         };
 
         // check if user type is valid
@@ -109,11 +115,12 @@ class User implements WithId<IUser> {
             return [undefined, Error("Failed to create user")];
         }
 
-        return [ { id: result.insertedId, username: options.username, password } , null];
+        return [{ id: result.insertedId, username: options.username, password }, null];
     }
 
     private static generatePassword(): string {
-        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:!?@#$%^&*()_+-=";
+        const chars =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:!?@#$%^&*()_+-=";
         let password = "";
         for (let i = 0; i < 12; i++) {
             password += chars[Math.floor(Math.random() * chars.length)];
@@ -176,7 +183,7 @@ class User implements WithId<IUser> {
                 algorithm: "SHA1",
                 digits: 6,
                 period: 30,
-                secret: OTPAuth.Secret.fromBase32(this.mfa_secret),
+                secret: OTPAuth.Secret.fromBase32(this.mfa_secret)
             });
         }
         if (this.mfa_setup_secret) {
@@ -186,7 +193,7 @@ class User implements WithId<IUser> {
                 algorithm: "SHA1",
                 digits: 6,
                 period: 30,
-                secret: OTPAuth.Secret.fromBase32(this.mfa_setup_secret),
+                secret: OTPAuth.Secret.fromBase32(this.mfa_setup_secret)
             });
         }
     }
@@ -248,7 +255,6 @@ class User implements WithId<IUser> {
      * @param password string
      */
     async setPassword(password: string): Promise<MethodResult<boolean>> {
-
         // check some password requirements
         if (password.length < 8) {
             return [undefined, Error("Password must be at least 8 characters long")];
@@ -320,11 +326,9 @@ class User implements WithId<IUser> {
         }
 
         return this._totp.validate({ token: code, window: 10 }) !== null;
-
     }
 
     async setUpMFA(): Promise<MethodResult<string>> {
-
         // 0. check if mfa is already set up
         if (this.mfa_secret) {
             return [undefined, Error("MFA is already set up")];
@@ -343,7 +347,7 @@ class User implements WithId<IUser> {
             algorithm: "SHA1",
             digits: 6,
             period: 30,
-            secret: secret,
+            secret: secret
         });
 
         // 4. save this.mfa_secret to database
@@ -356,21 +360,16 @@ class User implements WithId<IUser> {
         // 5. return the setup url for the user to scan if the database update was successful
         //    else return an error
         if (dbResult.ok === 1) {
-            return [
-                this._setupTotp.toString(),
-                null
-            ];
+            return [this._setupTotp.toString(), null];
         }
 
         // if it was not successful, return an error and undo the changes to this object
         this.mfa_secret = undefined;
         this._totp = undefined;
         return [undefined, Error("Database error")];
-
     }
 
     async completeMFASetup(code: string): Promise<MethodResult<boolean>> {
-
         // 0. check if mfa is already set up
         if (this.mfa_secret) {
             return [undefined, Error("MFA is already set up")];
@@ -410,7 +409,6 @@ class User implements WithId<IUser> {
         this.mfa_secret = undefined;
         this._totp = undefined;
         return [undefined, Error("Database error")];
-
     }
 
     get askForMFASetup(): boolean {
@@ -427,7 +425,6 @@ class User implements WithId<IUser> {
     }
 
     async doNotAskForMFASetup(period: "7d" | "30d"): Promise<MethodResult<boolean>> {
-
         switch (period) {
             case "7d":
                 this.doNotAskForMFASetupUntil = Date.now() + 1000 * 60 * 60 * 24 * 7;
@@ -450,11 +447,9 @@ class User implements WithId<IUser> {
 
         this.doNotAskForMFASetupUntil = undefined;
         return [undefined, Error("Database error")];
-
     }
 
     async disableMFA() {
-
         if (!this.mfaEnabled) {
             return [undefined, Error("MFA is not enabled")];
         }
@@ -479,7 +474,6 @@ class User implements WithId<IUser> {
         this.mfa_secret = tempMFASecret;
         this._totp = tempTOTP;
         return [undefined, Error("Database error")];
-
     }
 }
 
