@@ -1,6 +1,6 @@
 import Dolphin from "@/server/Dolphin/Dolphin";
 import { SessionState } from "../Dolphin/Session/Session";
-import GlobalUserManager from "../Dolphin/User/GlobalUserManager";
+import User from "@/server/Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {
     event.context.auth = {
@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
         mfa_required: false,
         user: undefined
     };
-    const dolphin = Dolphin.instance ?? (await Dolphin.init());
+    const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
     // get token from cookies
     const token = parseCookies(event).token;
 
@@ -40,10 +40,8 @@ export default defineEventHandler(async (event) => {
         return;
     }
 
-    const users = GlobalUserManager.getInstance(dolphin);
-
     // get user from session
-    const [user, userFindError] = await users.findUser({ id: session.userId });
+    const [user, userFindError] = await User.getUserById(session.userId);
     if (userFindError) {
         event.context.auth.authenticated = false;
         event.context.auth.mfa_required = false;

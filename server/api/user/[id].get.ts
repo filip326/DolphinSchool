@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb";
-import Dolphin from "../../Dolphin/Dolphin";
-import GlobalUserManager from "../../Dolphin/User/GlobalUserManager";
+import User from "../../Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {
     if (
@@ -10,9 +9,6 @@ export default defineEventHandler(async (event) => {
     ) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
-
-    const dolphin = Dolphin.instance ?? (await Dolphin.init());
-    // const user = event.context.auth.user
 
     // get user with id
     const userId = getRouterParams(event).id;
@@ -27,10 +23,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // get user
-    const [userWithId, userFindError] = await GlobalUserManager.getInstance(dolphin).findUser({
-        id: new ObjectId(userId)
-    });
-
+    const [userWithId, userFindError] = await User.getUserById(new ObjectId(userId));
     if (userFindError) {
         throw createError({ statusCode: 404, message: "User not found" });
     }

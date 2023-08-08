@@ -1,7 +1,8 @@
 import Dolphin from "@/server/Dolphin/Dolphin";
+import User from "../Dolphin/User/User";
 
 export default eventHandler(async (event) => {
-    const dolphin = Dolphin.instance ?? (await Dolphin.init());
+    const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
     const { username, password } = await readBody(event);
     console.log(await readBody(event));
 
@@ -9,7 +10,7 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 400, message: "Invalid body" });
     }
 
-    const [user, findUserError] = await dolphin.users.findUser({ username: username });
+    const [user, findUserError] = await User.getUserByUsername(username);
 
     if (findUserError) {
         throw createError({

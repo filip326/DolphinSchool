@@ -39,7 +39,8 @@ class User implements WithId<IUser> {
     // static methods to create, find, get or delete users
 
     static async getUserById(id: ObjectId): Promise<MethodResult<User>> {
-        const dolphin = Dolphin.instance ?? await Dolphin.init();
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw new Error("Dolphin not initialized");
         const userCollection = dolphin.database.collection<IUser>("users");
         const user = await userCollection.findOne({ _id: id });
         if (!user) {
@@ -49,7 +50,8 @@ class User implements WithId<IUser> {
     }
 
     static async getUserByUsername(username: string): Promise<MethodResult<User>> {
-        const dolphin = Dolphin.instance ?? await Dolphin.init();
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw new Error("Dolphin not initialized");
         const userCollection = dolphin.database.collection<IUser>("users");
         const user = await userCollection.findOne({ username });
         if (!user) {
@@ -59,21 +61,24 @@ class User implements WithId<IUser> {
     }
 
     static async searchUsersByName(query: string): Promise<MethodResult<User[]>> {
-        const dolphin = Dolphin.instance ?? await Dolphin.init();
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw new Error("Dolphin not initialized");
         const userCollection = dolphin.database.collection<IUser>("users");
         const users = await userCollection.find({ fullName: { $regex: query, $options: "i" } }).toArray();
         return [users.map(user => new User(userCollection, user)), null];
     }
 
     static async listUsers(options: { limit?: number, skip?: number}): Promise<MethodResult<User[]>> {
-        const dolphin = Dolphin.instance ?? await Dolphin.init();
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw new Error("Dolphin not initialized");
         const userCollection = dolphin.database.collection<IUser>("users");
         const users = await userCollection.find({}, { ...options }).toArray();
         return [users.map(user => new User(userCollection, user)), null];
     }
 
     static async createUser(options: CreateUserOptions): Promise<MethodResult<{ id: ObjectId, username: string, password: string }>> {
-        const dolphin = Dolphin.instance ?? await Dolphin.init();
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw new Error("Dolphin not initialized");
         const userCollection = dolphin.database.collection<IUser>("users");
 
         const password = this.generatePassword();
@@ -86,6 +91,11 @@ class User implements WithId<IUser> {
             password: passwordHash,
             permissions: options.permissions ?? 0,
         };
+
+        // check if user type is valid
+        if (!["student", "teacher", "parent"].includes(options.type)) {
+            return [undefined, Error("Invalid user type")];
+        }
 
         // check if user with same username exists
         const existingUser = await userCollection.findOne({ username: options.username });
@@ -238,6 +248,21 @@ class User implements WithId<IUser> {
      * @param password string
      */
     async setPassword(password: string): Promise<MethodResult<boolean>> {
+
+        // check some password requirements
+        if (password.length < 8) {
+            return [undefined, Error("Password must be at least 8 characters long")];
+        }
+        if (!/[a-z]/.test(password)) {
+            return [undefined, Error("Password must contain at least one lowercase letter")];
+        }
+        if (!/[A-Z]/.test(password)) {
+            return [undefined, Error("Password must contain at least one uppercase letter")];
+        }
+        if (!/[0-9]/.test(password)) {
+            return [undefined, Error("Password must contain at least one number")];
+        }
+
         let passwordHash: string;
         try {
             passwordHash = await hash(password, 12);

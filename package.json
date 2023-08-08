@@ -11,6 +11,7 @@
         "lint-fix": "yarn lint -- --fix"
     },
     "devDependencies": {
+        "@jest/globals": "^29.6.2",
         "@nuxt/devtools": "^0.7.4",
         "@types/bcrypt": "^5.0.0",
         "@types/dompurify": "^3.0.2",
@@ -30,7 +31,8 @@
         "nuxt-vuetify": "^1.0.1",
         "prettier": "^3.0.0",
         "sass": "^1.64.2",
-        "sass-loader": "^13.3.2"
+        "sass-loader": "^13.3.2",
+        "ts-jest": "^29.1.1"
     },
     "dependencies": {
         "@nuxt/types": "^2.17.0",
