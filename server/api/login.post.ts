@@ -53,7 +53,7 @@ export default eventHandler(async (event) => {
     if (user.mfaEnabled) {
         return "continue with 2fa";
     }
-    
+
     if (user.askForMFASetup) {
         return "continue with 2fa setup";
     }

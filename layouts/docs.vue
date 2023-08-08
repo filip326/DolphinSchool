@@ -19,8 +19,8 @@ export default {
     computed: {
         filterOutDefaultURLs() {
             return this.items.filter((item) => {
-                const filterOut = ["/"];
-                filterOut.includes(item.link) === false;
+                if (item.link === "/") return false;
+                return true;
             });
         }
     }
@@ -44,7 +44,7 @@ export default {
                     label="Suche"
                     prepend-inner-icon="mdi-magnify"
                     variant="underlined"
-                    :items="items"
+                    :items="filterOutDefaultURLs"
                     item-text="title"
                     v-model="searchItemLink"
                     item-value="link"

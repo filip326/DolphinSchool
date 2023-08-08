@@ -1,8 +1,7 @@
 import checkAuth from "../composables/checkAuth";
 
 export default eventHandler(async (event) => {
-    
-    const [ user, error ] = await checkAuth(event, {
+    const [user, error] = await checkAuth(event, {
         throwErrOnAuthFail: false
     });
 
@@ -15,6 +14,6 @@ export default eventHandler(async (event) => {
 
     return {
         username: user.username,
-        fullName: user.fullName,
+        fullName: user.fullName
     };
 });

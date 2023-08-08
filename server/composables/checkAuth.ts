@@ -10,8 +10,11 @@ interface IOptions {
 }
 
 export default async (event: H3Event, options: IOptions): Promise<MethodResult<User>> => {
-    if (event.context.auth.authenticated && event.context.auth.user &&
-        (event.context.auth.mfa_required === false || options.skipMFA)) {
+    if (
+        event.context.auth.authenticated &&
+        event.context.auth.user &&
+        (event.context.auth.mfa_required === false || options.skipMFA)
+    ) {
         if (options.requirePerm) {
             if (event.context.auth.user.hasPermission(options.requirePerm)) {
                 return [event.context.auth.user, null];

@@ -1,5 +1,4 @@
 export default defineEventHandler(async (event) => {
-
     // check authentication
     if (
         !event.context.auth.authenticated ||
@@ -41,7 +40,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // disable 2fa
-    const [ disableMFA, disableMFAError ] = await user.disableMFA();
+    const [disableMFA, disableMFAError] = await user.disableMFA();
 
     if (disableMFAError) {
         throw createError({ statusCode: 500, message: "Internal Server Error" });

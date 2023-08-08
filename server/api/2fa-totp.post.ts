@@ -3,7 +3,7 @@ import { SessionState } from "../Dolphin/Session/Session";
 import SessionManager from "../Dolphin/Session/SessionManager";
 
 export default defineEventHandler(async (event) => {
-    const dolphin = Dolphin.instance ?? (await Dolphin.init());
+    const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
     // check authentication without 2fa
     if (!event.context.auth.authenticated || !event.context.auth.user) {
@@ -15,7 +15,9 @@ export default defineEventHandler(async (event) => {
 
     // get session object
     const token = parseCookies(event).token;
-    const [session, sessionFindError] = await SessionManager.getInstance(dolphin).findSession(token);
+    const [session, sessionFindError] = await SessionManager.getInstance(dolphin).findSession(
+        token
+    );
 
     if (sessionFindError) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
@@ -50,6 +52,6 @@ export default defineEventHandler(async (event) => {
 
     return {
         statusCode: 200,
-        statusMessage: "OK",
+        statusMessage: "OK"
     };
 });
