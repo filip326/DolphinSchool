@@ -1,6 +1,6 @@
-import Dolphin from "../../Dolphin/Dolphin";
+import Dolphin from "../Dolphin";
 import { config } from "dotenv";
-import User from "./User";
+import User from "../User/User";
 import { ObjectId } from "mongodb";
 
 config();
