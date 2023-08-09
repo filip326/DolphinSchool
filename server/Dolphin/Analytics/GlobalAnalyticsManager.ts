@@ -28,12 +28,13 @@ export default class GlobalAnalyticsManager {
             "requests",
             true
         );
+        const authenticated = event.context.auth?.authenticated;
         const doc: IRequestAnalyics = {
             timestamp: new Date().toISOString(),
             path: event.path,
             method: event.node.req.method ?? "unknown",
-            auth: event.context.auth.authenticated ?? false,
-            userId: event.context.auth.user?._id ?? undefined
+            auth: authenticated ?? false,
+            userId: event.context.auth?.user?._id ?? undefined
         };
         await collection.insertOne(doc);
     }
