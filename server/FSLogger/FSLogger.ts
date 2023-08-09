@@ -5,10 +5,11 @@ import { join } from "path";
 type LogLevel = "LOG" | "DEBUG" | "INFO" | "WARN" | "ERROR";
 
 const DATE_FORMAT_STR = "dd MM yyyy HH:mm:ss";
+const FILE_FORMAT_STR = "yyyy-MM-dd";
 
 class FSLogger {
     static log(name: string, level: LogLevel, msg: string): void {
-        const path = join("logs", `${formatDate(new Date(), "yyyy-MM-dd--HH-mm-ss")}--${name}.log`);
+        const path = join("logs", `${formatDate(new Date(), FILE_FORMAT_STR)}--${name}.log`);
         const toLog = this.buildLogStr(level, name, msg);
         if (!existsSync("logs")) {
             mkdirSync("logs");
