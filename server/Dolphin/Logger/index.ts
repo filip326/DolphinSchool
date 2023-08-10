@@ -65,6 +65,34 @@ interface Log {
  * Class used to Log messages and important events into an audit log.
  */
 class Logger {
+    private static async deleteLogs(): Promise<void> {
+        // get Dolphin class
+        const dolphin = Dolphin.instance;
+        if (!dolphin) {
+            await Logger.logToFS({
+                level: "ERROR",
+                action: Action.DolphinUNDEFINED,
+                shortMessage: "Dolphin is undefiend",
+                longMessage: "Dolphin is undefined",
+                causedBy: "Logger.getLogs"
+            });
+            return;
+        }
+
+        // get the database
+        const db = dolphin.database;
+
+        // get the collection
+        const collection = db.collection<Log>("logs");
+
+        // drop all logs, where deleteBy is smaller than now
+        await collection.deleteMany({
+            deleteBy: {
+                $lte: Date.now()
+            }
+        });
+    }
+
     static async getLogs(from: Date, to: Date = new Date()) {
         // get Dolphin class
         const dolphin = Dolphin.instance;
@@ -84,6 +112,8 @@ class Logger {
 
         // get the collection
         const collection = db.collection<Log>("logs");
+
+        this.deleteLogs();
 
         // get the logs
         const logs = await collection
