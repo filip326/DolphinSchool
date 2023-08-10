@@ -11,6 +11,7 @@
             TODO: make text field a otp field when released in vuetify
         -->
         <VTextField
+            type="number"
             label="2FA-Code"
             v-model="totp"
             placeholder="123456"
