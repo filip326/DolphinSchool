@@ -1,6 +1,5 @@
 import GlobalAnalyticsManager from "../Dolphin/Analytics/GlobalAnalyticsManager";
 import Dolphin from "../Dolphin/Dolphin";
-import FSLogger from "../FSLogger/FSLogger";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -8,12 +7,10 @@ export default defineEventHandler(async (event) => {
             await Dolphin.init(useRuntimeConfig());
         }
         await GlobalAnalyticsManager.addRequest(event);
+        event.node.res.addListener("close", () => {
+            // todo get stop time and save
+        });
     } catch (err) {
         console.log(err);
-        FSLogger.log(
-            "analytics",
-            "ERROR",
-            "Failed to add request to analytics" + JSON.stringify(err)
-        );
     }
 });
