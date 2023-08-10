@@ -2,12 +2,19 @@ import Dolphin from "../Dolphin";
 import { config } from "dotenv";
 config();
 
-import { mkdirSync, existsSync, appendFileSync, writeFileSync } from "fs";
+import {
+    mkdirSync,
+    existsSync,
+    appendFileSync,
+    writeFileSync,
+    readdirSync,
+    readFileSync,
+    unlinkSync
+} from "fs";
 import { format as formatDate } from "date-fns";
 import { join } from "path";
 
 const DATE_FORMAT_STR = "dd MM yyyy HH:mm:ss";
-const FILE_FORMAT_STR = "yyyy-MM-dd";
 
 type LogLevel =
     | "DEBUG" // Debug messages, are not saved in production. Valid for 10 minutes before removal.
@@ -22,7 +29,9 @@ type LogLevel =
 // e.g.
 // AccountCreated = 0,
 // AccountDeleted = 1,
-enum Action {}
+enum Action {
+    DolphinUNDEFINED = 0
+}
 
 interface LogData {
     // the data that is passed to the logger
@@ -36,6 +45,9 @@ interface LogData {
 }
 
 interface Log {
+    // the data that is stored in the database
+    timestamp: number;
+
     // the data stored in the db
     level: LogLevel;
 
@@ -53,6 +65,39 @@ interface Log {
  * Class used to Log messages and important events into an audit log.
  */
 class Logger {
+    static async getLogs(from: Date, to: Date = new Date()) {
+        // get Dolphin class
+        const dolphin = Dolphin.instance;
+        if (!dolphin) {
+            await Logger.logToFS({
+                level: "ERROR",
+                action: Action.DolphinUNDEFINED,
+                shortMessage: "Dolphin is undefiend",
+                longMessage: "Dolphin is undefined",
+                causedBy: "Logger.getLogs"
+            });
+            return;
+        }
+
+        // get the database
+        const db = dolphin.database;
+
+        // get the collection
+        const collection = db.collection<Log>("logs");
+
+        // get the logs
+        const logs = await collection
+            .find({
+                timestamp: {
+                    $gte: from.getTime(),
+                    $lte: to.getTime()
+                }
+            })
+            .toArray();
+
+        return logs;
+    }
+
     static async log(data: LogData): Promise<void> {
         // get Dolphin class
         const dolphin = Dolphin.instance;
@@ -101,6 +146,7 @@ class Logger {
 
         // create the log
         const log: Log = {
+            timestamp: Date.now(),
             level: data.level,
             action: data.action,
             shortMessage: data.shortMessage,
@@ -130,7 +176,7 @@ class Logger {
         // 1. all string are url encoded
         // 2. different fields are separated by a semicolon
         // 3. the log is saved in the following format:
-        //    level;action;shortMessage;longMessage;causedBy;deleteBy;archived
+        //    level;action;shortMessage;longMessage;causedBy;
         // 4. each log is saved in a new line
         // 5. the log file is named in the following format:
         //    logs/dolphin-logs-<unix timestamp>.log
@@ -149,30 +195,92 @@ class Logger {
         }
 
         // get all log files in the directory and filter out the ones that are older than 1 hour
-        // const logFiles = readdirSync(join(".", ".logs")).filter((file) => {
-        //     if (/^((.\/)?.logs\/)?dolphin-logs-[0-9]+\.log$/.test(file)) {
-        //         const timestamp = parseInt(file.split("-")[2].split(".")[0]);
-        //         if (Date.now() - timestamp < 1000 * 60 * 60) {
-        //             return true;
-        //         }
-        //     }
-        // });
+        const logFiles = readdirSync(join(".", ".logs")).filter((file: any) => {
+            if (/^((.\/)?.logs\/)?dolphin-logs-[0-9]+\.log$/.test(file)) {
+                const timestamp = parseInt(file.split("-")[2].split(".")[0]);
+                if (Date.now() - timestamp < 1000 * 60 * 60) {
+                    return true;
+                }
+            }
+        });
 
-        const path = join("logs", `${formatDate(new Date(), FILE_FORMAT_STR)}.log`);
-        const toLog = this.buildLogStr(data);
+        // go through all log files and go through all lines in each log file and put them into the database
+        // if the database connection is restored
+        for (const file of logFiles) {
+            // read the file
+            const content = readFileSync(join(".", ".logs", file), { encoding: "utf-8" });
+            // split the file into lines
+            const lines = content.split("\n");
+            // go through all lines
+            for (let line of lines) {
+                // remove "\n" and "\r" from the line
+                line = line.replace("\n", "").replace("\r", "");
+
+                // split the line into the different fields
+                const fields = line.split(";");
+                // decode the fields
+                const decodedFields = fields.map((field) => decodeURIComponent(field));
+
+                // create the log data
+                const logData: LogData = {
+                    level: decodedFields[0] as LogLevel,
+                    action: decodedFields[1] as unknown as Action,
+                    shortMessage: decodedFields[2],
+                    longMessage: decodedFields[3],
+                    causedBy: decodedFields[4]
+                };
+
+                // log the data to the database
+                await Logger.log(logData);
+            }
+
+            // delete the file
+            unlinkSync(join(".", ".logs", file));
+        }
+
+        const path = this.buildLogPath();
         if (!existsSync("logs")) {
             mkdirSync("logs");
         }
-        if (!existsSync(path)) {
-            writeFileSync(path, `${formatDate(new Date(), DATE_FORMAT_STR)} Begin of log\n`);
-        }
+
+        const toLog = this.buildLogStr(data);
         appendFileSync(path, toLog, { encoding: "utf-8" });
     }
 
     private static buildLogStr(data: LogData): string {
-        return `${data.level} [${formatDate(new Date(), DATE_FORMAT_STR)}] ${
-            data.longMessage
-        }\n ${JSON.stringify(data)}`;
+        // return level;action;shortMessage;longMessage;causedBy;
+        return (
+            encodeURIComponent(
+                `${data.level};${data.action};${data.shortMessage};${data.longMessage};${data.causedBy};`
+            ) + "\n"
+        );
+    }
+
+    private static buildLogPath(): string {
+        // check if a log file exists that is not older than 1 hour and has less than 100 lines
+        // if so, append the log to it
+        // if not, create a new one and append the log to it
+
+        // get all log files in the directory and filter out the ones that are older than 1 hour
+        const logFiles = readdirSync(join(".", ".logs")).filter((file: any) => {
+            if (/^((.\/)?.logs\/)?dolphin-logs-[0-9]+\.log$/.test(file)) {
+                const timestamp = parseInt(file.split("-")[2].split(".")[0]);
+                if (Date.now() - timestamp < 1000 * 60 * 60) {
+                    return true;
+                }
+            }
+        });
+
+        // if there is a log file that is not older than 1 hour and has less than 100 lines, return it
+        if (logFiles.length > 0) {
+            return join(".", ".logs", logFiles[0]);
+        }
+
+        // if there is no log file that is not older than 1 hour and has less than 100 lines, create a new one
+        const timestamp = Date.now();
+        const path = join(".", ".logs", `dolphin-logs-${timestamp}.log`);
+        writeFileSync(path, `${formatDate(new Date(), DATE_FORMAT_STR)} Begin of log\n`);
+        return path;
     }
 }
 
