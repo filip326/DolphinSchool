@@ -1,5 +1,4 @@
 export default defineEventHandler(async (event) => {
-
     // check authentication
     if (
         !event.context.auth.authenticated ||
@@ -11,7 +10,7 @@ export default defineEventHandler(async (event) => {
 
     // get objects
     const user = event.context.auth.user;
-    
+
     // check if user is setting up 2fa
     if (!user.isSettingUp2fa) {
         throw createError({ statusCode: 400, message: "2fa is not in set-up mode" });
@@ -41,7 +40,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // check if totp code is valid
-    const [ completeMFASetup, completeMFASetupError ] = await user.completeMFASetup(totp);
+    const [completeMFASetup, completeMFASetupError] = await user.completeMFASetup(totp);
 
     if (completeMFASetupError) {
         throw createError({ statusCode: 500, message: "Internal Server Error" });
@@ -53,5 +52,4 @@ export default defineEventHandler(async (event) => {
 
     // confirm 2fa setup
     return "Ok";
-
 });

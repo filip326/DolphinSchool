@@ -1,5 +1,4 @@
 export default defineEventHandler(async (event) => {
-
     // check authentication
     if (
         !event.context.auth.authenticated ||
@@ -25,5 +24,5 @@ export default defineEventHandler(async (event) => {
     }
 
     // send response with secret to client
-    return {secret: secret};
+    return { secret: secret };
 });
