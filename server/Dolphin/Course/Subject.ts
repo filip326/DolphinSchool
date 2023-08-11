@@ -1,3 +1,4 @@
+import Dolphin from "../Dolphin";
 import MethodResult from "../MethodResult";
 import Teacher from "../User/Teacher/Teacher";
 import { Collection, ObjectId, WithId } from "mongodb";
@@ -10,7 +11,72 @@ interface ISubject {
     main: boolean; // Hauptfach ja/nein
 }
 
+interface SubjectSearchOptions {
+    id?: ObjectId;
+    long?: string;
+    short?: string;
+    teacher?: string;
+    main?: boolean;
+}
+
 class Subject implements ISubject {
+    static async list(): Promise<MethodResult<Subject[]>> {
+        try {
+            const dolphin = Dolphin.instance;
+            if (!dolphin) throw Error("Dolphin not initialized");
+            const dbResult = await dolphin.database.collection<ISubject>("subjects").find({});
+            return [
+                (await dbResult.toArray()).map(
+                    (subject) =>
+                        new Subject(dolphin.database.collection<ISubject>("subjects"), subject)
+                ),
+                null
+            ];
+        } catch {
+            return [undefined, Error("Database error")];
+        }
+    }
+
+    static async search(options: SubjectSearchOptions) {
+        try {
+            const dolphin = Dolphin.instance;
+            if (!dolphin) throw Error("Dolphin not initialized");
+            const dbResult = await dolphin.database.collection<ISubject>("subjects").find({
+                _id: options.id,
+                long: options.long,
+                short: options.short,
+                teacher: options.teacher,
+                main: options.main
+            });
+            return [await dbResult.toArray(), null];
+        } catch {
+            return [undefined, Error("Database error")];
+        }
+    }
+
+    static async create(subject: ISubject): Promise<MethodResult<Subject>> {
+        try {
+            const dolphin = Dolphin.instance;
+            if (!dolphin) throw Error("Dolphin not initialized");
+            const dbResult = await dolphin.database
+                .collection<ISubject>("subjects")
+                .insertOne(subject);
+            if (dbResult.acknowledged) {
+                return [
+                    new Subject(dolphin.database.collection<ISubject>("subjects"), {
+                        ...subject,
+                        _id: dbResult.insertedId
+                    }),
+                    null
+                ];
+            } else {
+                return [undefined, Error("Failed to create subject")];
+            }
+        } catch {
+            return [undefined, Error("Failed to create subject")];
+        }
+    }
+
     _id: ObjectId;
     longName: string;
     short: string;
@@ -95,4 +161,4 @@ class Subject implements ISubject {
 }
 
 export default Subject;
-export { ISubject };
+export { ISubject, SubjectSearchOptions };
