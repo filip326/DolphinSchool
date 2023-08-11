@@ -1,7 +1,9 @@
 import Dolphin from "../Dolphin";
 import { config } from "dotenv";
-import User from "../User/User";
+import User, { IUser } from "../User/User";
 import { ObjectId } from "mongodb";
+import { manyDummyUsers } from "./initTests";
+import { URI } from "otpauth";
 
 config();
 
@@ -12,13 +14,17 @@ describe("User class", () => {
         await Dolphin.init({
             prod: false,
             DB_URL: process.env.DB_URL,
-            DB_NAME: "dolphinSchool--test"
+            DB_NAME: "dolphinSchool--test-User_class"
         });
 
         const db = Dolphin.instance!.database;
 
         // drop database before creating dummy users
         await db.dropDatabase();
+
+        await db.collection<IUser>("users").insertMany(
+            await manyDummyUsers(30)
+        );
     });
 
     it("should create a user", async () => {
@@ -37,8 +43,8 @@ describe("User class", () => {
 
     it("should not create a user with the same username", async () => {
         const [user, userCreateError] = await User.createUser({
-            username: "testUser",
-            fullName: "Test User",
+            username: "testUser0",
+            fullName: "Test User 0",
             type: "student",
             password: "testPassword"
         });
@@ -50,7 +56,7 @@ describe("User class", () => {
 
     it("should not create a user with an invalid type", async () => {
         const [user, userCreateError] = await User.createUser({
-            username: "testUser2",
+            username: "notExistingTextUser",
             fullName: "Test User",
             // ts-ignore because we want to test for invalid type
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -65,11 +71,11 @@ describe("User class", () => {
     });
 
     it("should find a user by username", async () => {
-        const [user, userFindError] = await User.getUserByUsername("testUser");
+        const [user, userFindError] = await User.getUserByUsername("testUser0");
 
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
-        expect(user).toHaveProperty("username", "testUser");
+        expect(user).toHaveProperty("username", "testUser0");
         expect(user).toBeInstanceOf(User);
     });
 
@@ -83,7 +89,7 @@ describe("User class", () => {
 
     it("should find a user by id", async () => {
         const dbResult = await Dolphin.instance!.database.collection("users").findOne({
-            username: "testUser"
+            username: "testUser0"
         });
         if (!dbResult) throw new Error("User not found in database");
 
@@ -91,7 +97,7 @@ describe("User class", () => {
 
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
-        expect(user).toHaveProperty("username", "testUser");
+        expect(user).toHaveProperty("username", "testUser0");
         expect(user).toBeInstanceOf(User);
     });
 
@@ -104,18 +110,6 @@ describe("User class", () => {
     });
 
     it("should list all users", async () => {
-        // create 30 more dummy users
-        for (let i = 5; i < 35; i++) {
-            const [user, createError] = await User.createUser({
-                username: `testUser${i}`,
-                fullName: `Test User ${i}`,
-                type: i % 3 === 0 ? "student" : i % 3 === 1 ? "teacher" : "parent",
-                password: "testPassword"
-            });
-            expect(createError).toBeNull();
-            expect(user).toBeDefined();
-        }
-
         const [userList, userListError] = await User.listUsers({ limit: 30 });
 
         expect(userListError).toBeNull();
@@ -143,13 +137,14 @@ describe("User class", () => {
         expect(userListError).toBeNull();
         expect(userList).toBeDefined();
         expect(userList).toHaveLength(15);
+        expect(userList?.at(0)?.username).toBe("testUser10");
         for (const user of userList ?? []) {
             expect(user).toBeInstanceOf(User);
         }
     });
 
     it("should change a user's password", async () => {
-        const [user, userFindError] = await User.getUserByUsername("testUser");
+        const [user, userFindError] = await User.getUserByUsername("testUser0");
 
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
@@ -164,7 +159,7 @@ describe("User class", () => {
     });
 
     it("should not change a user's password if the password is to short", async () => {
-        const [user, userFindError] = await User.getUserByUsername("testUser");
+        const [user, userFindError] = await User.getUserByUsername("testUser0");
 
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
@@ -180,7 +175,7 @@ describe("User class", () => {
     });
 
     it("should not change a user's password if the password does not contain letters, numbers and capitals", async () => {
-        const [user, userFindError] = await User.getUserByUsername("testUser");
+        const [user, userFindError] = await User.getUserByUsername("testUser0");
 
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
@@ -195,13 +190,13 @@ describe("User class", () => {
     });
 
     it("should compare the password and return true if correct", async () => {
-        const [user, userFindError] = await User.getUserByUsername("testUser");
+        const [user, userFindError] = await User.getUserByUsername("testUser9");
 
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
 
         const [passwordValidationResult, passwordValidationError] = await user!.comparePassword(
-            "jzJu3f7.jzJu3f7."
+            "testPassword"
         );
 
         expect(passwordValidationError).toBeNull();
@@ -210,7 +205,7 @@ describe("User class", () => {
     });
 
     it("should compare the password and return false if incorrect", async () => {
-        const [user, userFindError] = await User.getUserByUsername("testUser");
+        const [user, userFindError] = await User.getUserByUsername("testUser0");
 
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
@@ -225,7 +220,7 @@ describe("User class", () => {
     });
 
     it("should enable mfa for a user", async () => {
-        const [user, userFindError] = await User.getUserByUsername("testUser");
+        const [user, userFindError] = await User.getUserByUsername("testUser0");
 
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
@@ -234,9 +229,20 @@ describe("User class", () => {
 
         expect(mfaEnableError).toBeNull();
         expect(mfaEnableResult).toBeDefined();
-        expect(mfaEnableResult).toBeInstanceOf(String);
+        expect(mfaEnableResult).toBeTruthy();
+        expect(typeof mfaEnableResult).toBe("string");
 
         expect(user?.mfaEnabled).toBe(false); // mfa is still in setup mode, not enabled yet
+
+        // generate a totp code based on provided secret uri
+        const totpUriParsed = URI.parse(mfaEnableResult!);
+        const totp = totpUriParsed.generate();
+
+        const [mfaEnableResult2, mfaEnableError2] = await user!.completeMFASetup(totp);
+
+        expect(mfaEnableError2).toBeNull();
+        expect(mfaEnableResult2).toBeDefined();
+        expect(user?.mfaEnabled).toBe(true); // mfa is now enabled, since setup was completed by providing a valid totp code
     });
 
     afterAll(async () => {

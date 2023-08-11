@@ -422,7 +422,9 @@ class User implements WithId<IUser> {
         }
 
         // 2. check if code is valid
-        if (!this._setupTotp.validate({ token: code, window: 10 })) {
+        if (this._setupTotp.validate({ token: code, window: 30, timestamp: Date.now() }) === null) {
+            console.log("Expected code" + this._setupTotp.generate());
+            console.log("Actual code" + code);
             return [false, null];
         }
 

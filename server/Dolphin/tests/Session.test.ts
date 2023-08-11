@@ -1,38 +1,51 @@
 import Dolphin from "../Dolphin";
 import { config } from "dotenv";
-import Session from "../Session/Session";
-import User from "../User/User";
+import Session, { ISession, SessionState } from "../Session/Session";
+import User, { IUser } from "../User/User";
+import { manyDummyUsers } from "./initTests";
+import { ObjectId } from "mongodb";
 
 config();
 
 describe("Session class", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (!process.env.DB_URL) throw Error("DB_URL not set in .env file");
+
 
         await Dolphin.init({
             prod: false,
             DB_URL: process.env.DB_URL,
-            DB_NAME: "dolphinSchool--test"
+            DB_NAME: "dolphinSchool--test-Session_class"
         });
 
         const db = Dolphin.instance!.database;
 
         // drop database before creating dummy users
         await db.dropDatabase();
+        await db.collection<IUser>("users").insertMany(
+            await manyDummyUsers(5)
+        );
+
+        // insert a session for one user
+        await db.collection<ISession>("sessions").insertOne({
+            token: "testToken",
+            userId: ObjectId.createFromTime(0),
+            expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+            lastUsed: Date.now(),
+            state: SessionState.INACTIVE,
+            type: "Session"
+        });
     });
 
     it("should create a session", async () => {
-        const [usr, userCreateError] = await User.createUser({
-            username: "testUser",
-            fullName: "Test User",
-            type: "student",
-            password: "testPassword"
-        });
-        if (userCreateError || !usr) throw userCreateError;
-        const [user, userByidError] = await User.getUserById(usr.id);
-        if (userByidError || !user) throw userByidError;
 
-        const [session, sessionCreateError] = await Session.createSession(user);
+        const [user, userGetError ] = await User.getUserByUsername("testUser0");
+
+        if (userGetError || !user) throw userGetError;
+
+        const [session, sessionCreateError] = await Session.createSession(
+            user
+        );
 
         expect(sessionCreateError).toBeNull();
         expect(session).toBeDefined();
@@ -40,44 +53,80 @@ describe("Session class", () => {
     });
 
     it("should get a session", async () => {
-        const [usr, userCreateError] = await User.createUser({
-            username: "testUser",
-            fullName: "Test User",
-            type: "student",
-            password: "testPassword"
-        });
-        if (userCreateError || !usr) throw userCreateError;
-        const [user, userByidError] = await User.getUserById(usr.id);
-        if (userByidError || !user) throw userByidError;
-        const [session, sessionCreateError] = await Session.createSession(user);
-        if (sessionCreateError || !session) throw sessionCreateError;
-
-        const [sessionFound, sessionFoundError] = await Session.findSession(session!.token);
+        const [sessionFound, sessionFoundError] = await Session.findSession("testToken");
         expect(sessionFoundError).toBeNull();
         expect(sessionFound).toBeDefined();
-        expect(sessionFound).toHaveProperty("userId", user._id);
+        expect(sessionFound).toHaveProperty("userId");
+        expect(sessionFound?.userId).toBeInstanceOf(ObjectId);
     });
 
     it("should delete a session", async () => {
-        const [usr, userCreateError] = await User.createUser({
-            username: "testUser",
-            fullName: "Test User",
-            type: "student",
-            password: "testPassword"
-        });
-        if (userCreateError || !usr) throw userCreateError;
-        const [user, userByidError] = await User.getUserById(usr.id);
-        if (userByidError || !user) throw userByidError;
-        const [session, sessionCreateError] = await Session.createSession(user);
-        if (sessionCreateError || !session) throw sessionCreateError;
+        
+        const [session, sessionFoundError] = await Session.findSession("testToken");
+
+        if (sessionFoundError || !session) throw sessionFoundError;
 
         const [destroyed, destroyedError] = await session.destroy();
         expect(destroyedError).toBeNull();
-        expect(destroyed).toBe(true);
+        expect(destroyed).toBeTruthy();
 
-        const [sessionFound, sessionFoundError] = await Session.findSession(session!.token);
-        expect(sessionFoundError).toBeNull();
-        expect(sessionFound).toBeNull();
+        const [sessionFound, sessionFoundError2] = await Session.findSession(session!.token);
+        expect(sessionFoundError2).not.toBeNull();
+        expect(sessionFoundError2).toHaveProperty("message", "Session not found");
+        expect(sessionFound).toBeUndefined();
+    });
+
+    it("should activate a session", async () => {
+
+        const [ session, sessionFoundError ] = await Session.findSession("testToken");
+
+        if (sessionFoundError || !session) throw sessionFoundError;
+
+        expect(session).toHaveProperty("state", SessionState.INACTIVE);
+
+        const [activated, activatedError] = await session.activate();
+
+        expect(activatedError).toBeNull();
+        expect(activated).toBeTruthy();
+
+        const [sessionFound, sessionFoundError2] = await Session.findSession(session.token);
+        expect(sessionFoundError2).toBeNull();
+        expect(sessionFound).toHaveProperty("state", SessionState.ACTIVE);
+    });
+
+    it("should report usage to a session", async () => {
+
+        const [ session, sessionFoundError ] = await Session.findSession("testToken");
+
+        if (sessionFoundError || !session) throw sessionFoundError;
+
+        expect(session).toHaveProperty("lastUsed", Date.now());
+        
+        setTimeout(async () => {
+
+            expect(session.lastUsed).not.toBeGreaterThanOrEqual(Date.now() - 100); // 100 ms tolerance
+            await session.reportUsage();
+            expect(session.lastUsed).toBeGreaterThanOrEqual(Date.now() - 100); // 100 ms tolerance 
+
+        }, 100);
+
+    });
+
+    it("should refresh a session", async () => {
+
+        const [ session, sessionFoundError ] = await Session.findSession("testToken");
+
+        if (sessionFoundError || !session) throw sessionFoundError;
+
+        expect(session.expires).toBeLessThanOrEqual(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 days
+
+        const [refreshed, refreshedError] = await session.refresh();
+
+        expect(refreshedError).toBeNull();
+        expect(refreshed).toBeTruthy();
+
+        expect(session.expires).toBeGreaterThanOrEqual(Date.now() + 1000 * 60 * 60 * 24 * 7 - 1000 * 10); // 7 days with 10s tolerance
+
     });
 
     afterAll(async () => {
