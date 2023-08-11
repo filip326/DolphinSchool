@@ -2,9 +2,7 @@ import Dolphin from "../Dolphin";
 import { Collection, ObjectId, WithId } from "mongodb";
 import { UserType } from "./UserTypes";
 import MethodResult from "../MethodResult";
-import Student from "./Student/Student";
 import PermissionManager, { Permissions } from "../Permissions/PermissionManager";
-import Parent from "./Parent/Parent";
 import { compare, hash } from "bcrypt";
 import { ISubject } from "../Course/Subject";
 
@@ -240,6 +238,92 @@ class User implements WithId<IUser> {
     }
 
     /**
+     * only for type == "student"
+     * @param index
+     * @returns
+     */
+    async getParents(index?: number): Promise<MethodResult<User | User[]>> {
+        let parentsIds = this.parents;
+
+        if (!parentsIds && this.type !== "student") {
+            return [undefined, new Error("User is not a student")];
+        } else {
+            parentsIds = this.parents ?? [];
+        }
+
+        if (index && index % 1 === 0 && index < parentsIds.length && index >= 0) {
+            const dbResult = await this.userCollection.findOne({
+                _id: parentsIds[index]
+            });
+            if (!dbResult) {
+                return [undefined, new Error("User not found")];
+            }
+            const parent = new User(this.userCollection, dbResult);
+            if (parent.isParent()) {
+                return [parent, null];
+            }
+            return [undefined, new Error("Parent is not a parent")];
+        }
+
+        const dbResult = await this.userCollection
+            .find({ $or: parentsIds.map((id) => ({ _id: id })) })
+            .toArray();
+        if (!dbResult || dbResult.length === 0) {
+            return [undefined, new Error("Users not found")];
+        }
+        const parents = dbResult.map((id) => new User(this.userCollection, id));
+        for (const parent of parents) {
+            if (!parent.isStudent()) {
+                return [undefined, new Error("Parent is not a parent")];
+            }
+        }
+        return [parents, null];
+    }
+
+    /**
+     * only for type == "parent"
+     * @param index
+     * @returns
+     */
+    async getStudents(index?: number): Promise<MethodResult<User | User[]>> {
+        let studentsIds = this.students;
+
+        if (!studentsIds && this.type !== "parent") {
+            return [undefined, new Error("User is not a parent")];
+        } else {
+            studentsIds = this.students ?? [];
+        }
+
+        if (index && index % 1 === 0 && index < studentsIds.length && index >= 0) {
+            const dbResult = await this.userCollection.findOne({
+                _id: studentsIds[index]
+            });
+            if (!dbResult) {
+                return [undefined, new Error("User not found")];
+            }
+            const student = new User(this.userCollection, dbResult);
+            if (student.isStudent()) {
+                return [student, null];
+            }
+            return [undefined, new Error("Student is not a student")];
+        }
+
+        const dbResult = await this.userCollection
+            .find({ $or: studentsIds.map((id) => ({ _id: id })) })
+            .toArray();
+        if (!dbResult || dbResult.length === 0) {
+            return [undefined, new Error("Users not found")];
+        }
+        const students = dbResult.map((id) => new User(this.userCollection, id)) as User[];
+        for (const student of students) {
+            if (!student.isStudent()) {
+                return [undefined, new Error("Student is not a student")];
+            }
+        }
+        return [students, null];
+    }
+
+    /**
      * check if the user has a permission
      * @param perm Permission
      */
@@ -283,11 +367,11 @@ class User implements WithId<IUser> {
         }
     }
 
-    isStudent(): this is Student {
+    isStudent(): boolean {
         return this.type === "student";
     }
 
-    isParent(): this is Parent {
+    isParent(): boolean {
         return this.type === "parent";
     }
 
