@@ -23,8 +23,8 @@ class Message implements IMessage {
     sender: ObjectId;
     anonymous: boolean;
     attachments?: IMessageAttachement[];
-    subject: string;
-    content: string;
+    _subject: string;
+    _content: string;
     receivers: ObjectId[];
     edited?: number;
     private readonly messageCollection: Collection<IMessage>;
@@ -38,8 +38,8 @@ class Message implements IMessage {
         this.id = message._id;
         this.sender = message.sender;
         this.attachments = message.attachments;
-        this.subject = message.subject;
-        this.content = message.content;
+        this._subject = message.subject;
+        this._content = message.content;
         this.anonymous = message.anonymous;
         this.receivers = message.receivers;
         this.messageCollection = messageCollection;
@@ -76,7 +76,7 @@ class Message implements IMessage {
 
     async updateContent(newContent: string): Promise<MethodResult<boolean>> {
         this.edited = Date.now();
-        this.content = newContent;
+        this._content = newContent;
 
         try {
             const updateResult = await this.messageCollection.updateOne(
@@ -96,6 +96,13 @@ class Message implements IMessage {
 
     get time() {
         return this.id.getTimestamp();
+    }
+
+    get subject(): string {
+        return "not implemented";
+    }
+    get content(): string {
+        return "not implemented";
     }
 }
 
