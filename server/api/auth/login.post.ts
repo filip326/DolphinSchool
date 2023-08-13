@@ -1,5 +1,5 @@
-import User from "../Dolphin/User/User";
-import Session from "../Dolphin/Session/Session";
+import User from "../../Dolphin/User/User";
+import Session from "../../Dolphin/Session/Session";
 
 export default eventHandler(async (event) => {
     const { username, password } = await readBody(event);

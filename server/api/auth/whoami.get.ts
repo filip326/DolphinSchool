@@ -1,4 +1,4 @@
-import checkAuth from "../composables/checkAuth";
+import checkAuth from "../../composables/checkAuth";
 
 export default eventHandler(async (event) => {
     const [user, error] = await checkAuth(event, {

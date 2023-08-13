@@ -1,5 +1,5 @@
-import { SessionState } from "../Dolphin/Session/Session";
-import Session from "../Dolphin/Session/Session";
+import { SessionState } from "../../Dolphin/Session/Session";
+import Session from "../../Dolphin/Session/Session";
 
 export default defineEventHandler(async (event) => {
     // check authentication without 2fa
