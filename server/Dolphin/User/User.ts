@@ -31,6 +31,21 @@ interface IUser {
 
     //teacher properties
     subjects?: ISubject[];
+
+    webAuthNCredentials?: {
+        [key: string]: {
+            credential: {
+                id: string,
+                publicKey: string,
+                algorithm: "RS256" | "ES256",
+            },
+            authenticator: {
+                name: string,
+
+            }
+
+        } | undefined
+    }
 }
 
 class User implements WithId<IUser> {
@@ -189,6 +204,21 @@ class User implements WithId<IUser> {
 
     userCollection: Collection<IUser>;
 
+    webAuthNCredentials?: {
+        [key: string]: {
+            credential: {
+                id: string,
+                publicKey: string,
+                algorithm: "RS256" | "ES256",
+            },
+            authenticator: {
+                name: string,
+                
+            }
+
+        } | undefined
+    };
+
     private _totp?: OTPAuth.TOTP;
     private _setupTotp?: OTPAuth.TOTP;
 
@@ -235,6 +265,8 @@ class User implements WithId<IUser> {
                 secret: OTPAuth.Secret.fromBase32(this.mfa_setup_secret)
             });
         }
+
+        this.webAuthNCredentials = user.webAuthNCredentials;
     }
 
     /**
@@ -601,6 +633,11 @@ class User implements WithId<IUser> {
         this.mfa_secret = tempMFASecret;
         this._totp = tempTOTP;
         return [undefined, Error("Database error")];
+    }
+
+
+    getWebAuthNCredentials(id: string) {
+        return this.webAuthNCredentials?.[id]?.credential;
     }
 }
 

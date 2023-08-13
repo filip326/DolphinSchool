@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import QRCode from "qrcode";
+
 definePageMeta({
     layout: "login"
 });
@@ -13,15 +15,20 @@ export default {
             error: {
                 shown: false,
                 message: ""
+            },
+            passwordless: {
+                avaible: true,
+                token: "",
+                challenge: "",
+                qr_url: "",
+                qr_code: "",
+                interval: ref<NodeJS.Timer | undefined>(undefined),
             }
         };
     },
     async beforeMount() {
-        const user = await checkAuth();
-        console.log(user);
-        if (user) {
-            navigateTo("/home");
-        }
+        await checkAuth();
+        await this.loadPasswordlessQRCode();
     },
     methods: {
         async login() {
@@ -54,35 +61,98 @@ export default {
                     this.error.message = "Login fehlgeschlagen";
                     break;
             }
+        },
+        async loadPasswordlessQRCode() {
+            const response = await useFetch("/api/auth/passwordless/init", {
+                method: "GET"
+            });
+
+            if (response.status.value !== "success") {
+                this.error.shown = true;
+                this.error.message = "Fehler beim Laden des QR Codes";
+                return;
+            }
+
+            if (!response.data.value?.url) {
+                this.passwordless.avaible = false;
+                this.passwordless.token = response.data.value?.token ?? "";
+                return;
+            }
+
+            QRCode.toDataURL(response.data.value.url, (err, dataUrl) => {
+                if (err) {
+                    this.passwordless.avaible = false;
+                }
+                this.passwordless.qr_code = dataUrl;
+            });
+
+            this.passwordless.interval = setInterval(() => {
+                this.checkPasswordless();
+            }, 3_000);
+        },
+        async checkPasswordless() {
+            if (this.passwordless.avaible === false) {
+                return;
+            }
+
+            const response = await useFetch("/api/auth/passwordless/login", { method: "POST", body: JSON.stringify({ token: this.passwordless.token }) });
+
+            if (response.status.value !== "success") {
+                this.error.shown = true;
+                this.error.message = "Fehler beim passwordless Login";
+                return;
+            }
+
+            if (response.data.value === "waiting for aproval") {
+                return;
+            }
+
+            if (response.data.value === "Login successful") {
+                clearInterval(this.passwordless.interval);
+                navigateTo("/home");
+                return;
+            }
         }
-    }
+    },
 };
 </script>
 
 <template>
-    <VForm id="loginform" @submit.prevent="login">
-        <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
-        <img src="/img/School/DolphinSchool_light.png" alt="Dolphin School" />
-        <h1>Login</h1>
-        <VTextField
-            label="Benutzername"
-            v-model="username"
-            placeholder="max.mustermann"
-            hint="Ihr Benutzername besteht aus Ihrem Vor- und Nachnamen, durch einen Punkt getrennt."
-        ></VTextField>
-        <VTextField
-            label="Passwort"
-            v-model="pwd"
-            type="password"
-            placeholder="P@55w0rt"
-            hint="Geben Sie hier Ihr Passwort ein."
-        ></VTextField>
-        <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
-        <NuxtLink to="">Zugangsdaten vergessen</NuxtLink>
-        <NuxtLink to="/support">Hilfe und Support</NuxtLink>
-    </VForm>
+    <div class="loginform">
+        <VForm @submit.prevent="login">
+            <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
+            <h1>Login</h1>
+            <VTextField label="Benutzername" v-model="username" placeholder="max.mustermann"
+                hint="Ihr Benutzername besteht aus Ihrem Vor- und Nachnamen, durch einen Punkt getrennt."></VTextField>
+            <VTextField label="Passwort" v-model="pwd" type="password" placeholder="P@55w0rt"
+                hint="Geben Sie hier Ihr Passwort ein."></VTextField>
+            <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
+            <NuxtLink to="/support">Ich kann mich nicht einloggen</NuxtLink>
+        </VForm>
+        <div>
+            <h1>passwordless</h1>
+            <VAlert v-if="passwordless.avaible" type="info" variant="text" text="passwordless funktioniert nur, wenn du es zuvor eingerichtet hast!" />
+            <VAler v-else type="error" variant="text" text="passwordless ist nicht verfügbar!" />
+            <p v-if="passwordless.avaible">
+                Scanne den QR Code mit der Kamera deines Smartphones und folge den Anweisungen auf dem Bildschirm.
+            </p>
+            <!-- placeholder 128 x 128 px-->
+            <VImg v-if="passwordless.avaible" :src="passwordless.qr_code" />
+        </div>
+    </div>
 </template>
 
 <style scoped>
 @import url("../assets/login.css");
+
+.v-img {
+    width: 128px;
+    height: 128px;
+    margin: 10px auto;
+}
+
+.v-progress-circular {
+    width: 200px;
+    height: 200px;
+}
 </style>
