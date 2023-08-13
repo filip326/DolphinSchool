@@ -17,9 +17,7 @@ export default {
         };
     },
     async beforeMount() {
-        const user = await checkAuthAndReturnUserOrNull({
-            throwErrorOnFailure: false
-        });
+        const user = await checkAuth();
         console.log(user);
         if (user) {
             navigateTo("/home");

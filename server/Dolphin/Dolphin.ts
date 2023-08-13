@@ -1,18 +1,10 @@
 import { MongoClient, Db } from "mongodb";
-import GlobalCourseManager from "./Course/GlobalCourseManager";
-import UserMessageManager from "./Messenger/UserMessageManager";
-import User from "./User/User";
-import MethodResult from "./MethodResult";
-import { IMessage } from "./Messenger/Message";
-import { IUserMessage } from "./Messenger/UserMessage";
 import GlobalAnalyticsManager from "./Analytics/GlobalAnalyticsManager";
 
 class Dolphin {
     ready: boolean = false;
     private readonly client: MongoClient;
     readonly database: Db;
-    /** @deprecated */
-    courses: GlobalCourseManager;
 
     private static _instance?: Dolphin;
 
@@ -26,7 +18,6 @@ class Dolphin {
 
         this.database = db;
         this.client = client;
-        this.courses = GlobalCourseManager.getInstance(this);
 
         this.ready = true;
 
@@ -67,18 +58,6 @@ class Dolphin {
     static destroy() {
         Dolphin.instance?.client?.close();
         Dolphin._instance = undefined;
-    }
-
-    async getMessenger(user: User): Promise<MethodResult<UserMessageManager>> {
-        const userMessageManager = new UserMessageManager(
-            this.database.collection<IMessage>("messages"),
-            this.database.collection<IUserMessage>("userMessages"),
-            {
-                userId: user._id
-            }
-        );
-
-        return [userMessageManager, null];
     }
 }
 

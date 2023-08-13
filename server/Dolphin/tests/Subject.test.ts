@@ -2,18 +2,17 @@ import Subject from "../Course/Subject";
 import Dolphin from "../Dolphin";
 import { config } from "dotenv";
 import User from "../User/User";
-import Teacher from "../User/Teacher/Teacher";
 
 config();
 
 describe("Subject class", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (!process.env.DB_URL) throw Error("DB_URL not set in .env file");
 
         await Dolphin.init({
             prod: false,
             DB_URL: process.env.DB_URL,
-            DB_NAME: "dolphinSchool--test"
+            DB_NAME: "dolphinSchool--test--Subject_class"
         });
 
         const db = Dolphin.instance!.database;
@@ -35,7 +34,7 @@ describe("Subject class", () => {
             teachers: []
         });
 
-        expect(subjectCreateError).toBeUndefined();
+        expect(subjectCreateError).toBeNull();
         expect(subject).toBeDefined();
         expect(subject!.longName).toBe("Mathematics");
         expect(subject!.short).toBe("M");
@@ -51,7 +50,7 @@ describe("Subject class", () => {
             username: "johndoe"
         });
 
-        expect(teacherCreateError).toBeUndefined();
+        expect(teacherCreateError).toBeNull();
         expect(teacher).toBeDefined();
 
         // create a subject
@@ -67,7 +66,7 @@ describe("Subject class", () => {
             teachers: [teacher!.id]
         });
 
-        expect(subjectCreateError).toBeUndefined();
+        expect(subjectCreateError).toBeNull();
         expect(subject).toBeDefined();
         expect(subject!.longName).toBe("Mathematics");
         expect(subject!.short).toBe("M");
@@ -84,7 +83,7 @@ describe("Subject class", () => {
             username: "johndoe"
         });
 
-        expect(teacherCreateError).toBeUndefined();
+        expect(teacherCreateError).toBeNull();
         expect(teacher).toBeDefined();
 
         // create a subject
@@ -100,7 +99,7 @@ describe("Subject class", () => {
             teachers: [teacher!.id]
         });
 
-        expect(subjectCreateError).toBeUndefined();
+        expect(subjectCreateError).toBeNull();
         expect(subject).toBeDefined();
         expect(subject!.longName).toBe("Mathematics");
         expect(subject!.short).toBe("M");
@@ -108,10 +107,11 @@ describe("Subject class", () => {
         expect(subject!.teachers).toEqual([teacher!.id]);
 
         const [teacher2, teacher2Err] = await User.getUserById(subject!.teachers[0]);
-        expect(teacher2Err).toBeUndefined();
+        expect(teacher2Err).toBeNull();
         expect(teacher2).toBeDefined();
+        expect(teacher2!._id).toEqual(teacher!.id);
 
-        subject?.removeTeacher(teacher2! as Teacher);
+        await subject?.removeTeacher(teacher2!);
 
         expect(subject!.teachers).toEqual([]);
     });

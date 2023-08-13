@@ -18,10 +18,14 @@ export default async function checkAuth(): Promise<CheckAuthResult> {
         }
 
         if (loginStatus.data.value === "2fa required") {
+            if(window.location.pathname !== "/totp")
+                navigateTo("/totp");
             return "/totp";
         }
 
         if (loginStatus.data.value === "Login required") {
+            if(window.location.pathname !== "/")
+                navigateTo("/");
             return "/";
         }
 

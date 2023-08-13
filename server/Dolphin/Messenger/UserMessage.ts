@@ -1,4 +1,6 @@
+import Dolphin from "../Dolphin";
 import MethodResult from "../MethodResult";
+import User from "../User/User";
 import Message, { IMessage } from "./Message";
 import { Collection, ObjectId, WithId } from "mongodb";
 
@@ -13,7 +15,130 @@ interface IUserMessage {
     newsletter: boolean;
 }
 
+interface MessageFilterOptions {
+    subject?: string;
+    read?: boolean;
+    stared?: boolean;
+    newsletter?: boolean;
+    limit?: number;
+    skip?: number;
+}
+
+
 class UserMessage implements IUserMessage {
+
+    /**
+     * lists the messages of a user
+     * @param user 
+     * @returns the user messages
+     */
+    static async listUsersMessages(user: User, { limit, skip }: { limit?: number, skip?: number }): Promise<MethodResult<UserMessage[]>> {
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw Error("Dolphin not initialized");
+        const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").find({
+            owner: user._id
+        }, { limit, skip });
+        return [
+            (await dbResult.toArray()).map(
+                (userMessage) =>
+                    new UserMessage(
+                        dolphin.database.collection<IMessage>("messages"),
+                        dolphin.database.collection<IUserMessage>("userMessages"),
+                        userMessage
+                    )
+            ),
+            null
+        ];
+    
+    }
+
+    static async getUserMessageByAuthor(author: User, receiver: User) {
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw Error("Dolphin not initialized");
+        const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({
+            owner: receiver._id,
+            author: author._id
+        });
+        if (!dbResult) return [undefined, Error("UserMessage not found")];
+        return [new UserMessage(dolphin.database.collection<IMessage>("messages"), dolphin.database.collection<IUserMessage>("userMessages"), dbResult), null];
+    }
+
+    static async getUserMessageById(id: ObjectId): Promise<MethodResult<UserMessage>> {
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw Error("Dolphin not initialized");
+        const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({ _id: id });
+        if (!dbResult) return [undefined, Error("UserMessage not found")];
+        return [new UserMessage(dolphin.database.collection<IMessage>("messages"), dolphin.database.collection<IUserMessage>("userMessages"), dbResult), null];
+    }
+
+    static async getMessages(user: User, filter: MessageFilterOptions): Promise<MethodResult<IUserMessage[]>> {
+
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw Error("Dolphin not initialized");
+
+        const userMessageCollection = dolphin.database.collection<IUserMessage>("userMessages");
+        const messageCollection = dolphin.database.collection<IMessage>("messages");
+
+        if (!user) {
+            return [undefined, new Error("User not logged in")];
+        }
+
+        const dbResult = await userMessageCollection
+            .find(
+                {
+                    owner: user._id,
+                    stared: filter.stared,
+                    read: filter.read,
+                    newsletter: filter.newsletter
+                },
+                { limit: filter.limit, skip: filter.skip }
+            )
+            .sort({
+                _id: -1
+            })
+            .toArray();
+
+        if (!dbResult) {
+            return [undefined, Error("No messages found")];
+        }
+
+        return [dbResult.map(msg => new UserMessage(messageCollection, userMessageCollection, msg)), null];
+    }
+
+    /**
+     * sends a message to a user
+     * @param receiver
+     * @param message
+     * @param newsletter
+     * @return true if the message was sent successfully
+     */
+    static async sendMessage(receiver: User, message: Message, newsletter: boolean = false): Promise<MethodResult<boolean>> {
+
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw Error("Dolphin not initialized");
+
+        const userMessage: IUserMessage = {
+            owner: receiver._id,
+
+            subject: message.subject,
+            author: message.sender,
+            message: message.id,
+            read: false,
+            stared: false,
+            newsletter
+        };
+
+        const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").insertOne(userMessage);
+        if (!dbResult.acknowledged) {
+            return [undefined, Error("DB error")];
+        }
+
+        return [true, null];
+
+    }
+
+    readonly _id: ObjectId;
+
     owner: ObjectId;
     author: ObjectId;
 
@@ -26,11 +151,12 @@ class UserMessage implements IUserMessage {
     private readonly messageCollection: Collection<IMessage>;
     private readonly userMessageCollection: Collection<IUserMessage>;
 
-    constructor(
+    private constructor(
         messageCollection: Collection<IMessage>,
         userMessageCollection: Collection<IUserMessage>,
         userMessage: WithId<IUserMessage>
     ) {
+        this._id = userMessage._id;
         this.owner = userMessage.owner;
         this.author = userMessage.author;
         this.subject = userMessage.subject;
@@ -43,13 +169,7 @@ class UserMessage implements IUserMessage {
     }
 
     async getMessage(): Promise<MethodResult<Message>> {
-        const dbResult = await this.messageCollection.findOne({
-            _id: this.message
-        });
-        if (!dbResult) {
-            return [undefined, new Error("Message not found")];
-        }
-        return [new Message(this.messageCollection, this.userMessageCollection, dbResult), null];
+        return Message.getMessageById(this.message);
     }
 
     async star(stared = true): Promise<MethodResult<boolean>> {
@@ -88,6 +208,36 @@ class UserMessage implements IUserMessage {
         } catch (err) {
             return [undefined, new Error("DB error")];
         }
+    }
+
+    async delete(): Promise<MethodResult<boolean>> {
+        // get the message id
+        const messageId = this.message;
+
+        // delete the user message
+        const dbResult = await this.userMessageCollection.deleteOne({
+            _id: this._id
+        });
+
+        // if the user message was deleted successfully
+        if (dbResult.acknowledged) {
+            // delete the message, if it was the last user message referencing it
+
+            const dbResult2 = await this.userMessageCollection.countDocuments( { message: messageId } );
+            if (dbResult2 === 0) {
+                const dbResult3 = await this.messageCollection.deleteOne({
+                    _id: messageId
+                });
+                // if the message was deleted successfully
+                if (dbResult3.acknowledged) {
+                    return [true, null];
+                }
+            }
+            return [true, null];
+        }
+
+        return [undefined, Error("DB error")];
+    
     }
 }
 

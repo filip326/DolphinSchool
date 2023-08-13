@@ -7,13 +7,13 @@ import User from "../User/User";
 config();
 
 describe("Course class", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
         if (!process.env.DB_URL) throw Error("DB_URL not set in .env file");
 
         await Dolphin.init({
             prod: false,
             DB_URL: process.env.DB_URL,
-            DB_NAME: "dolphinSchool--test"
+            DB_NAME: "dolphinSchool--test--Course_class"
         });
 
         const db = Dolphin.instance!.database;
@@ -30,7 +30,7 @@ describe("Course class", () => {
             username: "johndoe"
         });
 
-        expect(teacherCreateError).toBeUndefined();
+        expect(teacherCreateError).toBeNull();
         expect(teacher).toBeDefined();
 
         const [subject, subjectCreateError] = await Subject.create({
@@ -45,7 +45,7 @@ describe("Course class", () => {
             teachers: []
         });
 
-        expect(subjectCreateError).toBeUndefined();
+        expect(subjectCreateError).toBeNull();
         expect(subject).toBeDefined();
 
         if (!subject || !subject!._id) throw Error("subject._id is undefined");
@@ -57,7 +57,7 @@ describe("Course class", () => {
             teacher: teacher.id
         });
 
-        expect(courseCreateError).toBeUndefined();
+        expect(courseCreateError).toBeNull();
         expect(course).toBeDefined();
         expect(course!.name).toBe("Mathematics 1");
         expect(course!.subject).toBe(subject._id);

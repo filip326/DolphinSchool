@@ -100,7 +100,9 @@ describe("Session class", () => {
 
         if (sessionFoundError || !session) throw sessionFoundError;
 
-        expect(session).toHaveProperty("lastUsed", Date.now());
+        expect(session).toHaveProperty("lastUsed");
+        expect(session.lastUsed).toBeGreaterThanOrEqual(Date.now() - 5);
+        expect(session.lastUsed).toBeLessThanOrEqual(Date.now());
         
         setTimeout(async () => {
 

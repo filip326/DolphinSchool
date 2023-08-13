@@ -1,6 +1,7 @@
 import MethodResult from "../MethodResult";
 import { Collection, ObjectId, WithId } from "mongodb";
 import { IUserMessage } from "./UserMessage";
+import Dolphin from "../Dolphin";
 
 interface IMessageAttachement {
     expires: number;
@@ -18,6 +19,15 @@ interface IMessage {
 }
 
 class Message implements IMessage {
+
+    static async getMessageById(id: ObjectId): Promise<MethodResult<Message>> {
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw Error("Dolphin not initialized");
+        const dbResult = await dolphin.database.collection<IMessage>("messages").findOne({ _id: id });
+        if (!dbResult) return [undefined, Error("Message not found")];
+        return [new Message(dolphin.database.collection<IMessage>("messages"), dolphin.database.collection<IUserMessage>("userMessages"), dbResult), null];
+    }
+
     id: ObjectId;
     sender: ObjectId;
     anonymous: boolean;
@@ -29,7 +39,7 @@ class Message implements IMessage {
     private readonly messageCollection: Collection<IMessage>;
     private readonly userMessageCollection: Collection<IUserMessage>;
 
-    constructor(
+    private constructor(
         messageCollection: Collection<IMessage>,
         userMessageCollection: Collection<IUserMessage>,
         message: WithId<IMessage>

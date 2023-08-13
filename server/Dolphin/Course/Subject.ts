@@ -1,7 +1,7 @@
 import Dolphin from "../Dolphin";
 import MethodResult from "../MethodResult";
-import Teacher from "../User/Teacher/Teacher";
 import { Collection, ObjectId, WithId } from "mongodb";
+import User from "../User/User";
 
 interface ISubject {
     longName: string;
@@ -77,6 +77,19 @@ class Subject implements ISubject {
         }
     }
 
+    static async getSubjectById(id: ObjectId): Promise<MethodResult<Subject>> {
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw Error("Dolphin not initialized");
+        const dbResult = await dolphin.database
+            .collection<ISubject>("subjects")
+            .findOne({ _id: id });
+        if (dbResult) {
+            return [new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult), null];
+        } else {
+            return [undefined, Error("Subject not found")];
+        }
+    }
+
     _id: ObjectId;
     longName: string;
     short: string;
@@ -100,7 +113,7 @@ class Subject implements ISubject {
      * Add a teacher to the subject
      * @param teacher Teacher
      */
-    async addTeacher(teacher: Teacher): Promise<MethodResult<boolean>> {
+    async addTeacher(teacher: User): Promise<MethodResult<boolean>> {
         this.teachers.push(teacher._id);
 
         try {
@@ -122,20 +135,15 @@ class Subject implements ISubject {
      * Remove a teacher from the subject
      * @param teacher Teacher
      */
-    async removeTeacher(teacher: Teacher): Promise<MethodResult<boolean>> {
-        this.teachers = this.teachers.filter((t) => t !== teacher._id);
-
-        try {
-            const dbResult = await this.subjectCollection.updateOne(
-                { _id: this._id },
-                { $pull: { teachers: teacher._id } }
-            );
-            if (dbResult.acknowledged) {
-                return [true, null];
-            } else {
-                return [undefined, Error("Failed to remove teacher")];
-            }
-        } catch {
+    async removeTeacher(teacher: User): Promise<MethodResult<boolean>> {
+        this.teachers = this.teachers.filter((t) => !t.equals(teacher._id));
+        const dbResult = await this.subjectCollection.updateOne(
+            { _id: this._id },
+            { $pull: { teachers: teacher._id } }
+        );
+        if (dbResult.acknowledged) {
+            return [true, null];
+        } else {
             return [undefined, Error("Failed to remove teacher")];
         }
     }

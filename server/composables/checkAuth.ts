@@ -9,7 +9,7 @@ interface IOptions {
     skipMFA?: boolean;
 }
 
-export default async (event: H3Event, options: IOptions): Promise<MethodResult<User>> => {
+export default async function checkAuth(event: H3Event, options: IOptions = { throwErrOnAuthFail: false }): Promise<MethodResult<User>> {
     if (
         event.context.auth.authenticated &&
         event.context.auth.user &&
