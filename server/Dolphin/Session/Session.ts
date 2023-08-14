@@ -158,6 +158,20 @@ class Session implements WithId<ISession> {
         }
     }
 
+    async continueToMFA(): Promise<MethodResult<boolean>> {
+        this.state = SessionState.MFA_REQ;
+        try {
+            const dolphin: Dolphin | undefined = Dolphin.instance;
+            if (!dolphin) throw new Error("Dolphin instance not initialized");
+            const dbResult = await dolphin.database
+                .collection("sessions")
+                .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
+            return [dbResult.modifiedCount === 1, null];
+        } catch {
+            return [undefined, new Error("Failed to activate session")];
+        }
+    }
+
     async reportUsage(): Promise<MethodResult<boolean>> {
         this.lastUsed = Date.now();
         try {

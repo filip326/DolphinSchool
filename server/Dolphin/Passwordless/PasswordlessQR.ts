@@ -10,10 +10,10 @@ import { ObjectId } from "mongodb";
 import Dolphin from "../Dolphin";
 import { createHash, randomBytes } from "crypto";
 import MethodResult from "../MethodResult";
-import User from "../User/User";
+import User, { IUser } from "../User/User";
 
 import { server } from "@passwordless-id/webauthn";
-import { AuthenticationEncoded } from "@passwordless-id/webauthn/dist/esm/types";
+import { AuthenticationEncoded, RegistrationEncoded } from "@passwordless-id/webauthn/dist/esm/types";
 
 interface IPasswordlessQR {
     token: string;
@@ -26,6 +26,7 @@ interface IPasswordlessQR {
 class PasswordlessQR {
 
     static async requestChallenge(): Promise<MethodResult<{ token: string, url: string }>> {
+        this.tick();
         const dolphin = Dolphin.instance;
         if (!dolphin) throw Error("Dolphin not initialized");
 
@@ -58,6 +59,7 @@ class PasswordlessQR {
         tokenHash: string,
         solvedChallenge: AuthenticationEncoded
     ): Promise<MethodResult<boolean>> {
+        this.tick();
 
         const dolphin = Dolphin.instance;
         if (!dolphin) throw Error("Dolphin not initialized");
@@ -83,7 +85,7 @@ class PasswordlessQR {
             });
 
             if (!result) {
-                return [ undefined, Error("Unknown error") ];
+                return [undefined, Error("Unknown error")];
             }
 
             // write user id to database
@@ -109,6 +111,7 @@ class PasswordlessQR {
     }
 
     static async login(token: string): Promise<MethodResult<User | false>> {
+        this.tick();
         const dolphin = Dolphin.instance;
         if (!dolphin) throw Error("Dolphin not initialized");
 
@@ -125,7 +128,7 @@ class PasswordlessQR {
         }
 
         if (!challenge.user) {
-            return [ false, null ];
+            return [false, null];
         }
 
         const user = await dolphin.database.collection<User>("users").findOne({
@@ -142,6 +145,70 @@ class PasswordlessQR {
         });
 
         return [user, null];
+    }
+
+    static async register(user: User, token: string, solvedChallenge: RegistrationEncoded): Promise<MethodResult<boolean>> {
+        this.tick();
+        // get challenge from database by token
+        const dolphin = Dolphin.instance;
+        if (!dolphin) throw Error("Dolphin not initialized");
+
+        const challenge = await dolphin.database.collection<IPasswordlessQR>("passwordless").findOne({
+            token
+        });
+
+        if (!challenge) {
+            return [undefined, Error("Invalid token")];
+        }
+
+        if (challenge.expirery < Date.now()) {
+            return [undefined, Error("Token expired")];
+        }
+
+        try {
+            // auth registration
+            const result = await server.verifyRegistration(solvedChallenge, {
+                challenge: challenge.challenge,
+                origin: process.env.DOMAIN ?? "",
+            });
+
+            if (!result) {
+                return [undefined, Error("Unknown error")];
+            }
+
+            // write credentials to database
+            const dbResult = await dolphin.database.collection<IUser>("users").updateOne({_id: user._id}, {
+                webAuthNCredentials: {
+                    $set: {
+                        [solvedChallenge.credential.id]: solvedChallenge
+                    }
+                }
+            });
+
+            if (!dbResult.acknowledged) {
+                return [undefined, Error("Database error")];
+            }
+
+            // login successful, delete token since it's single use
+            await dolphin.database.collection<IPasswordlessQR>("passwordless").deleteOne({
+                token
+            });
+
+            return [true, null];
+
+        } catch {
+            return [undefined, Error("Invalid credentials")];
+        }
+    }
+
+    static async tick() {
+        const dolphin = Dolphin.instance;
+        if (!dolphin) return;
+        await dolphin.database.collection<IPasswordlessQR>("passwordless").deleteMany({
+            expirery: {
+                $lt: Date.now() - 1000 * 60 * 2 // delete 2 minutes after expirery
+            }
+        });
     }
 
 }

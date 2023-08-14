@@ -32,7 +32,7 @@ export default {
     },
     methods: {
         async login() {
-            const response = await useFetch("/api/login", {
+            const response = await useFetch("/api/auth/login", {
                 method: "POST",
                 body: JSON.stringify({
                     username: this.username,
@@ -54,7 +54,7 @@ export default {
                     navigateTo("/totp");
                     break;
                 case "continue with 2fa setup":
-                    navigateTo("/setup/2fa");
+                    navigateTo("/setup/totp");
                     break;
                 default:
                     this.error.shown = true;
@@ -73,17 +73,18 @@ export default {
                 return;
             }
 
-            if (!response.data.value?.url) {
+            if (!response.data.value?.url || !response.data.value?.token) {
                 this.passwordless.avaible = false;
-                this.passwordless.token = response.data.value?.token ?? "";
                 return;
             }
-
+            
             QRCode.toDataURL(response.data.value.url, (err, dataUrl) => {
                 if (err) {
                     this.passwordless.avaible = false;
+                    return;
                 }
                 this.passwordless.qr_code = dataUrl;
+                this.passwordless.token = response.data.value?.token ?? "";
             });
 
             this.passwordless.interval = setInterval(() => {
@@ -100,6 +101,7 @@ export default {
             if (response.status.value !== "success") {
                 this.error.shown = true;
                 this.error.message = "Fehler beim passwordless Login";
+                clearInterval(this.passwordless.interval);
                 return;
             }
 
@@ -113,6 +115,10 @@ export default {
                 return;
             }
         }
+    },
+
+    beforeUnmount() {
+        clearInterval(this.passwordless.interval);
     },
 };
 </script>

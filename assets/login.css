@@ -24,6 +24,12 @@
     grid-template-columns: 1fr 1fr;
 }
 
+.loginform.small {
+    width: 400px;
+
+    grid-template-columns: 1fr;
+}
+
 .loginform > * {
     display: grid;
     grid-template-columns: 1fr;
@@ -37,4 +43,18 @@
 button[type="submit"] {
     margin-top: 10px;
     width: 100%;
+}
+
+@media screen and (max-width: 800px) {
+    .loginform {
+        position: relative;
+        right: 0;
+        top: 0;
+
+        transform: none;
+        display: flex;
+        flex-direction: column;
+
+        gap: 50px;
+    }
 }

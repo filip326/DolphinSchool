@@ -511,7 +511,7 @@ class User implements WithId<IUser> {
 
         const dbResult = await this.userCollection.findOneAndUpdate(
             { _id: this._id },
-            { $set: { mfa_secret: this.mfa_secret } }
+            { $set: { mfa_setup_secret: this.mfa_setup_secret } }
         );
 
         // 5. return the setup url for the user to scan if the database update was successful
@@ -521,8 +521,8 @@ class User implements WithId<IUser> {
         }
 
         // if it was not successful, return an error and undo the changes to this object
-        this.mfa_secret = undefined;
-        this._totp = undefined;
+        this.mfa_setup_secret = undefined;
+        this._setupTotp = undefined;
         return [undefined, Error("Database error")];
     }
 
@@ -635,6 +635,23 @@ class User implements WithId<IUser> {
         return [undefined, Error("Database error")];
     }
 
+    async cancelMFASetup(): Promise<MethodResult<boolean>> {
+    
+        this._setupTotp = undefined;
+        this.mfa_setup_secret = undefined;
+
+        const dbResult = await this.userCollection.findOneAndUpdate(
+            { _id: this._id },
+            { $unset: { mfa_setup_secret: "" } }
+        );
+
+        if (dbResult.ok === 1) {
+            return [true, null];
+        }
+
+        return [undefined, Error("Database error")];
+    
+    }
 
     getWebAuthNCredentials(id: string) {
         return this.webAuthNCredentials?.[id]?.credential;
