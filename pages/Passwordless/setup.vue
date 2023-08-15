@@ -2,7 +2,7 @@
 import { client as pwless } from "@passwordless-id/webauthn";
 definePageMeta({
     title: "passwordless",
-    layout: "default"
+    layout: "login"
 });
 </script>
 
@@ -100,30 +100,36 @@ export default {
 </script>
 
 <template>
-    <VCard>
-        <VCardTitle>
-            passwordless Login
-        </VCardTitle>
-        <VCardSubtitle>
-            passwordless Login einrichten
-        </VCardSubtitle>
-        <VCardText>
+    <div class="loginform">
+        <div>
+            <h1>passwordless Login </h1>
             <p>
-                Mit passwordless Login können Sie sich auf diesem Gerät ohne Passwort anmelden. Zusätzlich können Sie sich
-                auf anderen Geräten durch scannen des QR-Codes anmelden. Aktivieren Sie diese Funktion nur, wenn Sie
-                eine sichere Bildschirmsperre eingerichtet haben.
+                Mit passwordless Login können Sie sich auf diesem Gerät ohne Passwort anmelden. Zusätzlich können Sie
+                sich auf anderen Geräten durch scannen des QR-Codes sehr einfach und sicher anmelden. Aktivieren Sie diese
+                Funktion nur, wenn Sie eine sichere Bildschirmsperre eingerichtet haben.
             </p>
-            <VForm @submit.prevent="setupPasswordless()">
-                <VCheckbox label="Dies ist mein eigenes, privates Gerät" />
-                <VCheckbox
-                    label="Ich habe auf diesem Gerät eine sichere Bildschirmsperre (PIN, Passwort, Fingerabdruck oder Gesichtserkennung) eingerichtet" />
-                <VBtn type="submit" :loading="loading">
-                    Einrichten
-                </VBtn>
-                <VBtn type="button">
-                    Überspringen
-                </VBtn>
-            </VForm>
-        </VCardText>
-    </VCard>
+            <p>
+                <b>Wichtig:</b> Falls Sie sich entscheiden das Passwort zu deaktivieren, können Sie sich nur noch anmelden,
+                indem Sie mit diesem Gerät den QR-Code scannen. Auf diesem Gerät bleiben Sie angemeldet. Benutzen Sie diese
+                Option <u>nur</u>, wenn es sich um Ihr Smartphone handelt.
+            </p>
+
+        </div>
+        <VForm @submit.prevent="setupPasswordless()">
+            <h1>Einrichten:</h1>
+            <VCheckbox label="Dies ist mein eigenes, privates Gerät" />
+            <VCheckbox
+                label="Ich habe auf diesem Gerät eine sichere Bildschirmsperre (PIN, Passwort, Fingerabdruck oder Gesichtserkennung) eingerichtet" />
+            <VCheckbox
+                label="Die Anmeldung mit Passwort nach der Einrichtung deaktivieren. Dadurch kann ich mich nur noch anmelden, in dem ich mit diesem Gerät den QR-Code scanne. Dies erhöht die Kontosicherheit erheblich." />
+            <VBtn type="submit" :loading="loading" color="primary">
+                Einrichten
+            </VBtn>
+            <VBtn type="button">
+                Überspringen
+            </VBtn>
+        </VForm>
+    </div>
 </template>
+
+<style scoped></style>

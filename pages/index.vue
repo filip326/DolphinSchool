@@ -169,7 +169,7 @@ export default {
         <div>
             <h1>passwordless</h1>
             <VAlert v-if="passwordless.avaible" type="info" variant="text"
-                text="passwordless funktioniert nur, wenn du es zuvor eingerichtet hast!" />
+                text="passwordless funktioniert nur, wenn Sie es zuvor eingerichtet haben!" />
             <VAler v-else type="error" variant="text" text="passwordless ist nicht verfügbar!" />
             <p v-if="passwordless.avaible">
                 Scanne den QR Code mit der Kamera deines Smartphones und folge den Anweisungen auf dem Bildschirm.

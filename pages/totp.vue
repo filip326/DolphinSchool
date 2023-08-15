@@ -5,12 +5,12 @@
 
             <h1>2-Faktor Authentizierung</h1>
             <p>
-                Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App im Smartphone ein.
+                Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App (z.B. Authy) von Ihrem Smartphone ein.
             </p>
             <!--
             TODO: #12 make text field a otp field when released in vuetify
         -->
-            <VTextField type="text" label="2FA-Code" v-model="totp" placeholder="123456"
+            <VTextField type="text" label="2FA-Code" v-model="totp" placeholder="12345678"
                 hint="Geben Sie hier den Code ein." :rules="[rules.required, rules.totpLength, rules.totpNumbers]">
             </VTextField>
 

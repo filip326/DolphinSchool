@@ -251,8 +251,8 @@ class User implements WithId<IUser> {
                 issuer: "DolphinSchool",
                 label: this.username,
                 algorithm: "SHA1",
-                digits: 8,
-                period: 15,
+                digits: 6,
+                period: 30,
                 secret: OTPAuth.Secret.fromBase32(this.mfa_secret)
             });
         }
@@ -261,8 +261,8 @@ class User implements WithId<IUser> {
                 issuer: "DolphinSchool",
                 label: this.username,
                 algorithm: "SHA1",
-                digits: 8,
-                period: 15,
+                digits: 6,
+                period: 30,
                 secret: OTPAuth.Secret.fromBase32(this.mfa_setup_secret)
             });
         }
@@ -473,7 +473,7 @@ class User implements WithId<IUser> {
     }
 
     checkMFA(code: string): boolean {
-        if (useRuntimeConfig().prod === false && code === "123456") {
+        if (useRuntimeConfig().prod === false && code === "12345678") {
             // in development mode, allow 123456 as a valid code for testing purposes
             return true;
         }
@@ -503,8 +503,8 @@ class User implements WithId<IUser> {
             issuer: "DolphinSchool",
             label: this.username,
             algorithm: "SHA1",
-            digits: 8,
-            period: 15,
+            digits: 6,
+            period: 30,
             secret: secret
         });
 

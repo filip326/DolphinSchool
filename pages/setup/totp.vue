@@ -76,7 +76,7 @@ export default {
             width: 128,
             margin: 1
 
-            
+
         }, (err, dataUrl) => {
             if (err) {
                 this.error.shown = true;
@@ -91,21 +91,22 @@ export default {
 
 <template>
     <div class="loginform">
-        
+
         <div>
             <div>
                 <h1>2FA</h1>
                 <ol>
-                    <li>Ihr Konto hat keine 2-Faktor-Authentifizierung (2FA), die die Sicherheit erheblich erhöht.</li>
-                    <li>Installieren Sie eine App wie "Authy" auf Ihrem Smartphone, um 2-Faktor-Authentifizierung zu
-                        aktivieren.</li>
-                    <li>Scannen Sie den QR-Code und geben Sie den angezeigten 8-stelligen Code ein.</li>
+                    <li>Ihr Konto hat keine 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres Kontos erheblich
+                        erhöht.</li>
+                    <li>Installieren Sie eine App wie "Authy" (oder eine andere) auf Ihrem Smartphone, um die
+                        2-Faktor-Authentifizierung zu aktivieren.</li>
+                    <li>Scannen Sie den QR-Code und geben Sie den angezeigten 6-stelligen Code ein.</li>
                     <li>Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem Smartphone für den
                         Zugriff.</li>
                 </ol>
                 <ul>
                     <li>Das Überspringen der Einrichtung macht Ihr Konto anfälliger für Cyberangriffe.</li>
-                    <li>Sie können die 2-Faktor-Authentifizierung später einrichten.</li>
+                    <li>Sie können die 2-Faktor-Authentizierung später einrichten.</li>
                     <li><b>Nach der Einrichtung ist ein Zugriff auf das Konto nur mit Ihrem Smartphone möglich.</b></li>
                 </ul>
             </div>
@@ -120,7 +121,8 @@ export default {
                 <VProgressCircular v-else indeterminate color="primary" />
             </div>
 
-            <VTextField v-model="code" label="Code" name="code" type="text" :rules="[rules.required, rules.totpLength, rules.totpNumbers]" />
+            <VTextField v-model="code" label="Code" name="code" type="text"
+                :rules="[rules.required, rules.totpLength, rules.totpNumbers]" />
 
             <VBtn type="submit" color="primary" class="mr-4">2FA-Aktivieren</VBtn>
             <VBtn @click.prevent="skip()" :loading="skip_button_loading">Überspringen</VBtn>

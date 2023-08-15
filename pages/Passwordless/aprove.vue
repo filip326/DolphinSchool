@@ -90,7 +90,7 @@ export default {
         if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {
             alert("WebAuthN is not available");
             this.continue_button.loading = false;
-            navigateTo("/passwordless/not-avaible");
+            // navigateTo("/passwordless/not-avaible");
             this.error = true;
             this.error_message = "passwordless checks failed";
             return;
@@ -103,7 +103,7 @@ export default {
             alert(localStorage.getItem("passwordless"));
             // alert("passwordless data invalid or not found!");
             this.continue_button.loading = false;
-            navigateTo("/passwordless/not-avaible");
+            // navigateTo("/passwordless/not-avaible");
             return;
         }
 
@@ -113,7 +113,7 @@ export default {
         if (!this.passwordlessData.keys || this.passwordlessData.keys.length === 0) {
             alert("no keys");
             this.continue_button.loading = false;
-            navigateTo("/passwordless/not-avaible");
+            // navigateTo("/passwordless/not-avaible");
             return;
         }
 
@@ -122,7 +122,7 @@ export default {
         if (!challenge) {
             alert("no challenge");
             this.continue_button.loading = false;
-            navigateTo("/passwordless/not-avaible");
+            // navigateTo("/passwordless/not-avaible");
             return;
         }
 
@@ -133,7 +133,7 @@ export default {
         if (!token) {
             alert("no token");
             this.continue_button.loading = false;
-            navigateTo("/passwordless/not-avaible");
+            // navigateTo("/passwordless/not-avaible");
             return;
         }
 
