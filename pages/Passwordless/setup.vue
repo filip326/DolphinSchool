@@ -108,12 +108,20 @@ export default {
             passwordless Login einrichten
         </VCardSubtitle>
         <VCardText>
+            <p>
+                Mit passwordless Login können Sie sich auf diesem Gerät ohne Passwort anmelden. Zusätzlich können Sie sich
+                auf anderen Geräten durch scannen des QR-Codes anmelden. Aktivieren Sie diese Funktion nur, wenn Sie
+                eine sichere Bildschirmsperre eingerichtet haben.
+            </p>
             <VForm @submit.prevent="setupPasswordless()">
-                <VCheckbox label="Die ist mein privates Gerät" />
+                <VCheckbox label="Dies ist mein eigenes, privates Gerät" />
                 <VCheckbox
                     label="Ich habe auf diesem Gerät eine sichere Bildschirmsperre (PIN, Passwort, Fingerabdruck oder Gesichtserkennung) eingerichtet" />
                 <VBtn type="submit" :loading="loading">
                     Einrichten
+                </VBtn>
+                <VBtn type="button">
+                    Überspringen
                 </VBtn>
             </VForm>
         </VCardText>
