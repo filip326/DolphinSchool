@@ -88,9 +88,8 @@ export default {
         this.continue_button.loading = true;
 
         if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {
-            alert("WebAuthN is not available");
             this.continue_button.loading = false;
-            // navigateTo("/passwordless/not-avaible");
+            navigateTo("/passwordless/not-avaible");
             this.error = true;
             this.error_message = "passwordless checks failed";
             return;
@@ -99,11 +98,8 @@ export default {
         const data = JSON.parse(localStorage.getItem("passwordless"));
 
         if (!data.username || !data.credId) {
-            alert("no data");
-            alert(localStorage.getItem("passwordless"));
-            // alert("passwordless data invalid or not found!");
             this.continue_button.loading = false;
-            // navigateTo("/passwordless/not-avaible");
+            navigateTo("/passwordless/not-avaible");
             return;
         }
 
@@ -111,18 +107,16 @@ export default {
         this.passwordlessData.keys = [data.credId];
 
         if (!this.passwordlessData.keys || this.passwordlessData.keys.length === 0) {
-            alert("no keys");
             this.continue_button.loading = false;
-            // navigateTo("/passwordless/not-avaible");
+            navigateTo("/passwordless/not-avaible");
             return;
         }
 
         // url param "challenge" is the challenge
         const challenge = this.$route.query.challenge;
         if (!challenge) {
-            alert("no challenge");
             this.continue_button.loading = false;
-            // navigateTo("/passwordless/not-avaible");
+            navigateTo("/passwordless/not-avaible");
             return;
         }
 
@@ -131,9 +125,8 @@ export default {
         const token = this.$route.query.token;
 
         if (!token) {
-            alert("no token");
             this.continue_button.loading = false;
-            // navigateTo("/passwordless/not-avaible");
+            navigateTo("/passwordless/not-avaible");
             return;
         }
 
