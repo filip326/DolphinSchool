@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import QRCode from "qrcode";
+import { client as pwless } from "@passwordless-id/webauthn";
 
 definePageMeta({
     layout: "login"
@@ -77,7 +78,7 @@ export default {
                 this.passwordless.avaible = false;
                 return;
             }
-            
+
             console.log(response.data.value.url);
             QRCode.toDataURL(response.data.value.url, (err, dataUrl) => {
                 if (err) {
@@ -91,6 +92,34 @@ export default {
             this.passwordless.interval = setInterval(() => {
                 this.checkPasswordless();
             }, 3_000);
+
+            try {
+                const data = JSON.parse(localStorage.getItem("passwordless") ?? "");
+
+                if (!data || !data.username || !data.credId) {
+                    return;
+                }
+
+                if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {
+                    return;
+                }
+
+                const signed = await pwless.authenticate([ data.credId ], response.data.value?.challenge, {
+                    userVerification: "required"
+                });
+
+                await useFetch("/api/auth/passwordless/approve", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        username: data.username,
+                        tokenHash: response.data.value?.tokenHash,
+                        signed: signed
+                    })
+                });
+
+            } catch {
+                return;
+            }
         },
         async checkPasswordless() {
             if (this.passwordless.avaible === false) {
@@ -115,7 +144,8 @@ export default {
                 navigateTo("/home");
                 return;
             }
-        }
+        },
+
     },
 
     beforeUnmount() {
@@ -138,7 +168,8 @@ export default {
         </VForm>
         <div>
             <h1>passwordless</h1>
-            <VAlert v-if="passwordless.avaible" type="info" variant="text" text="passwordless funktioniert nur, wenn du es zuvor eingerichtet hast!" />
+            <VAlert v-if="passwordless.avaible" type="info" variant="text"
+                text="passwordless funktioniert nur, wenn du es zuvor eingerichtet hast!" />
             <VAler v-else type="error" variant="text" text="passwordless ist nicht verfügbar!" />
             <p v-if="passwordless.avaible">
                 Scanne den QR Code mit der Kamera deines Smartphones und folge den Anweisungen auf dem Bildschirm.

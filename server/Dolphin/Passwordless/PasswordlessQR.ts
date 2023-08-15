@@ -25,7 +25,7 @@ interface IPasswordlessQR {
 
 class PasswordlessQR {
 
-    static async requestChallenge(): Promise<MethodResult<{ token: string, url: string, challenge: string }>> {
+    static async requestChallenge(): Promise<MethodResult<{ token: string, url: string, challenge: string, tokenSHA256: string }>> {
         this.tick();
         const dolphin = Dolphin.instance;
         if (!dolphin) throw Error("Dolphin not initialized");
@@ -51,7 +51,8 @@ class PasswordlessQR {
         return [{
             token,
             url: `${process.env.DOMAIN}/passwordless/aprove?token=${tokenSHA256}&challenge=${challenge}`,
-            challenge
+            challenge,
+            tokenSHA256
         }, null];
     }
 

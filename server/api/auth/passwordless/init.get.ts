@@ -14,7 +14,9 @@ export default defineEventHandler(async () => {
 
     return {
         token: qrLoginData.token,
-        url: qrLoginData.url
+        url: qrLoginData.url,
+        challenge: qrLoginData.challenge,
+        tokenHash: qrLoginData.tokenSHA256
     };
 
 });
