@@ -12,10 +12,13 @@ definePageMeta({
 export default {
     data() {
         return {
+            error: false,
+            error_message: "",
             continue_button: {
                 loading: false,
             },
             passwordlessData: {
+                username: "",
                 token: "",
                 challenge: "",
                 keys: [],
@@ -28,18 +31,20 @@ export default {
             this.continue_button.loading = true;
 
             if (!this.passwordlessData.token
+                || !this.passwordlessData.username
                 || !this.passwordlessData.challenge
                 || !this.passwordlessData.keys
                 || !pwless.isAvailable()
                 || !pwless.isLocalAuthenticator()) {
                 this.continue_button.loading = false;
+                console.error("passwordless checks failed");
                 navigateTo("/passwordless/not-avaible");
                 return;
             }
 
 
             try {
-                const authentication = await pwless.authenticate(keys, challenge, {
+                const authentication = await pwless.authenticate(this.passwordlessData.keys, this.passwordlessData.challenge, {
                     timeout: 60_000,
                     userVerification: "required",
                     authenticatorType: "local",
@@ -47,7 +52,8 @@ export default {
 
                 const response2 = await useFetch("/api/auth/passwordless/approve", {
                     method: "POST", body: JSON.stringify({
-                        token,
+                        username: this.passwordlessData.username,
+                        tokenHash: this.passwordlessData.token,
                         signed: authentication
                     })
                 });
@@ -68,8 +74,10 @@ export default {
 
 
 
-            } catch {
+            } catch (err) {
                 this.continue_button.loading = false;
+                console.log("passwordless failed");
+                console.error(err);
                 navigateTo("/passwordless/not-avaible");
                 return;
             }
@@ -80,21 +88,30 @@ export default {
         this.continue_button.loading = true;
 
         if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {
+            alert("WebAuthN is not available");
+            this.continue_button.loading = false;
+            navigateTo("/passwordless/not-avaible");
+            this.error = true;
+            this.error_message = "passwordless checks failed";
+            return;
+        }
+
+        const data = JSON.parse(localStorage.getItem("passwordless"));
+
+        if (!data.username || !data.credId) {
+            alert("no data");
+            alert(localStorage.getItem("passwordless"));
+            // alert("passwordless data invalid or not found!");
             this.continue_button.loading = false;
             navigateTo("/passwordless/not-avaible");
             return;
         }
 
-        const response = await useFetch("/api/auth/passwordless/valid-keys", { method: "get" });
-        if (response.status.value !== "success") {
-            this.continue_button.loading = false;
-            navigateTo("/passwordless/not-avaible");
-            return;
-        }
+        this.passwordlessData.username = data.username;
+        this.passwordlessData.keys = [data.credId];
 
-        this.passwordlessData.keys = response.data.value;
-
-        if (!keys || keys.length === 0) {
+        if (!this.passwordlessData.keys || this.passwordlessData.keys.length === 0) {
+            alert("no keys");
             this.continue_button.loading = false;
             navigateTo("/passwordless/not-avaible");
             return;
@@ -103,6 +120,7 @@ export default {
         // url param "challenge" is the challenge
         const challenge = this.$route.query.challenge;
         if (!challenge) {
+            alert("no challenge");
             this.continue_button.loading = false;
             navigateTo("/passwordless/not-avaible");
             return;
@@ -113,12 +131,15 @@ export default {
         const token = this.$route.query.token;
 
         if (!token) {
+            alert("no token");
             this.continue_button.loading = false;
             navigateTo("/passwordless/not-avaible");
             return;
         }
 
         this.passwordlessData.token = token;
+
+        this.continue_button.loading = false;
     }
 };
 </script>
@@ -128,6 +149,7 @@ export default {
         <VCardTitle>passwordless Login</VCardTitle>
 
         <VCardText>
+            <VAlert v-if="error" type="error" :text="error_message" />
             <ul>
                 <li>Prüfe die URL in der Adresszeile des Browsers. Logge dich <u>nicht</u> ein, wenn du dir nicht sicher
                     bist, dass du auf der offiziellen Website von DolphinSchool bist.</li>

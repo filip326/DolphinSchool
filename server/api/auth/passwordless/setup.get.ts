@@ -25,7 +25,8 @@ export default defineEventHandler(async (event) => {
         username: user.username,
         rp: useRuntimeConfig().public.DOMAIN,
         token: qrLoginData.token,
-        url: qrLoginData.url
+        url: qrLoginData.url,
+        challenge: qrLoginData.challenge
     };
 
 });

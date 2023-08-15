@@ -1,5 +1,9 @@
-<script lang="ts">
-export default {};
+<script >
+export default {
+    async beforeMount() {
+        await checkAuth();
+    }
+};
 </script>
 
 <template>

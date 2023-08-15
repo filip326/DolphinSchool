@@ -46,6 +46,8 @@ export default defineEventHandler(async (event) => {
         maxAge: 60 * 60 * 24 * 7 // 7 days
     });
 
+    await session.activate();
+
     return "Login successful";
 
 });

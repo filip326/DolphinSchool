@@ -10,7 +10,7 @@ import { ObjectId } from "mongodb";
 import Dolphin from "../Dolphin";
 import { createHash, randomBytes } from "crypto";
 import MethodResult from "../MethodResult";
-import User, { IUser } from "../User/User";
+import User from "../User/User";
 
 import { server } from "@passwordless-id/webauthn";
 import { AuthenticationEncoded, RegistrationEncoded } from "@passwordless-id/webauthn/dist/esm/types";
@@ -25,7 +25,7 @@ interface IPasswordlessQR {
 
 class PasswordlessQR {
 
-    static async requestChallenge(): Promise<MethodResult<{ token: string, url: string }>> {
+    static async requestChallenge(): Promise<MethodResult<{ token: string, url: string, challenge: string }>> {
         this.tick();
         const dolphin = Dolphin.instance;
         if (!dolphin) throw Error("Dolphin not initialized");
@@ -51,6 +51,7 @@ class PasswordlessQR {
         return [{
             token,
             url: `${process.env.DOMAIN}/passwordless/aprove?token=${tokenSHA256}&challenge=${challenge}`,
+            challenge
         }, null];
     }
 
@@ -68,16 +69,22 @@ class PasswordlessQR {
             token_hash: tokenHash
         });
 
-        const challenge = dbResult?.challenge;
-
-        if (!challenge) {
+        if (!dbResult) {
             return [undefined, Error("Invalid token")];
         }
 
+        const challenge = dbResult.challenge;
+
         const credentials = user.getWebAuthNCredentials(solvedChallenge.credentialId);
+
         if (!credentials) return [undefined, Error("Invalid credentials")];
         try {
-            const result = await server.verifyAuthentication(solvedChallenge, credentials, {
+            const result = await server.verifyAuthentication({
+                credentialId: solvedChallenge.credentialId,
+                authenticatorData: solvedChallenge.authenticatorData,
+                clientData: solvedChallenge.clientData,
+                signature: solvedChallenge.signature,
+            }, credentials, {
                 challenge,
                 origin: process.env.DOMAIN ?? "",
                 userVerified: true,
@@ -94,6 +101,9 @@ class PasswordlessQR {
             }, {
                 $set: {
                     user: user._id
+                },
+                $inc: {
+                    expirery: 1000 * 120 // add 120 seconds to expirery
                 }
             });
 
@@ -103,7 +113,7 @@ class PasswordlessQR {
 
             return [true, null];
 
-        } catch {
+        } catch (err) {
             return [undefined, Error("Invalid credentials")];
         }
 
@@ -177,15 +187,9 @@ class PasswordlessQR {
             }
 
             // write credentials to database
-            const dbResult = await dolphin.database.collection<IUser>("users").updateOne({_id: user._id}, {
-                webAuthNCredentials: {
-                    $set: {
-                        [solvedChallenge.credential.id]: solvedChallenge
-                    }
-                }
-            });
+            const [addResult, addError] = await user.addWebAuthNCredential(solvedChallenge);
 
-            if (!dbResult.acknowledged) {
+            if (addError || !addResult) {
                 return [undefined, Error("Database error")];
             }
 

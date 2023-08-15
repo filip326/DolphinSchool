@@ -11,6 +11,7 @@ import { randomBytes } from "node:crypto";
 import * as OTPAuth from "otpauth";
 import CreateUserOptions from "./CreateUserOptions";
 import SearchUserOptions from "./SearchUserOptions";
+import { RegistrationEncoded } from "@passwordless-id/webauthn/dist/esm/types";
 
 interface IUser {
     type: UserType;
@@ -250,8 +251,8 @@ class User implements WithId<IUser> {
                 issuer: "DolphinSchool",
                 label: this.username,
                 algorithm: "SHA1",
-                digits: 6,
-                period: 30,
+                digits: 8,
+                period: 15,
                 secret: OTPAuth.Secret.fromBase32(this.mfa_secret)
             });
         }
@@ -260,8 +261,8 @@ class User implements WithId<IUser> {
                 issuer: "DolphinSchool",
                 label: this.username,
                 algorithm: "SHA1",
-                digits: 6,
-                period: 30,
+                digits: 8,
+                period: 15,
                 secret: OTPAuth.Secret.fromBase32(this.mfa_setup_secret)
             });
         }
@@ -502,8 +503,8 @@ class User implements WithId<IUser> {
             issuer: "DolphinSchool",
             label: this.username,
             algorithm: "SHA1",
-            digits: 6,
-            period: 30,
+            digits: 8,
+            period: 15,
             secret: secret
         });
 
@@ -655,6 +656,47 @@ class User implements WithId<IUser> {
 
     getWebAuthNCredentials(id: string) {
         return this.webAuthNCredentials?.[id]?.credential;
+    }
+
+    async addWebAuthNCredential(credential: RegistrationEncoded): Promise<MethodResult<boolean>> {
+
+        // 1. get credential id
+        const id = credential.credential.id;
+
+        // 2. create an empty object if webAuthNCredentials is undefined
+        if (!this.webAuthNCredentials) {
+            this.webAuthNCredentials = {};
+        }
+
+        // 3. check if credential id already exists
+        if (this.webAuthNCredentials[id]) {
+            return [undefined, Error("Credential already exists")];
+        }
+
+        // 4. add credential to webAuthNCredentials
+        this.webAuthNCredentials[id] = { credential: credential.credential, authenticator: {
+            name: credential.authenticatorData
+        } };
+
+        // 5. save webAuthNCredentials to database
+        const dbResult = await this.userCollection.findOneAndUpdate(
+            { _id: this._id },
+            {
+                $set: {
+                    [`webAuthNCredentials.${id}`]: this.webAuthNCredentials[id]
+                }
+            }
+        );
+
+        // 6. return true if the database update was successful
+        //    else return an error
+        if (dbResult.ok === 1) {
+            return [true, null];
+        }
+
+        // if it was not successful, return an error and undo the changes to this object
+        this.webAuthNCredentials[id] = undefined;
+        return [undefined, Error("Database error")];
     }
 }
 

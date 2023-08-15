@@ -8,9 +8,9 @@
                 Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App im Smartphone ein.
             </p>
             <!--
-            TODO: make text field a otp field when released in vuetify
+            TODO: #12 make text field a otp field when released in vuetify
         -->
-            <VTextField type="number" label="2FA-Code" v-model="totp" placeholder="123456"
+            <VTextField type="text" label="2FA-Code" v-model="totp" placeholder="123456"
                 hint="Geben Sie hier den Code ein." :rules="[rules.required, rules.totpLength, rules.totpNumbers]">
             </VTextField>
 
@@ -33,7 +33,7 @@ export default {
                 // required
                 required: (v) => !!v || "Dieses Feld ist erforderlich",
                 // 6 digits
-                totpLength: (v) => v.length === 6 || "Der Code muss 6-stellig sein",
+                totpLength: (v) => v.length === 8 || "Der Code muss 6-stellig sein",
                 // only numbers
                 totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen"
             },

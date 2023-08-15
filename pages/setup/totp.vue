@@ -14,7 +14,9 @@ export default {
             totpSec: "",
             qr_code: "",
             rules: {
-                required: (v) => !!v || "Dieses Feld ist erforderlich!"
+                required: (v) => !!v || "Dieses Feld ist erforderlich!",
+                totpLength: (v) => v.length === 8 || "Der Code muss 8-stellig sein!",
+                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!"
             },
             userInfo: {
                 fullName: "" | undefined,
@@ -23,7 +25,8 @@ export default {
             error: {
                 shown: false,
                 message: ""
-            }
+            },
+            skip_button_loading: false,
         };
     },
     methods: {
@@ -51,8 +54,10 @@ export default {
         },
 
         async skip() {
+            this.skip_button_loading = true;
             await useFetch("/api/setup/2fa/cancel", { method: "POST" });
             navigateTo("/home");
+            this.skip_button_loading = false;
         },
 
         async totpSecret() {
@@ -94,7 +99,7 @@ export default {
                     <li>Ihr Konto hat keine 2-Faktor-Authentifizierung (2FA), die die Sicherheit erheblich erhöht.</li>
                     <li>Installieren Sie eine App wie "Authy" auf Ihrem Smartphone, um 2-Faktor-Authentifizierung zu
                         aktivieren.</li>
-                    <li>Scannen Sie den QR-Code und geben Sie den angezeigten 6-stelligen Code ein.</li>
+                    <li>Scannen Sie den QR-Code und geben Sie den angezeigten 8-stelligen Code ein.</li>
                     <li>Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem Smartphone für den
                         Zugriff.</li>
                 </ol>
@@ -106,7 +111,7 @@ export default {
             </div>
         </div>
 
-        <VForm @submit.prevent="submit2FA">
+        <VForm @submit.prevent="submit2FA()">
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
 
             <p>Scannen Sie diesen QR Code mit Ihrer Authentizierungs-App auf dem Smartphone ein:</p>
@@ -115,10 +120,10 @@ export default {
                 <VProgressCircular v-else indeterminate color="primary" />
             </div>
 
-            <VTextField v-model="code" label="Code" name="code" type="text" :rules="[rules.required]" />
+            <VTextField v-model="code" label="Code" name="code" type="text" :rules="[rules.required, rules.totpLength, rules.totpNumbers]" />
 
             <VBtn type="submit" color="primary" class="mr-4">2FA-Aktivieren</VBtn>
-            <VBtn @click:prevent="skip">Überspringen</VBtn>
+            <VBtn @click.prevent="skip()" :loading="skip_button_loading">Überspringen</VBtn>
         </VForm>
     </div>
 </template>

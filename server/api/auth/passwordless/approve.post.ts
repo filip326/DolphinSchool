@@ -1,28 +1,35 @@
-import checkAuth from "@/server/composables/checkAuth";
 import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
+import User from "../../../Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {
-
-    // check authentication
-    const [ user, authError ] = await checkAuth(event);
-
-    if (authError || !user) {
-        return createError({
-            statusCode: 401,
-            statusMessage: "Unauthorized"
-        });
-    }
-
+    
+    
     // get signed string from body
-    const { signed, tokenHash } = await readBody(event);
-
-    if (!signed) {
+    const { signed, tokenHash, username } = await readBody(event);
+    
+    if (!signed || !tokenHash || !username) {
         return createError({
             statusCode: 400,
             statusMessage: "Bad Request"
         });
     }
 
+    const [ user, userFindError ] = await User.getUserByUsername(username);
+
+    if (userFindError) {
+        return createError({
+            statusCode: 500,
+            statusMessage: "Internal Server Error"
+        });
+    }
+
+    if (!user) {
+        return createError({
+            statusCode: 404,
+            statusMessage: "Not Found"
+        });
+    }
+    
     // verify signed string
     const [ approveResult, approveError ] = await PasswordlessQR.approve(user, tokenHash, signed);
     if (approveError) {
