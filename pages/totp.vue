@@ -33,7 +33,7 @@ export default {
                 // required
                 required: (v) => !!v || "Dieses Feld ist erforderlich",
                 // 6 digits
-                totpLength: (v) => v.length === 8 || "Der Code muss 6-stellig sein",
+                totpLength: (v) => v.length === 6 || "Der Code muss 6-stellig sein",
                 // only numbers
                 totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen"
             },

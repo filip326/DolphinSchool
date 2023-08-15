@@ -1,4 +1,8 @@
-<script >
+<script setup>
+import { client as pwless } from "@passwordless-id/webauthn";
+</script>
+
+<script>
 export default {
     data() {
         return {
@@ -7,7 +11,7 @@ export default {
     },
     async beforeMount() {
         await checkAuth();
-        // this.passwordless_setup = window.localStorage.getItem("passwordless") != null;
+        this.passwordless_setup = window.localStorage.getItem("passwordless") != null || !pwless.isAvailable() || !pwless.isLocalAuthenticator();
     }
 };
 </script>
