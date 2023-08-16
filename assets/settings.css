@@ -1,0 +1,9 @@
+.settings__wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 500px));
+    gap: 10px;
+}
+
+.v-icon {
+    margin: 12px;
+}
