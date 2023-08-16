@@ -1,4 +1,4 @@
-import Session from "../Dolphin/Session/Session";
+import Session from "../../Dolphin/Session/Session";
 
 export default eventHandler(async (event) => {
     // find the session by the cookie "token"

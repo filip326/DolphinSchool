@@ -1,5 +1,5 @@
-import { SessionState } from "../Dolphin/Session/Session";
-import Session from "../Dolphin/Session/Session";
+import { SessionState } from "../../Dolphin/Session/Session";
+import Session from "../../Dolphin/Session/Session";
 
 export default defineEventHandler(async (event) => {
     // check authentication without 2fa
@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
     const { totp } = await readBody(event);
 
     // check if totp code matches pattern
-    if (!/^[0-9]{6}$/.test(totp)) {
+    if (!/^[0-9]{8}$/.test(totp)) {
         throw createError({ statusCode: 400, message: "TOTP Token invalid" });
     }
 

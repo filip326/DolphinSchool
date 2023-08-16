@@ -22,21 +22,12 @@ export default defineEventHandler(async (event) => {
     }
 
     // get password (1st factor) and totp (2nd factor) from body
-    const { password, totp } = await readBody(event);
+    const { totp } = await readBody(event);
 
-    // check if password
-    if (!password) {
-        throw createError({ statusCode: 400, message: "Password required" });
-    }
 
     // check if totp code matches pattern
     if (!/^[0-9]{6}$/.test(totp)) {
         throw createError({ statusCode: 400, message: "TOTP Token invalid" });
-    }
-
-    // check if password is valid
-    if (!user.comparePassword(password)) {
-        throw createError({ statusCode: 401, message: "Password invalid" });
     }
 
     // check if totp code is valid
