@@ -12,6 +12,6 @@ export default {
     </v-app>
 </template>
 
-<style scoped>
+<style>
 @import url("../assets/login.css");
 </style>

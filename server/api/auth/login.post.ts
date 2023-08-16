@@ -1,9 +1,8 @@
-import User from "../Dolphin/User/User";
-import Session from "../Dolphin/Session/Session";
+import User from "../../Dolphin/User/User";
+import Session from "../../Dolphin/Session/Session";
 
 export default eventHandler(async (event) => {
     const { username, password } = await readBody(event);
-    console.log(await readBody(event));
 
     if (!username || !password || typeof username !== "string" || typeof password !== "string") {
         throw createError({ statusCode: 400, message: "Invalid body" });
@@ -37,10 +36,9 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 500, message: "Internal server error" });
     }
 
-    await session.activate();
-
+    
     const token = session.token;
-
+    
     setCookie(event, "token", token, {
         maxAge: 30 * 24 * 60 * 60, // 30 days
         secure: useRuntimeConfig().prod,
@@ -50,9 +48,11 @@ export default eventHandler(async (event) => {
     });
 
     if (user.mfaEnabled) {
+        await session.continueToMFA();
         return "continue with 2fa";
     }
-
+    await session.activate();
+    
     if (user.askForMFASetup) {
         return "continue with 2fa setup";
     }
