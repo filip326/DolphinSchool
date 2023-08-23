@@ -1,14 +1,13 @@
 enum DolphinErrorTypes {
     Failed = 0,
     DatabaseError = 1,
-    DolphinNotReady = 2,
-    NotFound = 3,
-    AlreadyExists = 4,
-    NotSupported = 5,
-    NotAuthorized = 6,
-    NotAuthenticated = 7,
-    InvalidArgument = 8,
-    InvalidType = 9
+    NotFound = 2,
+    AlreadyExists = 3,
+    NotSupported = 4,
+    NotAuthorized = 5,
+    NotAuthenticated = 6,
+    InvalidArgument = 7,
+    InvalidType = 8
 }
 
 type MethodResult<T> = [T, null] | [undefined, DolphinErrorTypes];

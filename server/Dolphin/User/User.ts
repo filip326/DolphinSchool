@@ -61,7 +61,8 @@ class User implements WithId<IUser> {
             options.child
         ) {
             try {
-                const userCollection = Dolphin.instance?.database.collection<IUser>("users");
+                const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+                const userCollection = dolphin.database.collection<IUser>("users");
                 if (!userCollection) throw new Error("User collection not found");
                 const dbResult = await userCollection
                     .find({
@@ -93,8 +94,7 @@ class User implements WithId<IUser> {
     }
 
     static async getUserById(id: ObjectId): Promise<MethodResult<User>> {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw new Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const userCollection = dolphin.database.collection<IUser>("users");
         const user = await userCollection.findOne({ _id: id });
         if (!user) {
@@ -104,8 +104,7 @@ class User implements WithId<IUser> {
     }
 
     static async getUserByUsername(username: string): Promise<MethodResult<User>> {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw new Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const userCollection = dolphin.database.collection<IUser>("users");
         const user = await userCollection.findOne({ username });
         if (!user) {
@@ -115,8 +114,7 @@ class User implements WithId<IUser> {
     }
 
     static async searchUsersByName(query: string): Promise<MethodResult<User[]>> {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw new Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const userCollection = dolphin.database.collection<IUser>("users");
         const users = await userCollection
             .find({ fullName: { $regex: query, $options: "i" } })
@@ -128,8 +126,7 @@ class User implements WithId<IUser> {
         limit?: number;
         skip?: number;
     }): Promise<MethodResult<User[]>> {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw new Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const userCollection = dolphin.database.collection<IUser>("users");
         const users = await userCollection.find({}, { ...options }).toArray();
         return [users.map((user) => new User(userCollection, user)), null];
@@ -138,8 +135,7 @@ class User implements WithId<IUser> {
     static async createUser(
         options: CreateUserOptions
     ): Promise<MethodResult<{ id: ObjectId; username: string; password: string }>> {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw new Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const userCollection = dolphin.database.collection<IUser>("users");
 
         const password = this.generatePassword();
@@ -609,9 +605,9 @@ class User implements WithId<IUser> {
         return [undefined, DolphinErrorTypes.DatabaseError];
     }
 
-    async disableMFA() {
+    async disableMFA(): Promise<MethodResult<boolean>> {
         if (!this.mfaEnabled) {
-            return [undefined, Error("MFA is not enabled")];
+            return [undefined, DolphinErrorTypes.NotSupported];
         }
 
         const tempMFASecret = this.mfa_secret,
@@ -633,7 +629,7 @@ class User implements WithId<IUser> {
 
         this.mfa_secret = tempMFASecret;
         this._totp = tempTOTP;
-        return [undefined, Error("Database error")];
+        return [undefined, DolphinErrorTypes.DatabaseError];
     }
 
     async cancelMFASetup(): Promise<MethodResult<boolean>> {

@@ -22,8 +22,7 @@ interface SubjectSearchOptions {
 class Subject implements ISubject {
     static async list(): Promise<MethodResult<Subject[]>> {
         try {
-            const dolphin = Dolphin.instance;
-            if (!dolphin) throw Error("Dolphin not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database.collection<ISubject>("subjects").find({});
             return [
                 (await dbResult.toArray()).map(
@@ -39,8 +38,7 @@ class Subject implements ISubject {
 
     static async search(options: SubjectSearchOptions): Promise<MethodResult<ISubject[]>> {
         try {
-            const dolphin = Dolphin.instance;
-            if (!dolphin) throw Error("Dolphin not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database.collection<ISubject>("subjects").find({
                 _id: options.id,
                 long: options.long,
@@ -56,8 +54,7 @@ class Subject implements ISubject {
 
     static async create(subject: ISubject): Promise<MethodResult<Subject>> {
         try {
-            const dolphin = Dolphin.instance;
-            if (!dolphin) throw Error("Dolphin not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection<ISubject>("subjects")
                 .insertOne(subject);
@@ -78,8 +75,7 @@ class Subject implements ISubject {
     }
 
     static async getSubjectById(id: ObjectId): Promise<MethodResult<Subject>> {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const dbResult = await dolphin.database
             .collection<ISubject>("subjects")
             .findOne({ _id: id });

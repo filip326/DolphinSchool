@@ -33,8 +33,7 @@ class UserMessage implements IUserMessage {
      * @returns the user messages
      */
     static async listUsersMessages(user: User, { limit, skip }: { limit?: number, skip?: number }): Promise<MethodResult<UserMessage[]>> {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").find({
             owner: user._id
         }, { limit, skip });
@@ -53,8 +52,7 @@ class UserMessage implements IUserMessage {
     }
 
     static async getUserMessageByAuthor(author: User, receiver: User): Promise<MethodResult<UserMessage>> {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({
             owner: receiver._id,
             author: author._id
@@ -64,8 +62,7 @@ class UserMessage implements IUserMessage {
     }
 
     static async getUserMessageById(id: ObjectId): Promise<MethodResult<UserMessage>> {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({ _id: id });
         if (!dbResult) return [undefined, DolphinErrorTypes.NotFound];
         return [new UserMessage(dolphin.database.collection<IMessage>("messages"), dolphin.database.collection<IUserMessage>("userMessages"), dbResult), null];
@@ -73,8 +70,7 @@ class UserMessage implements IUserMessage {
 
     static async getMessages(user: User, filter: MessageFilterOptions): Promise<MethodResult<IUserMessage[]>> {
 
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
 
         const userMessageCollection = dolphin.database.collection<IUserMessage>("userMessages");
         const messageCollection = dolphin.database.collection<IMessage>("messages");
@@ -114,8 +110,7 @@ class UserMessage implements IUserMessage {
      */
     static async sendMessage(receiver: User, message: Message, newsletter: boolean = false): Promise<MethodResult<boolean>> {
 
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
 
         const userMessage: IUserMessage = {
             owner: receiver._id,

@@ -30,8 +30,7 @@ class PasswordlessQR {
         MethodResult<{ token: string; url: string; challenge: string; tokenSHA256: string }>
         > {
         this.tick();
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
 
         const token = randomBytes(256).toString("hex");
         const challenge = randomBytes(32).toString("hex");
@@ -71,8 +70,7 @@ class PasswordlessQR {
     ): Promise<MethodResult<boolean>> {
         this.tick();
 
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
 
         const dbResult = await dolphin.database
             .collection<IPasswordlessQR>("passwordless")
@@ -139,8 +137,7 @@ class PasswordlessQR {
 
     static async login(token: string): Promise<MethodResult<User | false>> {
         this.tick();
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
 
         const challenge = await dolphin.database
             .collection<IPasswordlessQR>("passwordless")
@@ -183,8 +180,7 @@ class PasswordlessQR {
     ): Promise<MethodResult<boolean>> {
         this.tick();
         // get challenge from database by token
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
 
         const challenge = await dolphin.database
             .collection<IPasswordlessQR>("passwordless")
@@ -230,8 +226,7 @@ class PasswordlessQR {
     }
 
     static async tick() {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) return;
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         await dolphin.database.collection<IPasswordlessQR>("passwordless").deleteMany({
             expirery: {
                 $lt: Date.now() - 1000 * 60 * 2 // delete 2 minutes after expirery

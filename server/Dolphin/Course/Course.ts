@@ -22,8 +22,7 @@ class Course implements WithId<ICourse> {
     static async searchCourses(options: SearchCourseOptions): Promise<MethodResult<Course[]>> {
         if (options.nameQuery) {
             try {
-                const dolphin = Dolphin.instance;
-                if (!dolphin) throw Error("Dolphin not initialized");
+                const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
                 const dbResult = await dolphin?.database
                     .collection<ICourse>("cources")
                     .find({
@@ -59,8 +58,7 @@ class Course implements WithId<ICourse> {
     static async findCourse(options: FindCourseOptions): Promise<MethodResult<Course>> {
         if (options.id) {
             try {
-                const dolphin = Dolphin.instance;
-                if (!dolphin) throw Error("Dolphin not initialized");
+                const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
                 const dbResult = await dolphin?.database.collection<ICourse>("cources").findOne({
                     _id: options.id
                 });
@@ -79,8 +77,7 @@ class Course implements WithId<ICourse> {
 
         if (options.name) {
             try {
-                const dolphin = Dolphin.instance;
-                if (!dolphin) throw Error("Dolphin not initialized");
+                const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
                 const dbResult = await dolphin?.database.collection<ICourse>("cources").findOne({
                     name: options.name
                 });
@@ -107,8 +104,7 @@ class Course implements WithId<ICourse> {
      */
     static async createCource(options: CreateCourseOptions): Promise<MethodResult<Course>> {
         try {
-            const dolphin = Dolphin.instance;
-            if (!dolphin) throw Error("Dolphin not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const newCourse = await dolphin?.database.collection<ICourse>("cources").insertOne({
                 name: options.name,
                 subject: options.subject,
@@ -141,8 +137,7 @@ class Course implements WithId<ICourse> {
      */
     static async list(options: { limit?: number; skip?: number }): Promise<MethodResult<Course[]>> {
         try {
-            const dolphin = Dolphin.instance;
-            if (!dolphin) throw Error("Dolphin not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const courses = await dolphin?.database
                 .collection<ICourse>("cources")
                 .find(
@@ -169,8 +164,7 @@ class Course implements WithId<ICourse> {
      * @param users
      */
     static async byMembers(...users: User[]) {
-        const dolphin = Dolphin.instance;
-        if (!dolphin) throw Error("Dolphin not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const courses = await dolphin?.database
             .collection<ICourse>("cources")
             .find({

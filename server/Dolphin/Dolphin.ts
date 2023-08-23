@@ -1,5 +1,4 @@
 import { MongoClient, Db } from "mongodb";
-import GlobalAnalyticsManager from "./Analytics/GlobalAnalyticsManager";
 
 class Dolphin {
     ready: boolean = false;
@@ -40,14 +39,6 @@ class Dolphin {
                 if (!db) return;
 
                 new Dolphin(db, client, resolve);
-
-                // add the dayly analytics every day at 00:00
-                setInterval(() => {
-                    const now = new Date();
-                    if (now.getHours() === 13 && now.getMinutes() === 40) {
-                        GlobalAnalyticsManager.addDaylyAnalytics();
-                    }
-                }, 1000 * 60); // ! change
             } catch (err) {
                 reject(err);
                 return;

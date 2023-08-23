@@ -47,8 +47,7 @@ class Session implements WithId<ISession> {
             lastUsed: Date.now()
         };
         try {
-            const dolphin: Dolphin | undefined = Dolphin.instance;
-            if (!dolphin) throw new Error("Dolphin instance not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const collection = dolphin.database.collection("sessions");
             const dbResult = await collection.insertOne(session);
             if (dbResult.acknowledged) {
@@ -72,8 +71,7 @@ class Session implements WithId<ISession> {
 
     static async findSession(token: string): Promise<MethodResult<Session>> {
         try {
-            const dolphin: Dolphin | undefined = Dolphin.instance;
-            if (!dolphin) throw new Error("Dolphin instance not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const collection = dolphin.database.collection<ISession>("sessions");
             const dbResult = await collection.findOne({
                 token: token
@@ -89,8 +87,7 @@ class Session implements WithId<ISession> {
     }
 
     static async tick() {
-        const dolphin: Dolphin | undefined = Dolphin.instance;
-        if (!dolphin) throw new Error("Dolphin instance not initialized");
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const sessionCollection = dolphin.database.collection<ISession>("sessions");
         // set all expired sessions to deleted
         await sessionCollection.updateMany(
@@ -147,8 +144,7 @@ class Session implements WithId<ISession> {
     async activate(): Promise<MethodResult<boolean>> {
         this.state = SessionState.ACTIVE;
         try {
-            const dolphin: Dolphin | undefined = Dolphin.instance;
-            if (!dolphin) throw new Error("Dolphin instance not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection("sessions")
                 .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
@@ -161,8 +157,7 @@ class Session implements WithId<ISession> {
     async continueToMFA(): Promise<MethodResult<boolean>> {
         this.state = SessionState.MFA_REQ;
         try {
-            const dolphin: Dolphin | undefined = Dolphin.instance;
-            if (!dolphin) throw new Error("Dolphin instance not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection("sessions")
                 .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
@@ -175,8 +170,7 @@ class Session implements WithId<ISession> {
     async reportUsage(): Promise<MethodResult<boolean>> {
         this.lastUsed = Date.now();
         try {
-            const dolphin: Dolphin | undefined = Dolphin.instance;
-            if (!dolphin) throw new Error("Dolphin instance not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection("sessions")
                 .updateOne({ _id: this._id }, { $set: { lastUsed: this.lastUsed } });
@@ -189,8 +183,7 @@ class Session implements WithId<ISession> {
     async refresh(expries?: number): Promise<MethodResult<boolean>> {
         this.expires = expries ?? Date.now() + 1000 * 60 * 60 * 24 * 7; // 7 days
         try {
-            const dolphin: Dolphin | undefined = Dolphin.instance;
-            if (!dolphin) throw new Error("Dolphin instance not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection("sessions")
                 .updateOne({ _id: this._id }, { $set: { expires: expries } });
@@ -203,8 +196,7 @@ class Session implements WithId<ISession> {
     async disable(): Promise<MethodResult<boolean>> {
         this.state = SessionState.DELETED;
         try {
-            const dolphin: Dolphin | undefined = Dolphin.instance;
-            if (!dolphin) throw new Error("Dolphin instance not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection("sessions")
                 .updateOne({ _id: this._id }, { $set: { state: SessionState.DELETED } });
@@ -217,8 +209,7 @@ class Session implements WithId<ISession> {
     async destroy(): Promise<MethodResult<boolean>> {
         this.state = SessionState.DELETED;
         try {
-            const dolphin: Dolphin | undefined = Dolphin.instance;
-            if (!dolphin) throw new Error("Dolphin instance not initialized");
+            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database.collection("sessions").deleteOne({
                 _id: this._id
             });
