@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     // check if token is valid
     const [session, sessionFindError] = await Session.findSession(token);
 
-    if (sessionFindError) {
+    if (sessionFindError || !session) {
         event.context.auth.authenticated = false;
         event.context.auth.mfa_required = false;
         event.context.auth.user = undefined;

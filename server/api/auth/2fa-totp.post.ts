@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     const token = parseCookies(event).token;
     const [session, sessionFindError] = await Session.findSession(token);
 
-    if (sessionFindError) {
+    if (sessionFindError || !session) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 

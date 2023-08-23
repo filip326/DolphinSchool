@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
 
     const [subject, subjectFindError] = await Subject.getSubjectById(ObjectId.createFromHexString(id));
 
-    if (subjectFindError) {
+    if (subjectFindError || !subject) {
         return createError({
             statusCode: 500,
             statusMessage: "Internal Server Error"

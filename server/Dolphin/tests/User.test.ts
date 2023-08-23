@@ -22,9 +22,7 @@ describe("User class", () => {
         // drop database before creating dummy users
         await db.dropDatabase();
 
-        await db.collection<IUser>("users").insertMany(
-            await manyDummyUsers(30)
-        );
+        await db.collection<IUser>("users").insertMany(await manyDummyUsers(30));
     });
 
     it("should create a user", async () => {

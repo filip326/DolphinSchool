@@ -1,5 +1,5 @@
 import Dolphin from "../Dolphin";
-import MethodResult from "../MethodResult";
+import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import User from "../User/User";
 import Message, { IMessage } from "./Message";
 import { Collection, ObjectId, WithId } from "mongodb";
@@ -52,14 +52,14 @@ class UserMessage implements IUserMessage {
     
     }
 
-    static async getUserMessageByAuthor(author: User, receiver: User) {
+    static async getUserMessageByAuthor(author: User, receiver: User): Promise<MethodResult<UserMessage>> {
         const dolphin = Dolphin.instance;
         if (!dolphin) throw Error("Dolphin not initialized");
         const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({
             owner: receiver._id,
             author: author._id
         });
-        if (!dbResult) return [undefined, Error("UserMessage not found")];
+        if (!dbResult) return [undefined, DolphinErrorTypes.NotFound];
         return [new UserMessage(dolphin.database.collection<IMessage>("messages"), dolphin.database.collection<IUserMessage>("userMessages"), dbResult), null];
     }
 
@@ -67,7 +67,7 @@ class UserMessage implements IUserMessage {
         const dolphin = Dolphin.instance;
         if (!dolphin) throw Error("Dolphin not initialized");
         const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({ _id: id });
-        if (!dbResult) return [undefined, Error("UserMessage not found")];
+        if (!dbResult) return [undefined, DolphinErrorTypes.NotFound];
         return [new UserMessage(dolphin.database.collection<IMessage>("messages"), dolphin.database.collection<IUserMessage>("userMessages"), dbResult), null];
     }
 
@@ -80,7 +80,7 @@ class UserMessage implements IUserMessage {
         const messageCollection = dolphin.database.collection<IMessage>("messages");
 
         if (!user) {
-            return [undefined, new Error("User not logged in")];
+            return [undefined, DolphinErrorTypes.NotAuthenticated];
         }
 
         const dbResult = await userMessageCollection
@@ -99,7 +99,7 @@ class UserMessage implements IUserMessage {
             .toArray();
 
         if (!dbResult) {
-            return [undefined, Error("No messages found")];
+            return [undefined, DolphinErrorTypes.NotFound];
         }
 
         return [dbResult.map(msg => new UserMessage(messageCollection, userMessageCollection, msg)), null];
@@ -130,7 +130,7 @@ class UserMessage implements IUserMessage {
 
         const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").insertOne(userMessage);
         if (!dbResult.acknowledged) {
-            return [undefined, Error("DB error")];
+            return [undefined, DolphinErrorTypes.DatabaseError];
         }
 
         return [true, null];
@@ -180,11 +180,11 @@ class UserMessage implements IUserMessage {
                 { $set: { stared } }
             );
             if (!dbResult.acknowledged) {
-                return [undefined, new Error("DB error")];
+                return [undefined, DolphinErrorTypes.DatabaseError];
             }
             return [true, null];
         } catch (err) {
-            return [undefined, new Error(JSON.stringify(err))];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -201,12 +201,12 @@ class UserMessage implements IUserMessage {
                     { $set: { read } }
                 );
                 if (!dbResult.acknowledged) {
-                    return [undefined, new Error("DB error")];
+                    return [undefined, DolphinErrorTypes.DatabaseError];
                 }
             }
             return [true, null];
         } catch (err) {
-            return [undefined, new Error("DB error")];
+            return [undefined,  DolphinErrorTypes.Failed];
         }
     }
 
@@ -236,7 +236,7 @@ class UserMessage implements IUserMessage {
             return [true, null];
         }
 
-        return [undefined, Error("DB error")];
+        return [undefined, DolphinErrorTypes.DatabaseError];
     
     }
 }

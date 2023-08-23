@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
 
     // get user
     const [userWithId, userFindError] = await User.getUserById(new ObjectId(userId));
-    if (userFindError) {
+    if (userFindError || !userWithId) {
         throw createError({ statusCode: 404, message: "User not found" });
     }
 

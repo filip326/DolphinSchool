@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
 
     // send subject list
     const [ subjects, subjectListError ] = await Subject.list();
-    if (subjectListError) {
+    if (subjectListError || !subjects) {
         return createError({
             statusCode: 500,
             statusMessage: "Internal Server Error"

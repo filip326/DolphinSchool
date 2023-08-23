@@ -1,7 +1,7 @@
 import { H3Event } from "h3";
 import { Permissions } from "../Dolphin/Permissions/PermissionManager";
 import User from "../Dolphin/User/User";
-import MethodResult from "../Dolphin/MethodResult";
+import MethodResult, { DolphinErrorTypes } from "../Dolphin/MethodResult";
 
 interface IOptions {
     throwErrOnAuthFail: boolean;
@@ -22,7 +22,7 @@ export default async function checkAuth(event: H3Event, options: IOptions = { th
                 if (options.throwErrOnAuthFail) {
                     throw throw403();
                 }
-                return [undefined, Error("Permission denied")];
+                return [undefined, DolphinErrorTypes.NotAuthorized];
             }
         } else {
             return [event.context.auth.user, null];
@@ -31,7 +31,7 @@ export default async function checkAuth(event: H3Event, options: IOptions = { th
         if (options.throwErrOnAuthFail) {
             throw throw401();
         }
-        return [undefined, Error("Login required")];
+        return [undefined, DolphinErrorTypes.NotAuthenticated];
     }
 };
 

@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     // get auth
     const [user, authError] = await checkAuth(event);
 
-    if (authError) {
+    if (authError || !user) {
         throw createError({
             statusCode: 401,
             message: "Unauthorized"
@@ -14,6 +14,13 @@ export default defineEventHandler(async (event) => {
 
     // cancel 2fa setup
     const [result, error] = await user.cancelMFASetup();
+
+    if (error && !result) {
+        throw createError({
+            statusCode: 500,
+            message: "Internal Server Error"
+        });
+    }
 
     await user.doNotAskForMFASetup("7d");
 

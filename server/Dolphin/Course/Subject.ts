@@ -1,5 +1,5 @@
 import Dolphin from "../Dolphin";
-import MethodResult from "../MethodResult";
+import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import { Collection, ObjectId, WithId } from "mongodb";
 import User from "../User/User";
 
@@ -33,11 +33,11 @@ class Subject implements ISubject {
                 null
             ];
         } catch {
-            return [undefined, Error("Database error")];
+            return [undefined, DolphinErrorTypes.DatabaseError];
         }
     }
 
-    static async search(options: SubjectSearchOptions) {
+    static async search(options: SubjectSearchOptions): Promise<MethodResult<ISubject[]>> {
         try {
             const dolphin = Dolphin.instance;
             if (!dolphin) throw Error("Dolphin not initialized");
@@ -50,7 +50,7 @@ class Subject implements ISubject {
             });
             return [await dbResult.toArray(), null];
         } catch {
-            return [undefined, Error("Database error")];
+            return [undefined, DolphinErrorTypes.DatabaseError];
         }
     }
 
@@ -70,10 +70,10 @@ class Subject implements ISubject {
                     null
                 ];
             } else {
-                return [undefined, Error("Failed to create subject")];
+                return [undefined, DolphinErrorTypes.Failed];
             }
         } catch {
-            return [undefined, Error("Failed to create subject")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -86,7 +86,7 @@ class Subject implements ISubject {
         if (dbResult) {
             return [new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult), null];
         } else {
-            return [undefined, Error("Subject not found")];
+            return [undefined, DolphinErrorTypes.NotFound];
         }
     }
 
@@ -124,10 +124,10 @@ class Subject implements ISubject {
             if (dbResult.acknowledged) {
                 return [true, null];
             } else {
-                return [undefined, Error("Failed to add teacher")];
+                return [undefined, DolphinErrorTypes.Failed];
             }
         } catch {
-            return [undefined, Error("Failed to add teacher")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -144,7 +144,7 @@ class Subject implements ISubject {
         if (dbResult.acknowledged) {
             return [true, null];
         } else {
-            return [undefined, Error("Failed to remove teacher")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -160,10 +160,10 @@ class Subject implements ISubject {
             if (dbResult.acknowledged) {
                 return [true, null];
             } else {
-                return [undefined, Error("Failed to delete subject")];
+                return [undefined, DolphinErrorTypes.Failed];
             }
         } catch {
-            return [undefined, Error("Failed to delete subject")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 }

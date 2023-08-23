@@ -8,7 +8,7 @@ export default eventHandler(async (event) => {
     }
 
     const [session, sessionFindError] = await Session.findSession(token);
-    if (sessionFindError) {
+    if (sessionFindError || !session) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 

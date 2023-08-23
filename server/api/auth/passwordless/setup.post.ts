@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     // get auth
     const [ user, authError ] = await checkAuth(event);
 
-    if (authError) {
+    if (authError || !user) {
         throw createError({
             statusCode: 401,
             message: "Unauthorized"

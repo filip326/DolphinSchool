@@ -5,7 +5,7 @@ import checkAuth from "../../../composables/checkAuth";
 export default defineEventHandler(async (event) => {
 
     const [user, authError] = await checkAuth(event);
-    if (authError) {
+    if (authError || !user) {
         throw createError({
             statusCode: 401,
             message: "Unauthorized"
@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
     const [qrLoginData, error] = await PasswordlessQR.requestChallenge();
 
-    if (error) {
+    if (error || !qrLoginData) {
         throw createError({
             statusCode: 500,
             statusMessage: "Internal Server Error"

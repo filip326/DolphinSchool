@@ -10,7 +10,7 @@ export default eventHandler(async (event) => {
 
     const [user, findUserError] = await User.getUserByUsername(username);
 
-    if (findUserError) {
+    if (findUserError || !user) {
         throw createError({
             statusCode: 401,
             message: "Invalid username or password"
@@ -32,7 +32,7 @@ export default eventHandler(async (event) => {
 
     const [session, sessionCreateError] = await Session.createSession(user);
 
-    if (sessionCreateError) {
+    if (sessionCreateError || !session) {
         throw createError({ statusCode: 500, message: "Internal server error" });
     }
 

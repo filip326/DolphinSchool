@@ -5,7 +5,7 @@ export default eventHandler(async (event) => {
         throwErrOnAuthFail: false
     });
 
-    if (error) {
+    if (error || !user) {
         throw createError({
             statusCode: 401,
             statusMessage: "Unauthorized"

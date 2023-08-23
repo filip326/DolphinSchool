@@ -1,5 +1,5 @@
 import Dolphin from "../Dolphin";
-import MethodResult from "../MethodResult";
+import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import { ObjectId, WithId } from "mongodb";
 import User from "../User/User";
 
@@ -59,10 +59,10 @@ class Session implements WithId<ISession> {
 
                 return [new Session(sessionWithId), null];
             } else {
-                return [undefined, new Error("Failed to create session")];
+                return [undefined, DolphinErrorTypes.Failed];
             }
         } catch {
-            return [undefined, new Error("Failed to create session")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -81,10 +81,10 @@ class Session implements WithId<ISession> {
             if (dbResult) {
                 return [new Session(dbResult), null];
             } else {
-                return [undefined, new Error("Session not found")];
+                return [undefined, DolphinErrorTypes.NotFound];
             }
         } catch {
-            return [undefined, new Error("Failed to find session")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -154,7 +154,7 @@ class Session implements WithId<ISession> {
                 .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, new Error("Failed to activate session")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -168,7 +168,7 @@ class Session implements WithId<ISession> {
                 .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, new Error("Failed to activate session")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -182,7 +182,7 @@ class Session implements WithId<ISession> {
                 .updateOne({ _id: this._id }, { $set: { lastUsed: this.lastUsed } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, new Error("Failed to report session usage")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -196,7 +196,7 @@ class Session implements WithId<ISession> {
                 .updateOne({ _id: this._id }, { $set: { expires: expries } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, new Error("Failed to refresh session")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -210,7 +210,7 @@ class Session implements WithId<ISession> {
                 .updateOne({ _id: this._id }, { $set: { state: SessionState.DELETED } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, new Error("Failed to disable session")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
@@ -224,7 +224,7 @@ class Session implements WithId<ISession> {
             });
             return [dbResult.acknowledged, null];
         } catch {
-            return [undefined, new Error("Failed to delete session")];
+            return [undefined, DolphinErrorTypes.Failed];
         }
     }
 
