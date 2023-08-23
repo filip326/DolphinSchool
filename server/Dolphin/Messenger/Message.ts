@@ -23,7 +23,7 @@ class Message implements IMessage {
     static async getMessageById(id: ObjectId): Promise<MethodResult<Message>> {
         const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const dbResult = await dolphin.database.collection<IMessage>("messages").findOne({ _id: id });
-        if (!dbResult) return [undefined, DolphinErrorTypes.NotFound];
+        if (!dbResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
         return [new Message(dolphin.database.collection<IMessage>("messages"), dolphin.database.collection<IUserMessage>("userMessages"), dbResult), null];
     }
 
@@ -78,7 +78,7 @@ class Message implements IMessage {
             });
             return [deleteAllResult.acknowledged && deleteResult.acknowledged, null];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
@@ -98,7 +98,7 @@ class Message implements IMessage {
             );
             return [updateResult.acknowledged, null];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 

@@ -57,14 +57,14 @@ class UserMessage implements IUserMessage {
             owner: receiver._id,
             author: author._id
         });
-        if (!dbResult) return [undefined, DolphinErrorTypes.NotFound];
+        if (!dbResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
         return [new UserMessage(dolphin.database.collection<IMessage>("messages"), dolphin.database.collection<IUserMessage>("userMessages"), dbResult), null];
     }
 
     static async getUserMessageById(id: ObjectId): Promise<MethodResult<UserMessage>> {
         const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({ _id: id });
-        if (!dbResult) return [undefined, DolphinErrorTypes.NotFound];
+        if (!dbResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
         return [new UserMessage(dolphin.database.collection<IMessage>("messages"), dolphin.database.collection<IUserMessage>("userMessages"), dbResult), null];
     }
 
@@ -76,7 +76,7 @@ class UserMessage implements IUserMessage {
         const messageCollection = dolphin.database.collection<IMessage>("messages");
 
         if (!user) {
-            return [undefined, DolphinErrorTypes.NotAuthenticated];
+            return [undefined, DolphinErrorTypes.NOT_AUTHENTICATED];
         }
 
         const dbResult = await userMessageCollection
@@ -95,7 +95,7 @@ class UserMessage implements IUserMessage {
             .toArray();
 
         if (!dbResult) {
-            return [undefined, DolphinErrorTypes.NotFound];
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
 
         return [dbResult.map(msg => new UserMessage(messageCollection, userMessageCollection, msg)), null];
@@ -125,7 +125,7 @@ class UserMessage implements IUserMessage {
 
         const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").insertOne(userMessage);
         if (!dbResult.acknowledged) {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
 
         return [true, null];
@@ -175,11 +175,11 @@ class UserMessage implements IUserMessage {
                 { $set: { stared } }
             );
             if (!dbResult.acknowledged) {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
             return [true, null];
         } catch (err) {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -196,12 +196,12 @@ class UserMessage implements IUserMessage {
                     { $set: { read } }
                 );
                 if (!dbResult.acknowledged) {
-                    return [undefined, DolphinErrorTypes.DatabaseError];
+                    return [undefined, DolphinErrorTypes.DATABASE_ERROR];
                 }
             }
             return [true, null];
         } catch (err) {
-            return [undefined,  DolphinErrorTypes.Failed];
+            return [undefined,  DolphinErrorTypes.FAILED];
         }
     }
 
@@ -231,7 +231,7 @@ class UserMessage implements IUserMessage {
             return [true, null];
         }
 
-        return [undefined, DolphinErrorTypes.DatabaseError];
+        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
     
     }
 }

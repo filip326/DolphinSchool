@@ -43,11 +43,11 @@ class Course implements WithId<ICourse> {
                     null
                 ];
             } catch {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
         }
 
-        return [undefined, DolphinErrorTypes.InvalidArgument];
+        return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
     }
 
     /**
@@ -69,9 +69,9 @@ class Course implements WithId<ICourse> {
                     );
                     return [cource, null];
                 }
-                return [undefined, DolphinErrorTypes.NotFound];
+                return [undefined, DolphinErrorTypes.NOT_FOUND];
             } catch {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
         }
 
@@ -88,13 +88,13 @@ class Course implements WithId<ICourse> {
                     );
                     return [cource, null];
                 }
-                return [undefined, DolphinErrorTypes.NotFound];
+                return [undefined, DolphinErrorTypes.NOT_FOUND];
             } catch {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
         }
 
-        return [undefined, DolphinErrorTypes.InvalidArgument];
+        return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
     }
 
     /**
@@ -113,7 +113,7 @@ class Course implements WithId<ICourse> {
             });
 
             if (!newCourse.acknowledged) {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
 
             const course = new Course(dolphin.database.collection<ICourse>("cources"), {
@@ -126,7 +126,7 @@ class Course implements WithId<ICourse> {
 
             return [course, null];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
@@ -155,7 +155,7 @@ class Course implements WithId<ICourse> {
                 null
             ];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 

@@ -47,7 +47,7 @@ class BruteForceProtection {
                 // if there is a BruteForceProtectionEntry, but less than 3 failed attempts, return true
                 return [true, null];
             } catch {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
         }
 
@@ -80,7 +80,7 @@ class BruteForceProtection {
             // if device token is valid and less than 3 failed attempts, return true
             return [true, null];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
@@ -119,7 +119,7 @@ class BruteForceProtection {
                             expires: Date.now() + 3 * 60 * 60 * 1000
                         });
                     } catch {
-                        return [undefined, DolphinErrorTypes.DatabaseError];
+                        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
                     }
                 }
                 // if there already is a BruteforceProtectionEntry, increment failed attempts and exceed expiration to 3 hours
@@ -140,11 +140,11 @@ class BruteForceProtection {
                             }
                         );
                     } catch {
-                        return [undefined, DolphinErrorTypes.DatabaseError];
+                        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
                     }
                 }
             } catch {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
         }
 
@@ -172,7 +172,7 @@ class BruteForceProtection {
                 );
                 return [true, null];
             } catch {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
         }
         // if there is no valid BruteForceProtectionEntry, create one, valid for 3 hours
@@ -185,7 +185,7 @@ class BruteForceProtection {
                 });
                 return [true, null];
             } catch {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
         }
     }
@@ -206,7 +206,7 @@ class BruteForceProtection {
             });
             return [token, null];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
@@ -237,7 +237,7 @@ class BruteForceProtection {
             );
             return [dbResult2.acknowledged, null];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 

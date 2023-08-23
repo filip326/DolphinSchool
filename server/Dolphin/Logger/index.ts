@@ -30,7 +30,7 @@ type LogLevel =
 // AccountCreated = 0,
 // AccountDeleted = 1,
 enum Action {
-    DolphinUNDEFINED = 0
+    DOLPHIN_UNDEFINED = 0
 }
 
 interface LogData {
@@ -71,7 +71,7 @@ class Logger {
         if (!dolphin) {
             await Logger.logToFS({
                 level: "ERROR",
-                action: Action.DolphinUNDEFINED,
+                action: Action.DOLPHIN_UNDEFINED,
                 shortMessage: "Dolphin is undefiend",
                 longMessage: "Dolphin is undefined",
                 causedBy: "Logger.getLogs"
@@ -99,7 +99,7 @@ class Logger {
         if (!dolphin) {
             await Logger.logToFS({
                 level: "ERROR",
-                action: Action.DolphinUNDEFINED,
+                action: Action.DOLPHIN_UNDEFINED,
                 shortMessage: "Dolphin is undefiend",
                 longMessage: "Dolphin is undefined",
                 causedBy: "Logger.getLogs"

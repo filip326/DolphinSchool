@@ -58,10 +58,10 @@ class Session implements WithId<ISession> {
 
                 return [new Session(sessionWithId), null];
             } else {
-                return [undefined, DolphinErrorTypes.Failed];
+                return [undefined, DolphinErrorTypes.FAILED];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -79,10 +79,10 @@ class Session implements WithId<ISession> {
             if (dbResult) {
                 return [new Session(dbResult), null];
             } else {
-                return [undefined, DolphinErrorTypes.NotFound];
+                return [undefined, DolphinErrorTypes.NOT_FOUND];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -150,7 +150,7 @@ class Session implements WithId<ISession> {
                 .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -163,7 +163,7 @@ class Session implements WithId<ISession> {
                 .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -176,7 +176,7 @@ class Session implements WithId<ISession> {
                 .updateOne({ _id: this._id }, { $set: { lastUsed: this.lastUsed } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -189,7 +189,7 @@ class Session implements WithId<ISession> {
                 .updateOne({ _id: this._id }, { $set: { expires: expries } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -202,7 +202,7 @@ class Session implements WithId<ISession> {
                 .updateOne({ _id: this._id }, { $set: { state: SessionState.DELETED } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -215,7 +215,7 @@ class Session implements WithId<ISession> {
             });
             return [dbResult.acknowledged, null];
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 

@@ -49,7 +49,7 @@ class PasswordlessQR {
             });
 
         if (!dbResult.acknowledged) {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
 
         return [
@@ -79,14 +79,14 @@ class PasswordlessQR {
             });
 
         if (!dbResult) {
-            return [undefined, DolphinErrorTypes.InvalidArgument];
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
 
         const challenge = dbResult.challenge;
 
         const credentials = user.getWebAuthNCredentials(solvedChallenge.credentialId);
 
-        if (!credentials) return [undefined, DolphinErrorTypes.InvalidArgument];
+        if (!credentials) return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         try {
             const result = await server.verifyAuthentication(
                 {
@@ -105,7 +105,7 @@ class PasswordlessQR {
             );
 
             if (!result) {
-                return [undefined, DolphinErrorTypes.Failed];
+                return [undefined, DolphinErrorTypes.FAILED];
             }
 
             // write user id to database
@@ -126,12 +126,12 @@ class PasswordlessQR {
                 );
 
             if (!dbResult.acknowledged) {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
 
             return [true, null];
         } catch (err) {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -146,11 +146,11 @@ class PasswordlessQR {
             });
 
         if (!challenge) {
-            return [undefined, DolphinErrorTypes.InvalidArgument];
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
 
         if (challenge.expirery < Date.now()) {
-            return [undefined, DolphinErrorTypes.NotSupported];
+            return [undefined, DolphinErrorTypes.NOT_SUPPORTED];
         }
 
         if (!challenge.user) {
@@ -162,7 +162,7 @@ class PasswordlessQR {
         });
 
         if (!user) {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
 
         // login successful, delete token since it's single use
@@ -189,11 +189,11 @@ class PasswordlessQR {
             });
 
         if (!challenge) {
-            return [undefined, DolphinErrorTypes.InvalidArgument];
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
 
         if (challenge.expirery < Date.now()) {
-            return [undefined, DolphinErrorTypes.NotSupported];
+            return [undefined, DolphinErrorTypes.NOT_SUPPORTED];
         }
 
         try {
@@ -204,14 +204,14 @@ class PasswordlessQR {
             });
 
             if (!result) {
-                return [undefined, DolphinErrorTypes.Failed];
+                return [undefined, DolphinErrorTypes.FAILED];
             }
 
             // write credentials to database
             const [addResult, addError] = await user.addWebAuthNCredential(solvedChallenge);
 
             if (addError || !addResult) {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
 
             // login successful, delete token since it's single use
@@ -221,7 +221,7 @@ class PasswordlessQR {
 
             return [true, null];
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 

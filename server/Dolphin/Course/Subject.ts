@@ -32,7 +32,7 @@ class Subject implements ISubject {
                 null
             ];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
@@ -48,7 +48,7 @@ class Subject implements ISubject {
             });
             return [await dbResult.toArray(), null];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
@@ -67,10 +67,10 @@ class Subject implements ISubject {
                     null
                 ];
             } else {
-                return [undefined, DolphinErrorTypes.Failed];
+                return [undefined, DolphinErrorTypes.FAILED];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -82,7 +82,7 @@ class Subject implements ISubject {
         if (dbResult) {
             return [new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult), null];
         } else {
-            return [undefined, DolphinErrorTypes.NotFound];
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
     }
 
@@ -120,10 +120,10 @@ class Subject implements ISubject {
             if (dbResult.acknowledged) {
                 return [true, null];
             } else {
-                return [undefined, DolphinErrorTypes.Failed];
+                return [undefined, DolphinErrorTypes.FAILED];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -140,7 +140,7 @@ class Subject implements ISubject {
         if (dbResult.acknowledged) {
             return [true, null];
         } else {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -156,10 +156,10 @@ class Subject implements ISubject {
             if (dbResult.acknowledged) {
                 return [true, null];
             } else {
-                return [undefined, DolphinErrorTypes.Failed];
+                return [undefined, DolphinErrorTypes.FAILED];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 }

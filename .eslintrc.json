@@ -21,7 +21,48 @@
         "vue/multi-word-component-names": "off",
         "vue/valid-v-on": "off",
         "no-undef": "off",
-        "switch-colon-spacing": "warn"
+        "switch-colon-spacing": "warn",
+        "@typescript-eslint/naming-convention": ["error", 
+            // variables
+            {
+                "selector": "variable",
+                "format": ["camelCase", "PascalCase", "UPPER_CASE"]
+            },
+            // class, enum, interface, type alias
+            {
+                "selector": "class",
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "enum",
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "enumMember",
+                "format": ["UPPER_CASE"]
+            },
+            {
+                "selector": "interface",
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "typeAlias",
+                "format": ["PascalCase"]
+            },
+            // functions and methods
+            {
+                "selector": "parameter",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "function",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "classMethod",
+                "format": ["camelCase"]
+            }
+    ]
     },
     "ignorePatterns": ["node_modules/", ".nuxt/", "dist/"]
 }

@@ -86,11 +86,11 @@ class User implements WithId<IUser> {
                     null
                 ];
             } catch {
-                return [undefined, DolphinErrorTypes.DatabaseError];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
         }
 
-        return [undefined, DolphinErrorTypes.InvalidArgument];
+        return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
     }
 
     static async getUserById(id: ObjectId): Promise<MethodResult<User>> {
@@ -98,7 +98,7 @@ class User implements WithId<IUser> {
         const userCollection = dolphin.database.collection<IUser>("users");
         const user = await userCollection.findOne({ _id: id });
         if (!user) {
-            return [undefined, DolphinErrorTypes.NotFound];
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
         return [new User(userCollection, user), null];
     }
@@ -108,7 +108,7 @@ class User implements WithId<IUser> {
         const userCollection = dolphin.database.collection<IUser>("users");
         const user = await userCollection.findOne({ username });
         if (!user) {
-            return [undefined, DolphinErrorTypes.NotFound];
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
         return [new User(userCollection, user), null];
     }
@@ -151,19 +151,19 @@ class User implements WithId<IUser> {
 
         // check if user type is valid
         if (!["student", "teacher", "parent"].includes(options.type)) {
-            return [undefined, DolphinErrorTypes.InvalidType];
+            return [undefined, DolphinErrorTypes.INVALID_TYPE];
         }
 
         // check if user with same username exists
         const existingUser = await userCollection.findOne({ username: options.username });
         if (existingUser) {
-            return [undefined, DolphinErrorTypes.AlreadyExists];
+            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
         }
 
         const result = await userCollection.insertOne(user);
 
         if (!result.acknowledged) {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
 
         return [{ id: result.insertedId, username: options.username, password }, null];
@@ -275,7 +275,7 @@ class User implements WithId<IUser> {
         let parentsIds = this.parents;
 
         if (!parentsIds && this.type !== "student") {
-            return [undefined, DolphinErrorTypes.InvalidType];
+            return [undefined, DolphinErrorTypes.INVALID_TYPE];
         } else {
             parentsIds = this.parents ?? [];
         }
@@ -285,25 +285,25 @@ class User implements WithId<IUser> {
                 _id: parentsIds[index]
             });
             if (!dbResult) {
-                return [undefined, DolphinErrorTypes.NotFound];
+                return [undefined, DolphinErrorTypes.NOT_FOUND];
             }
             const parent = new User(this.userCollection, dbResult);
             if (parent.isParent()) {
                 return [parent, null];
             }
-            return [undefined, DolphinErrorTypes.InvalidType];
+            return [undefined, DolphinErrorTypes.INVALID_TYPE];
         }
 
         const dbResult = await this.userCollection
             .find({ $or: parentsIds.map((id) => ({ _id: id })) })
             .toArray();
         if (!dbResult || dbResult.length === 0) {
-            return [undefined, DolphinErrorTypes.NotFound];
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
         const parents = dbResult.map((id) => new User(this.userCollection, id));
         for (const parent of parents) {
             if (!parent.isStudent()) {
-                return [undefined, DolphinErrorTypes.InvalidType];
+                return [undefined, DolphinErrorTypes.INVALID_TYPE];
             }
         }
         return [parents, null];
@@ -318,7 +318,7 @@ class User implements WithId<IUser> {
         let studentsIds = this.students;
 
         if (!studentsIds && this.type !== "parent") {
-            return [undefined, DolphinErrorTypes.InvalidType];
+            return [undefined, DolphinErrorTypes.INVALID_TYPE];
         } else {
             studentsIds = this.students ?? [];
         }
@@ -328,25 +328,25 @@ class User implements WithId<IUser> {
                 _id: studentsIds[index]
             });
             if (!dbResult) {
-                return [undefined, DolphinErrorTypes.NotFound];
+                return [undefined, DolphinErrorTypes.NOT_FOUND];
             }
             const student = new User(this.userCollection, dbResult);
             if (student.isStudent()) {
                 return [student, null];
             }
-            return [undefined, DolphinErrorTypes.InvalidType];
+            return [undefined, DolphinErrorTypes.INVALID_TYPE];
         }
 
         const dbResult = await this.userCollection
             .find({ $or: studentsIds.map((id) => ({ _id: id })) })
             .toArray();
         if (!dbResult || dbResult.length === 0) {
-            return [undefined, DolphinErrorTypes.NotFound];
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
         const students = dbResult.map((id) => new User(this.userCollection, id)) as User[];
         for (const student of students) {
             if (!student.isStudent()) {
-                return [undefined, DolphinErrorTypes.InvalidType];
+                return [undefined, DolphinErrorTypes.INVALID_TYPE];
             }
         }
         return [students, null];
@@ -374,7 +374,7 @@ class User implements WithId<IUser> {
             );
             return [updateResult.ok === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
@@ -392,7 +392,7 @@ class User implements WithId<IUser> {
             );
             return [updateResult.ok === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
@@ -411,23 +411,23 @@ class User implements WithId<IUser> {
     async setPassword(password: string): Promise<MethodResult<boolean>> {
         // check some password requirements
         if (password.length < 8) {
-            return [undefined, DolphinErrorTypes.InvalidArgument];
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
         if (!/[a-z]/.test(password)) {
-            return [undefined, DolphinErrorTypes.InvalidArgument];
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
         if (!/[A-Z]/.test(password)) {
-            return [undefined, DolphinErrorTypes.InvalidArgument];
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
         if (!/[0-9]/.test(password)) {
-            return [undefined, DolphinErrorTypes.InvalidArgument];
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
 
         let passwordHash: string;
         try {
             passwordHash = await hash(password, 12);
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
         this.password = passwordHash;
         try {
@@ -443,7 +443,7 @@ class User implements WithId<IUser> {
                 return [false, null];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.DatabaseError];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
@@ -456,7 +456,7 @@ class User implements WithId<IUser> {
             const hashResult = await compare(password, this.password);
             return [hashResult, null];
         } catch {
-            return [undefined, DolphinErrorTypes.Failed];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -485,7 +485,7 @@ class User implements WithId<IUser> {
     async setUpMFA(): Promise<MethodResult<string>> {
         // 0. check if mfa is already set up
         if (this.mfa_secret) {
-            return [undefined, DolphinErrorTypes.AlreadyExists];
+            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
         }
 
         // 1. generate secret
@@ -520,18 +520,18 @@ class User implements WithId<IUser> {
         // if it was not successful, return an error and undo the changes to this object
         this.mfa_setup_secret = undefined;
         this._setupTotp = undefined;
-        return [undefined, DolphinErrorTypes.DatabaseError];
+        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
     }
 
     async completeMFASetup(code: string): Promise<MethodResult<boolean>> {
         // 0. check if mfa is already set up
         if (this.mfa_secret) {
-            return [undefined, DolphinErrorTypes.AlreadyExists];
+            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
         }
 
         // 1. check if there is a setup totp object
         if (!this._setupTotp || !this.mfa_setup_secret) {
-            return [undefined, DolphinErrorTypes.NotSupported];
+            return [undefined, DolphinErrorTypes.NOT_SUPPORTED];
         }
 
         // 2. check if code is valid
@@ -564,7 +564,7 @@ class User implements WithId<IUser> {
         // if it was not successful, return an error and undo the changes to this object
         this.mfa_secret = undefined;
         this._totp = undefined;
-        return [undefined, DolphinErrorTypes.DatabaseError];
+        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
     }
 
     get askForMFASetup(): boolean {
@@ -589,7 +589,7 @@ class User implements WithId<IUser> {
                 this.doNotAskForMFASetupUntil = Date.now() + 1000 * 60 * 60 * 24 * 30;
                 break;
             default:
-                return [undefined, DolphinErrorTypes.InvalidArgument];
+                return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
 
         const dbResult = await this.userCollection.findOneAndUpdate(
@@ -602,12 +602,12 @@ class User implements WithId<IUser> {
         }
 
         this.doNotAskForMFASetupUntil = undefined;
-        return [undefined, DolphinErrorTypes.DatabaseError];
+        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
     }
 
     async disableMFA(): Promise<MethodResult<boolean>> {
         if (!this.mfaEnabled) {
-            return [undefined, DolphinErrorTypes.NotSupported];
+            return [undefined, DolphinErrorTypes.NOT_SUPPORTED];
         }
 
         const tempMFASecret = this.mfa_secret,
@@ -629,7 +629,7 @@ class User implements WithId<IUser> {
 
         this.mfa_secret = tempMFASecret;
         this._totp = tempTOTP;
-        return [undefined, DolphinErrorTypes.DatabaseError];
+        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
     }
 
     async cancelMFASetup(): Promise<MethodResult<boolean>> {
@@ -645,7 +645,7 @@ class User implements WithId<IUser> {
             return [true, null];
         }
 
-        return [undefined, DolphinErrorTypes.DatabaseError];
+        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
     }
 
     getWebAuthNCredentials(id: string) {
@@ -663,7 +663,7 @@ class User implements WithId<IUser> {
 
         // 3. check if credential id already exists
         if (this.webAuthNCredentials[id]) {
-            return [undefined, DolphinErrorTypes.AlreadyExists];
+            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
         }
 
         // 4. add credential to webAuthNCredentials
@@ -692,7 +692,7 @@ class User implements WithId<IUser> {
 
         // if it was not successful, return an error and undo the changes to this object
         this.webAuthNCredentials[id] = undefined;
-        return [undefined, DolphinErrorTypes.DatabaseError];
+        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
     }
 }
 
