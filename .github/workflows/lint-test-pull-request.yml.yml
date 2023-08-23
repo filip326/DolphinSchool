@@ -1,4 +1,4 @@
-name: lint-on-pull-request
+name: lint-test-on-pull-request
 
 on:
     pull_request:
