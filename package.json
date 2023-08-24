@@ -8,7 +8,8 @@
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
         "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue .",
-        "lint-fix": "yarn lint -- --fix"
+        "lint-fix": "yarn lint -- --fix",
+        "prepare": "husky install"
     },
     "devDependencies": {
         "@jest/globals": "^29.6.2",
@@ -33,7 +34,8 @@
         "prettier": "^3.0.0",
         "sass": "^1.64.2",
         "sass-loader": "^13.3.2",
-        "ts-jest": "^29.1.1"
+        "ts-jest": "^29.1.1",
+        "husky": "^8.0.0"
     },
     "dependencies": {
         "@nuxt/types": "^2.17.0",
