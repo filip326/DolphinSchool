@@ -1,13 +1,13 @@
 import { ObjectId } from "mongodb";
 import Subject from "../../../Dolphin/Course/Subject";
-import { Permissions } from "../../../Dolphin/Permissions/PermissionManager";
-import checkAuth from "@/server/composables/checkAuth";
 
 export default defineEventHandler(async (event) => {
-
-    const authError = (await checkAuth(event, { requirePerm: Permissions.MANAGE_SUBJECTS, throwErrOnAuthFail: true }))[1];
-    if (authError) {
-        return authError;
+    if (
+        !event.context.auth.authenticated ||
+        event.context.auth.mfa_required ||
+        !event.context.auth.user
+    ) {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     const { id } = getRouterParams(event);

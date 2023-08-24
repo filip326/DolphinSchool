@@ -3,7 +3,11 @@ import Session from "../../Dolphin/Session/Session";
 
 export default defineEventHandler(async (event) => {
     // check authentication without 2fa
-    if (!event.context.auth.authenticated || !event.context.auth.user) {
+    if (
+        !event.context.auth.authenticated ||
+        event.context.auth.mfa_required ||
+        !event.context.auth.user
+    ) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 

@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
     // create a new session and return login sucessful
     const [session, sessionError] = await Session.createSession(loginResult);
 
-    if (sessionError) {
+    if (sessionError || !session) {
         return createError({
             statusCode: 500,
             statusMessage: "Internal Server Error"
