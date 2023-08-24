@@ -13,13 +13,14 @@ export default async function checkAuth(options: {
     throwErrorOnNotAuthenticated?: boolean;
     redirectOnMfaRequired?: boolean;
 }): Promise<CheckAuthResult> {
-    const loginStatusRes = await useFetch("/api/auth/login-status", { method: "GET" });
-    const whoamiRes = await useFetch("/api/auth/whoami", { method: "GET" });
+    const loginStatusRes = await useFetch("/api/auth/login-status");
+    const whoamiRes = await useFetch("/api/auth/whoami");
 
     if (loginStatusRes.status.value != "success" || whoamiRes.status.value != "success") {
         throw createError({
             statusCode: 500,
-            statusMessage: "Internal server error"
+            statusMessage: "Internal server error",
+            fatal: true
         });
     }
 
@@ -29,7 +30,8 @@ export default async function checkAuth(options: {
                 if (options.throwErrorOnNotAuthenticated) {
                     throw createError({
                         statusCode: 401,
-                        statusMessage: "Not authenticated"
+                        statusMessage: "Not authenticated",
+                        fatal: true
                     });
                 }
                 return {
@@ -49,7 +51,8 @@ export default async function checkAuth(options: {
             default:
                 throw createError({
                     statusCode: 500,
-                    statusMessage: "Internal server error"
+                    statusMessage: "Internal server error",
+                    fatal: true
                 });
         }
     } else {
