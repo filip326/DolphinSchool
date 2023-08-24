@@ -23,6 +23,57 @@ API-Routes filename has to be followed by the http-method, example: *login.post.
 
 ## Templates
 
+### Pages
+
+#### Authentication Required
+
+```vue
+<script lang="ts">
+export default {
+    async beforeMount() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true
+        });
+    },
+};
+</script>
+
+<template>
+    
+</template>
+
+<style scoped>
+</style>
+```
+
+#### Public
+
+```vue
+<script lang="ts">
+export default {
+    async beforeMount() {
+        const auth = await checkAuth({
+            redirectOnMfaRequired: false,
+            throwErrorOnNotAuthenticated: false
+        });
+
+        // add this, if it is a login page
+        // if (auth.authenticated && !auth.mfa_required) {
+        //     navigateTo("/home");
+        // }
+    },
+};
+</script>
+
+<template>
+    
+</template>
+
+<style scoped>
+</style>
+```
+
 ### API
 
 #### Default
