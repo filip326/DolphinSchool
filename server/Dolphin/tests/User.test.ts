@@ -4,6 +4,7 @@ import User, { IUser } from "../User/User";
 import { ObjectId } from "mongodb";
 import { manyDummyUsers } from "./initTests";
 import { URI } from "otpauth";
+import { DolphinErrorTypes } from "../MethodResult";
 
 config();
 
@@ -48,7 +49,7 @@ describe("User class", () => {
         });
 
         expect(userCreateError).toBeDefined();
-        expect(userCreateError).toHaveProperty("message", "User with same username already exists");
+        expect(userCreateError).toBe(DolphinErrorTypes.ALREADY_EXISTS);
         expect(user).toBeUndefined();
     });
 
@@ -64,7 +65,7 @@ describe("User class", () => {
         });
 
         expect(userCreateError).toBeDefined();
-        expect(userCreateError).toHaveProperty("message", "Invalid user type");
+        expect(userCreateError).toBe(DolphinErrorTypes.INVALID_TYPE);
         expect(user).toBeUndefined();
     });
 
@@ -81,7 +82,7 @@ describe("User class", () => {
         const [user, userFindError] = await User.getUserByUsername("nonExistentUser");
 
         expect(userFindError).toBeDefined();
-        expect(userFindError).toHaveProperty("message", "User not found");
+        expect(userFindError).toBe(DolphinErrorTypes.NOT_FOUND);
         expect(user).toBeUndefined();
     });
 
@@ -103,7 +104,7 @@ describe("User class", () => {
         const [user, userFindError] = await User.getUserById(ObjectId.createFromTime(0));
 
         expect(userFindError).toBeDefined();
-        expect(userFindError).toHaveProperty("message", "User not found");
+        expect(userFindError).toBe(DolphinErrorTypes.NOT_FOUND);
         expect(user).toBeUndefined();
     });
 
@@ -165,10 +166,7 @@ describe("User class", () => {
         const [passwordChangeResult, passwordChangeError] = await user!.setPassword("short");
 
         expect(passwordChangeError).toBeDefined();
-        expect(passwordChangeError).toHaveProperty(
-            "message",
-            "Password must be at least 8 characters long"
-        );
+        expect(passwordChangeError).toBe(DolphinErrorTypes.INVALID_ARGUMENT);
         expect(passwordChangeResult).toBeUndefined();
     });
 
@@ -183,7 +181,7 @@ describe("User class", () => {
         );
 
         expect(passwordChangeError).toBeDefined();
-        expect(passwordChangeError).toHaveProperty("message");
+        expect(passwordChangeError).toBe(DolphinErrorTypes.INVALID_ARGUMENT);
         expect(passwordChangeResult).toBeUndefined();
     });
 

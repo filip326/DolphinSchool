@@ -4,6 +4,7 @@ import Session, { ISession, SessionState } from "../Session/Session";
 import User, { IUser } from "../User/User";
 import { manyDummyUsers } from "./initTests";
 import { ObjectId } from "mongodb";
+import { DolphinErrorTypes } from "../MethodResult";
 
 config();
 
@@ -41,7 +42,7 @@ describe("Session class", () => {
 
         const [user, userGetError ] = await User.getUserByUsername("testUser0");
 
-        if (userGetError || !user) throw userGetError;
+        if (userGetError || !user) throw Error(userGetError);
 
         const [session, sessionCreateError] = await Session.createSession(
             user
@@ -64,7 +65,7 @@ describe("Session class", () => {
         
         const [session, sessionFoundError] = await Session.findSession("testToken");
 
-        if (sessionFoundError || !session) throw sessionFoundError;
+        if (sessionFoundError || !session) throw Error(sessionFoundError);
 
         const [destroyed, destroyedError] = await session.destroy();
         expect(destroyedError).toBeNull();
@@ -72,7 +73,7 @@ describe("Session class", () => {
 
         const [sessionFound, sessionFoundError2] = await Session.findSession(session!.token);
         expect(sessionFoundError2).not.toBeNull();
-        expect(sessionFoundError2).toHaveProperty("message", "Session not found");
+        expect(sessionFoundError2).toBe(DolphinErrorTypes.NOT_FOUND);
         expect(sessionFound).toBeUndefined();
     });
 
@@ -80,7 +81,7 @@ describe("Session class", () => {
 
         const [ session, sessionFoundError ] = await Session.findSession("testToken");
 
-        if (sessionFoundError || !session) throw sessionFoundError;
+        if (sessionFoundError || !session) throw Error(sessionFoundError);
 
         expect(session).toHaveProperty("state", SessionState.INACTIVE);
 
@@ -98,7 +99,7 @@ describe("Session class", () => {
 
         const [ session, sessionFoundError ] = await Session.findSession("testToken");
 
-        if (sessionFoundError || !session) throw sessionFoundError;
+        if (sessionFoundError || !session) throw Error(sessionFoundError);
 
         expect(session).toHaveProperty("lastUsed");
         expect(session.lastUsed).toBeGreaterThanOrEqual(Date.now() - 5);
@@ -118,7 +119,7 @@ describe("Session class", () => {
 
         const [ session, sessionFoundError ] = await Session.findSession("testToken");
 
-        if (sessionFoundError || !session) throw sessionFoundError;
+        if (sessionFoundError || !session) throw Error(sessionFoundError);
 
         expect(session.expires).toBeLessThanOrEqual(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 days
 
