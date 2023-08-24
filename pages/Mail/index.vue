@@ -6,7 +6,11 @@ export default {
             show_floating_action_btn: false
         };
     },
-    beforeMount() {
+    async beforeMount() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true
+        });
         this.show_floating_action_btn = window.innerWidth < 600;
     }
 };

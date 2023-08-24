@@ -28,7 +28,13 @@ export default {
         };
     },
     async beforeMount() {
-        await checkAuth();
+        const auth = await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: false
+        });
+        if (auth.authenticated && !auth.mfa_required) {
+            navigateTo("/home");
+        }
         await this.loadPasswordlessQRCode();
     },
     methods: {

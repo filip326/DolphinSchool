@@ -66,7 +66,10 @@ export default {
         }
     },
     async beforeMount() {
-        await checkAuth();
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true
+        });
 
         this.totpSec = await this.totpSecret();
 

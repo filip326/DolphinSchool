@@ -1,10 +1,7 @@
-<script setup>
+<script lang="ts">
+export default {
 
-
-</script>
-
-<script>
-
+};
 </script>
 
 <template>

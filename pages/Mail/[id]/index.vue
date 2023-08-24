@@ -1,3 +1,14 @@
+<script lang="ts">
+export default {
+    async beforeMount() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true
+        });
+    }
+};
+</script>
+
 <template>
     <VCard>
         <VCardTitle>{{ $route.params.id }}<span class="author">von Autor</span></VCardTitle>

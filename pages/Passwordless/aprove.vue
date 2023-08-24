@@ -85,6 +85,11 @@ export default {
         }
     },
     async beforeMount() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true
+        });
+
         this.continue_button.loading = true;
 
         if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {

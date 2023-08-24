@@ -10,7 +10,10 @@ export default {
         };
     },
     async beforeMount() {
-        await checkAuth();
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true
+        });
         this.passwordless_setup = window.localStorage.getItem("passwordless") != null || !pwless.isAvailable() || !pwless.isLocalAuthenticator();
     }
 };

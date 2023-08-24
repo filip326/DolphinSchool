@@ -19,15 +19,16 @@ interface ISubject {
 }
 
 export default {
+    async beforeMount() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true
+        });
+    },
     data() {
         return {
             subjects: ref<ISubject[]>([]),
         };
-    },
-    async beforeMount() {
-        await checkAuth();
-
-        
     }
 };
 

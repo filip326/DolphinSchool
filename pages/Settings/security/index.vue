@@ -10,12 +10,16 @@ export default {
         return {
             settings: Array<{name: string; link: string;}>(
                 {
-                    name: "Persönliche Einstellungen",
-                    link: "/settings/profile"
+                    name: "Passwort ändern",
+                    link: "/settings/security/change-password"
                 },
                 {
-                    name: "Sicherheit",
-                    link: "/settings/security"
+                    name: "2FA",
+                    link: "/settings/security/mfa"
+                },
+                {
+                    name: "Passwordless",
+                    link: "/settings/security/passwordless"
                 }
             )
         };
@@ -24,7 +28,7 @@ export default {
 </script>
 
 <template>
-    <h2><VIcon>mdi-cogs</VIcon>Einstellungen</h2>
+    <h2><VIcon>mdi-cogs</VIcon>Sicherheit</h2>
     <div class="settings__wrapper">
         <VCard v-for="(setting, index) in settings" :key="index">
             <VCardTitle>

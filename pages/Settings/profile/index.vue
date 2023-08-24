@@ -8,23 +8,14 @@ export default {
     },
     data() {
         return {
-            settings: Array<{name: string; link: string;}>(
-                {
-                    name: "Persönliche Einstellungen",
-                    link: "/settings/profile"
-                },
-                {
-                    name: "Sicherheit",
-                    link: "/settings/security"
-                }
-            )
+            settings: Array<{name: string; link: string;}>()
         };
     }
 };
 </script>
 
 <template>
-    <h2><VIcon>mdi-cogs</VIcon>Einstellungen</h2>
+    <h2><VIcon>mdi-cogs</VIcon>Persönliche Einstellungen</h2>
     <div class="settings__wrapper">
         <VCard v-for="(setting, index) in settings" :key="index">
             <VCardTitle>

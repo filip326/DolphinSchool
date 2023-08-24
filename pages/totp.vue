@@ -65,8 +65,14 @@ export default {
             }
         }
     },
-    beforeMount() {
-        checkAuth();
+    async beforeMount() {
+        const auth = await checkAuth({
+            redirectOnMfaRequired: false,
+            throwErrorOnNotAuthenticated: true
+        });
+        if (auth.authenticated && !auth.mfa_required) {
+            navigateTo("/home");
+        }
     }
 };
 </script>

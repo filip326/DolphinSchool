@@ -2,6 +2,12 @@
 
 <script lang="ts">
 export default {
+    async beforeMount() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true
+        });
+    },
     data() {
         return {
             absender: "Du",
