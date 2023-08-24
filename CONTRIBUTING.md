@@ -76,10 +76,16 @@ export default {
 
 ### API
 
-#### Default
+#### Authentication Required
 
 ```ts
-export default defineEventHandler(async (event) => {
-    // ...
+export default eventHandler(async (event) => {
+    if (
+        !event.context.auth.authenticated ||
+        event.context.auth.mfa_required ||
+        !event.context.auth.user
+    ) {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
+    }
 });
 ```
