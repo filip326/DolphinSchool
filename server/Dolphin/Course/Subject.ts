@@ -26,8 +26,7 @@ class Subject implements ISubject {
             const dbResult = await dolphin.database.collection<ISubject>("subjects").find({});
             return [
                 (await dbResult.toArray()).map(
-                    (subject) =>
-                        new Subject(dolphin.database.collection<ISubject>("subjects"), subject),
+                    (subject) => new Subject(dolphin.database.collection<ISubject>("subjects"), subject),
                 ),
                 null,
             ];
@@ -55,9 +54,7 @@ class Subject implements ISubject {
     static async create(subject: ISubject): Promise<MethodResult<Subject>> {
         try {
             const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-            const dbResult = await dolphin.database
-                .collection<ISubject>("subjects")
-                .insertOne(subject);
+            const dbResult = await dolphin.database.collection<ISubject>("subjects").insertOne(subject);
             if (dbResult.acknowledged) {
                 return [
                     new Subject(dolphin.database.collection<ISubject>("subjects"), {
@@ -76,9 +73,7 @@ class Subject implements ISubject {
 
     static async getSubjectById(id: ObjectId): Promise<MethodResult<Subject>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-        const dbResult = await dolphin.database
-            .collection<ISubject>("subjects")
-            .findOne({ _id: id });
+        const dbResult = await dolphin.database.collection<ISubject>("subjects").findOne({ _id: id });
         if (dbResult) {
             return [new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult), null];
         } else {

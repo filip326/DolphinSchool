@@ -24,10 +24,7 @@ interface IRequestAnalyics extends Document {
 
 export default class GlobalAnalyticsManager {
     static async addRequest(event: H3Event): Promise<void> {
-        const collection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>(
-            "requests",
-            true,
-        );
+        const collection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>("requests", true);
         const authenticated = event.context.auth?.authenticated;
         const doc: IRequestAnalyics = {
             timestamp: new Date().toISOString(),
@@ -40,10 +37,7 @@ export default class GlobalAnalyticsManager {
     }
 
     static async getRequestAmount(start: string, end: string): Promise<number> {
-        const collection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>(
-            "requests",
-            true,
-        );
+        const collection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>("requests", true);
         // get the amount of requests between the start and end date
         const amount = await collection.countDocuments({
             timestamp: { $gte: start, $lte: end },
@@ -52,10 +46,7 @@ export default class GlobalAnalyticsManager {
     }
 
     static async getRequests(start: string, end: string): Promise<IRequestAnalyics[]> {
-        const collection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>(
-            "requests",
-            true,
-        );
+        const collection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>("requests", true);
         // find the requests analytics between the start and end date
         const requests = await collection
             .find({
@@ -66,10 +57,7 @@ export default class GlobalAnalyticsManager {
     }
 
     static async addDaylyAnalytics(): Promise<void> {
-        const collection = await GlobalAnalyticsManager.getCollection<IDailyAnalytics>(
-            "dayly",
-            true,
-        );
+        const collection = await GlobalAnalyticsManager.getCollection<IDailyAnalytics>("dayly", true);
 
         const userCollection = await GlobalAnalyticsManager.getCollection<IUser>("users", false);
         const userAmount = await userCollection.countDocuments();
@@ -77,18 +65,12 @@ export default class GlobalAnalyticsManager {
         const studentAmount = await userCollection.countDocuments({ type: "student" });
         const teacherAmount = await userCollection.countDocuments({ type: "teacher" });
 
-        const sessionCollection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>(
-            "sessions",
-            true,
-        );
+        const sessionCollection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>("sessions", true);
         const sessionsAmount = await sessionCollection.countDocuments();
 
         const doc: IDailyAnalytics = {
             timestamp: new Date().toISOString(),
-            requests: await GlobalAnalyticsManager.getRequestAmount(
-                new Date().toISOString(),
-                new Date().toISOString(),
-            ),
+            requests: await GlobalAnalyticsManager.getRequestAmount(new Date().toISOString(), new Date().toISOString()),
             sessionsAmount: sessionsAmount,
             userAmount: userAmount,
             userAmountByType: {
@@ -101,10 +83,7 @@ export default class GlobalAnalyticsManager {
     }
 
     static async getDaylyAnalytics(start: string, end: string): Promise<IDailyAnalytics[]> {
-        const collection = await GlobalAnalyticsManager.getCollection<IDailyAnalytics>(
-            "dayly",
-            true,
-        );
+        const collection = await GlobalAnalyticsManager.getCollection<IDailyAnalytics>("dayly", true);
         // find the analytics between the start and end date
         const data = await collection
             .find({

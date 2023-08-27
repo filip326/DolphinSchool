@@ -58,9 +58,7 @@ export default {
     <VCard density="compact" v-if="!passwordless_setup">
         <VCardTitle> passwordless Login </VCardTitle>
         <VCardSubtitle> passwordless Login auf diesem Gerät einrichten? </VCardSubtitle>
-        <VCardText>
-            Richten Sie auf diesem Gerät passwordless Login ein, um sich noch einfacher anzumelden!
-        </VCardText>
+        <VCardText> Richten Sie auf diesem Gerät passwordless Login ein, um sich noch einfacher anzumelden! </VCardText>
         <VCardActions>
             <VBtn @click="navigateTo('/passwordless/setup')" variant="elevated" color="primary">
                 Jetzt Einrichten
@@ -70,12 +68,7 @@ export default {
     </VCard>
     <h1>Home</h1>
     <div class="settings__wrapper">
-        <MenuThreeLinksCard
-            v-for="app in apps"
-            :key="app.title"
-            :title="app.title"
-            :links="app.links"
-        />
+        <MenuThreeLinksCard v-for="app in apps" :key="app.title" :title="app.title" :links="app.links" />
     </div>
 </template>
 

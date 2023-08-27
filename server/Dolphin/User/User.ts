@@ -53,13 +53,7 @@ class User implements WithId<IUser> {
     // static methods to create, find, get or delete users
 
     static async searchUsers(options: SearchUserOptions): Promise<MethodResult<User[]>> {
-        if (
-            options.nameQuery ||
-            options.cources ||
-            options.class ||
-            options.parent ||
-            options.child
-        ) {
+        if (options.nameQuery || options.cources || options.class || options.parent || options.child) {
             try {
                 const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
                 const userCollection = dolphin.database.collection<IUser>("users");
@@ -79,12 +73,7 @@ class User implements WithId<IUser> {
                 if (options.max) {
                     dbResult.limit(options.max);
                 }
-                return [
-                    (await dbResult.toArray()).map(
-                        (user: WithId<IUser>) => new User(userCollection, user),
-                    ),
-                    null,
-                ];
+                return [(await dbResult.toArray()).map((user: WithId<IUser>) => new User(userCollection, user)), null];
             } catch {
                 return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
@@ -116,16 +105,11 @@ class User implements WithId<IUser> {
     static async searchUsersByName(query: string): Promise<MethodResult<User[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const userCollection = dolphin.database.collection<IUser>("users");
-        const users = await userCollection
-            .find({ fullName: { $regex: query, $options: "i" } })
-            .toArray();
+        const users = await userCollection.find({ fullName: { $regex: query, $options: "i" } }).toArray();
         return [users.map((user) => new User(userCollection, user)), null];
     }
 
-    static async listUsers(options: {
-        limit?: number;
-        skip?: number;
-    }): Promise<MethodResult<User[]>> {
+    static async listUsers(options: { limit?: number; skip?: number }): Promise<MethodResult<User[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const userCollection = dolphin.database.collection<IUser>("users");
         const users = await userCollection.find({}, { ...options }).toArray();
@@ -170,8 +154,7 @@ class User implements WithId<IUser> {
     }
 
     private static generatePassword(): string {
-        const chars =
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:!?@#$%^&*()_+-=";
+        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:!?@#$%^&*()_+-=";
         let password = "";
         for (let i = 0; i < 12; i++) {
             password += chars[Math.floor(Math.random() * chars.length)];
@@ -294,9 +277,7 @@ class User implements WithId<IUser> {
             return [undefined, DolphinErrorTypes.INVALID_TYPE];
         }
 
-        const dbResult = await this.userCollection
-            .find({ $or: parentsIds.map((id) => ({ _id: id })) })
-            .toArray();
+        const dbResult = await this.userCollection.find({ $or: parentsIds.map((id) => ({ _id: id })) }).toArray();
         if (!dbResult || dbResult.length === 0) {
             return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
@@ -337,9 +318,7 @@ class User implements WithId<IUser> {
             return [undefined, DolphinErrorTypes.INVALID_TYPE];
         }
 
-        const dbResult = await this.userCollection
-            .find({ $or: studentsIds.map((id) => ({ _id: id })) })
-            .toArray();
+        const dbResult = await this.userCollection.find({ $or: studentsIds.map((id) => ({ _id: id })) }).toArray();
         if (!dbResult || dbResult.length === 0) {
             return [undefined, DolphinErrorTypes.NOT_FOUND];
         }

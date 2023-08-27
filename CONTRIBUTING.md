@@ -74,11 +74,7 @@ export default {
 
 ```ts
 export default eventHandler(async (event) => {
-    if (
-        !event.context.auth.authenticated ||
-        event.context.auth.mfa_required ||
-        !event.context.auth.user
-    ) {
+    if (!event.context.auth.authenticated || event.context.auth.mfa_required || !event.context.auth.user) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 });

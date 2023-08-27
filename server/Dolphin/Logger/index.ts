@@ -2,15 +2,7 @@ import Dolphin from "../Dolphin";
 import { config } from "dotenv";
 config();
 
-import {
-    mkdirSync,
-    existsSync,
-    appendFileSync,
-    writeFileSync,
-    readdirSync,
-    readFileSync,
-    unlinkSync,
-} from "fs";
+import { mkdirSync, existsSync, appendFileSync, writeFileSync, readdirSync, readFileSync, unlinkSync } from "fs";
 import { format as formatDate } from "date-fns";
 import { join } from "path";
 

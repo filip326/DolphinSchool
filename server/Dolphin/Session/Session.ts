@@ -33,11 +33,7 @@ class Session implements WithId<ISession> {
         return returnString;
     }
 
-    static async createSession(
-        user: User,
-        expires?: number,
-        short?: boolean,
-    ): Promise<MethodResult<Session>> {
+    static async createSession(user: User, expires?: number, short?: boolean): Promise<MethodResult<Session>> {
         const session: ISession = {
             type: short ? "ShortSession" : "Session",
             token: this.generateToken(),

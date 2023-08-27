@@ -19,13 +19,7 @@ export default {
         <VCardText>
             <VWindow v-model="tab">
                 <VWindowItem value="edit">
-                    <VTextarea
-                        v-model="md"
-                        label="Ihre Nachricht"
-                        variant="outlined"
-                        counter
-                        auto-grow
-                    />
+                    <VTextarea v-model="md" label="Ihre Nachricht" variant="outlined" counter auto-grow />
                 </VWindowItem>
                 <VWindowItem value="preview">
                     <Markdown :md="md" />

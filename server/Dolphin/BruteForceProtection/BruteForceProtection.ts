@@ -84,10 +84,7 @@ class BruteForceProtection {
         }
     }
 
-    async reportFailedLoginAttempt(
-        username: string,
-        bypassToken?: string,
-    ): Promise<MethodResult<boolean>> {
+    async reportFailedLoginAttempt(username: string, bypassToken?: string): Promise<MethodResult<boolean>> {
         if (bypassToken) {
             // check if device Token is valid
             try {

@@ -110,13 +110,9 @@ export default {
                     return;
                 }
 
-                const signed = await pwless.authenticate(
-                    [data.credId],
-                    response.data.value?.challenge,
-                    {
-                        userVerification: "required",
-                    },
-                );
+                const signed = await pwless.authenticate([data.credId], response.data.value?.challenge, {
+                    userVerification: "required",
+                });
 
                 await useFetch("/api/auth/passwordless/approve", {
                     method: "POST",
@@ -196,8 +192,7 @@ export default {
             />
             <VAler v-else type="error" variant="text" text="passwordless ist nicht verfügbar!" />
             <p v-if="passwordless.avaible">
-                Scanne den QR Code mit der Kamera deines Smartphones und folge den Anweisungen auf
-                dem Bildschirm.
+                Scanne den QR Code mit der Kamera deines Smartphones und folge den Anweisungen auf dem Bildschirm.
             </p>
             <!-- placeholder 128 x 128 px-->
             <VImg v-if="passwordless.avaible" :src="passwordless.qr_code" />

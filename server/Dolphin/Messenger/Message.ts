@@ -21,9 +21,7 @@ interface IMessage {
 class Message implements IMessage {
     static async getMessageById(id: ObjectId): Promise<MethodResult<Message>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-        const dbResult = await dolphin.database
-            .collection<IMessage>("messages")
-            .findOne({ _id: id });
+        const dbResult = await dolphin.database.collection<IMessage>("messages").findOne({ _id: id });
         if (!dbResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
         return [
             new Message(

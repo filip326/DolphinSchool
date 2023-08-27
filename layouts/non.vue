@@ -25,8 +25,7 @@ export default {
 <template>
     <v-app dark>
         <VAppBar>
-            <VAppBarNavIcon @click="show_nav_drawer_button = !show_nav_drawer_button">
-            </VAppBarNavIcon>
+            <VAppBarNavIcon @click="show_nav_drawer_button = !show_nav_drawer_button"> </VAppBarNavIcon>
 
             <VImg src="/img/School/DolphinSchool_light.png" />
 

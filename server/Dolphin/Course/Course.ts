@@ -37,8 +37,7 @@ class Course implements WithId<ICourse> {
                 }
                 return [
                     (await dbResult.toArray()).map(
-                        (cource) =>
-                            new Course(dolphin.database.collection<ICourse>("cources"), cource),
+                        (cource) => new Course(dolphin.database.collection<ICourse>("cources"), cource),
                     ),
                     null,
                 ];
@@ -63,10 +62,7 @@ class Course implements WithId<ICourse> {
                     _id: options.id,
                 });
                 if (dbResult) {
-                    const cource = new Course(
-                        dolphin.database.collection<ICourse>("cources"),
-                        dbResult,
-                    );
+                    const cource = new Course(dolphin.database.collection<ICourse>("cources"), dbResult);
                     return [cource, null];
                 }
                 return [undefined, DolphinErrorTypes.NOT_FOUND];
@@ -82,10 +78,7 @@ class Course implements WithId<ICourse> {
                     name: options.name,
                 });
                 if (dbResult) {
-                    const cource = new Course(
-                        dolphin.database.collection<ICourse>("cources"),
-                        dbResult,
-                    );
+                    const cource = new Course(dolphin.database.collection<ICourse>("cources"), dbResult);
                     return [cource, null];
                 }
                 return [undefined, DolphinErrorTypes.NOT_FOUND];
@@ -148,12 +141,7 @@ class Course implements WithId<ICourse> {
                     },
                 )
                 .toArray();
-            return [
-                courses.map(
-                    (course) => new Course(dolphin.database.collection<ICourse>("cources"), course),
-                ),
-                null,
-            ];
+            return [courses.map((course) => new Course(dolphin.database.collection<ICourse>("cources"), course)), null];
         } catch {
             return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }

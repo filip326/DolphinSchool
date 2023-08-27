@@ -12,8 +12,7 @@ class Dolphin {
     }
 
     private constructor(db: Db, client: MongoClient, cb: (dolphin: Dolphin) => void) {
-        if (Dolphin._instance)
-            throw new Error("Dolphin instance already exists! Class Dolphin is a singleton!");
+        if (Dolphin._instance) throw new Error("Dolphin instance already exists! Class Dolphin is a singleton!");
 
         this.database = db;
         this.client = client;
@@ -32,8 +31,7 @@ class Dolphin {
             try {
                 const client = await MongoClient.connect(config.DB_URL);
                 const db = client.db(
-                    config.DB_NAME +
-                        (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV"),
+                    config.DB_NAME + (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV"),
                 );
 
                 if (!db) return;

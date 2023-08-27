@@ -54,10 +54,7 @@ class UserMessage implements IUserMessage {
         ];
     }
 
-    static async getUserMessageByAuthor(
-        author: User,
-        receiver: User,
-    ): Promise<MethodResult<UserMessage>> {
+    static async getUserMessageByAuthor(author: User, receiver: User): Promise<MethodResult<UserMessage>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({
             owner: receiver._id,
@@ -76,9 +73,7 @@ class UserMessage implements IUserMessage {
 
     static async getUserMessageById(id: ObjectId): Promise<MethodResult<UserMessage>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-        const dbResult = await dolphin.database
-            .collection<IUserMessage>("userMessages")
-            .findOne({ _id: id });
+        const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({ _id: id });
         if (!dbResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
         return [
             new UserMessage(
@@ -90,10 +85,7 @@ class UserMessage implements IUserMessage {
         ];
     }
 
-    static async getMessages(
-        user: User,
-        filter: MessageFilterOptions,
-    ): Promise<MethodResult<IUserMessage[]>> {
+    static async getMessages(user: User, filter: MessageFilterOptions): Promise<MethodResult<IUserMessage[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
         const userMessageCollection = dolphin.database.collection<IUserMessage>("userMessages");
@@ -122,10 +114,7 @@ class UserMessage implements IUserMessage {
             return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
 
-        return [
-            dbResult.map((msg) => new UserMessage(messageCollection, userMessageCollection, msg)),
-            null,
-        ];
+        return [dbResult.map((msg) => new UserMessage(messageCollection, userMessageCollection, msg)), null];
     }
 
     /**
@@ -153,9 +142,7 @@ class UserMessage implements IUserMessage {
             newsletter,
         };
 
-        const dbResult = await dolphin.database
-            .collection<IUserMessage>("userMessages")
-            .insertOne(userMessage);
+        const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").insertOne(userMessage);
         if (!dbResult.acknowledged) {
             return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
@@ -201,10 +188,7 @@ class UserMessage implements IUserMessage {
     async star(stared = true): Promise<MethodResult<boolean>> {
         this.stared = stared;
         try {
-            const dbResult = await this.messageCollection.updateOne(
-                { _id: this.message },
-                { $set: { stared } },
-            );
+            const dbResult = await this.messageCollection.updateOne({ _id: this.message }, { $set: { stared } });
             if (!dbResult.acknowledged) {
                 return [undefined, DolphinErrorTypes.DATABASE_ERROR];
             }
@@ -222,10 +206,7 @@ class UserMessage implements IUserMessage {
         this.read = read;
         try {
             if (this.message && this.messageCollection) {
-                const dbResult = await this.messageCollection.updateOne(
-                    { _id: this.message },
-                    { $set: { read } },
-                );
+                const dbResult = await this.messageCollection.updateOne({ _id: this.message }, { $set: { read } });
                 if (!dbResult.acknowledged) {
                     return [undefined, DolphinErrorTypes.DATABASE_ERROR];
                 }
