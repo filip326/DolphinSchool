@@ -1,16 +1,13 @@
-import checkAuth from "@/server/composables/checkAuth";
 import Subject from "../../Dolphin/Course/Subject";
 
 export default defineEventHandler(async (event) => {
     
-    // check authentication
-    const authError = (await checkAuth(event))[1];
-
-    if (authError) {
-        return createError({
-            statusCode: 401,
-            statusMessage: "Unauthorized"
-        });
+    if (
+        !event.context.auth.authenticated ||
+        event.context.auth.mfa_required ||
+        !event.context.auth.user
+    ) {
+        throw createError({ statusCode: 401, message: "Unauthorized", });
     }
 
     // send subject list
@@ -18,7 +15,7 @@ export default defineEventHandler(async (event) => {
     if (subjectListError || !subjects) {
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 

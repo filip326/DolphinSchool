@@ -1,19 +1,14 @@
-import checkAuth from "../../composables/checkAuth";
-
 export default eventHandler(async (event) => {
-    const [user, error] = await checkAuth(event, {
-        throwErrOnAuthFail: false
-    });
-
-    if (error || !user) {
-        throw createError({
-            statusCode: 401,
-            statusMessage: "Unauthorized"
-        });
+    if (
+        !event.context.auth.authenticated ||
+        event.context.auth.mfa_required ||
+        !event.context.auth.user
+    ) {
+        throw createError({ statusCode: 401, message: "Unauthorized", });
     }
 
     return {
-        username: user.username,
-        fullName: user.fullName
+        username: event.context.auth.user.username,
+        fullName: event.context.auth.user.fullName,
     };
 });

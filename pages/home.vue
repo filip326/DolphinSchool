@@ -12,7 +12,7 @@ export default {
     async beforeMount() {
         await checkAuth();
         this.passwordless_setup = window.localStorage.getItem("passwordless") != null || !pwless.isAvailable() || !pwless.isLocalAuthenticator();
-    }
+    },
 };
 </script>
 

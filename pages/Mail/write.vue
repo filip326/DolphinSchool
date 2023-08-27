@@ -5,9 +5,9 @@ export default {
     data() {
         return {
             absender: "Du",
-            empfaenger: ""
+            empfaenger: "",
         };
-    }
+    },
 };
 </script>
 

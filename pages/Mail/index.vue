@@ -3,12 +3,12 @@ export default {
     data() {
         return {
             tab: "ungelesen",
-            show_floating_action_btn: false
+            show_floating_action_btn: false,
         };
     },
     beforeMount() {
         this.show_floating_action_btn = window.innerWidth < 600;
-    }
+    },
 };
 </script>
 

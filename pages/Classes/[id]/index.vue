@@ -5,7 +5,7 @@ export default {
             tab: null,
             tabs: ["Mitglieder", "Stundenplan", "Verlauf", "Anwesendheit", "Noten"],
             search_class: "",
-            timeout: ref<any>()
+            timeout: ref<any>(),
         };
     },
     methods: {
@@ -19,8 +19,8 @@ export default {
             this.timeout = setTimeout(() => {
                 this.search();
             }, 500);
-        }
-    }
+        },
+    },
 };
 </script>
 

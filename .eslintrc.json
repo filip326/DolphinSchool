@@ -22,11 +22,18 @@
         "vue/valid-v-on": "off",
         "no-undef": "off",
         "switch-colon-spacing": "warn",
+        "comma-dangle": ["error", {
+            "arrays": "never",
+            "objects": "always",
+            "imports": "never",
+            "exports": "never",
+            "functions": "never"
+        }],
         "@typescript-eslint/naming-convention": ["error", 
             // variables
             {
                 "selector": "variable",
-                "format": ["camelCase", "PascalCase", "UPPER_CASE"]
+                "format": ["camelCase"]
             },
             // class, enum, interface, type alias
             {

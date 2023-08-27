@@ -67,12 +67,12 @@ class User implements WithId<IUser> {
                 const dbResult = await userCollection
                     .find({
                         fullName: {
-                            $regex: options.nameQuery ?? ""
+                            $regex: options.nameQuery ?? "",
                         },
                         cources: options.cources ?? null,
                         class: options.class ?? null,
                         parent: options.parent ?? null,
-                        child: options.child ?? null
+                        child: options.child ?? null,
                     })
                     .skip(options.skip ?? 0);
 
@@ -96,7 +96,7 @@ class User implements WithId<IUser> {
     static async getUserById(id: ObjectId): Promise<MethodResult<User>> {
         const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const userCollection = dolphin.database.collection<IUser>("users");
-        const user = await userCollection.findOne({ _id: id });
+        const user = await userCollection.findOne({ _id: id, });
         if (!user) {
             return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
@@ -106,7 +106,7 @@ class User implements WithId<IUser> {
     static async getUserByUsername(username: string): Promise<MethodResult<User>> {
         const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const userCollection = dolphin.database.collection<IUser>("users");
-        const user = await userCollection.findOne({ username });
+        const user = await userCollection.findOne({ username, });
         if (!user) {
             return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
@@ -117,7 +117,7 @@ class User implements WithId<IUser> {
         const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const userCollection = dolphin.database.collection<IUser>("users");
         const users = await userCollection
-            .find({ fullName: { $regex: query, $options: "i" } })
+            .find({ fullName: { $regex: query, $options: "i", }, })
             .toArray();
         return [users.map((user) => new User(userCollection, user)), null];
     }
@@ -128,7 +128,7 @@ class User implements WithId<IUser> {
     }): Promise<MethodResult<User[]>> {
         const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const userCollection = dolphin.database.collection<IUser>("users");
-        const users = await userCollection.find({}, { ...options }).toArray();
+        const users = await userCollection.find({}, { ...options, }).toArray();
         return [users.map((user) => new User(userCollection, user)), null];
     }
 
@@ -146,7 +146,7 @@ class User implements WithId<IUser> {
             fullName: options.fullName,
             username: options.username,
             password: passwordHash,
-            permissions: options.permissions ?? 0
+            permissions: options.permissions ?? 0,
         };
 
         // check if user type is valid
@@ -155,7 +155,7 @@ class User implements WithId<IUser> {
         }
 
         // check if user with same username exists
-        const existingUser = await userCollection.findOne({ username: options.username });
+        const existingUser = await userCollection.findOne({ username: options.username, });
         if (existingUser) {
             return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
         }
@@ -166,7 +166,7 @@ class User implements WithId<IUser> {
             return [undefined, DolphinErrorTypes.FAILED];
         }
 
-        return [{ id: result.insertedId, username: options.username, password }, null];
+        return [{ id: result.insertedId, username: options.username, password, }, null];
     }
 
     private static generatePassword(): string {
@@ -249,7 +249,7 @@ class User implements WithId<IUser> {
                 algorithm: "SHA1",
                 digits: 6,
                 period: 30,
-                secret: OTPAuth.Secret.fromBase32(this.mfa_secret)
+                secret: OTPAuth.Secret.fromBase32(this.mfa_secret),
             });
         }
         if (this.mfa_setup_secret) {
@@ -259,7 +259,7 @@ class User implements WithId<IUser> {
                 algorithm: "SHA1",
                 digits: 6,
                 period: 30,
-                secret: OTPAuth.Secret.fromBase32(this.mfa_setup_secret)
+                secret: OTPAuth.Secret.fromBase32(this.mfa_setup_secret),
             });
         }
 
@@ -282,7 +282,7 @@ class User implements WithId<IUser> {
 
         if (index && index % 1 === 0 && index < parentsIds.length && index >= 0) {
             const dbResult = await this.userCollection.findOne({
-                _id: parentsIds[index]
+                _id: parentsIds[index],
             });
             if (!dbResult) {
                 return [undefined, DolphinErrorTypes.NOT_FOUND];
@@ -295,7 +295,7 @@ class User implements WithId<IUser> {
         }
 
         const dbResult = await this.userCollection
-            .find({ $or: parentsIds.map((id) => ({ _id: id })) })
+            .find({ $or: parentsIds.map((id) => ({ _id: id, })), })
             .toArray();
         if (!dbResult || dbResult.length === 0) {
             return [undefined, DolphinErrorTypes.NOT_FOUND];
@@ -325,7 +325,7 @@ class User implements WithId<IUser> {
 
         if (index && index % 1 === 0 && index < studentsIds.length && index >= 0) {
             const dbResult = await this.userCollection.findOne({
-                _id: studentsIds[index]
+                _id: studentsIds[index],
             });
             if (!dbResult) {
                 return [undefined, DolphinErrorTypes.NOT_FOUND];
@@ -338,7 +338,7 @@ class User implements WithId<IUser> {
         }
 
         const dbResult = await this.userCollection
-            .find({ $or: studentsIds.map((id) => ({ _id: id })) })
+            .find({ $or: studentsIds.map((id) => ({ _id: id, })), })
             .toArray();
         if (!dbResult || dbResult.length === 0) {
             return [undefined, DolphinErrorTypes.NOT_FOUND];
@@ -369,8 +369,8 @@ class User implements WithId<IUser> {
         this.permissions = this._permissionManager.permissions;
         try {
             const updateResult = await this.userCollection.findOneAndUpdate(
-                { _id: this._id },
-                { $set: { permissions: this.permissions } }
+                { _id: this._id, },
+                { $set: { permissions: this.permissions, }, }
             );
             return [updateResult.ok === 1, null];
         } catch {
@@ -387,8 +387,8 @@ class User implements WithId<IUser> {
         this.permissions = this._permissionManager.permissions;
         try {
             const updateResult = await this.userCollection.findOneAndUpdate(
-                { _id: this._id },
-                { $set: { permissions: this.permissions } }
+                { _id: this._id, },
+                { $set: { permissions: this.permissions, }, }
             );
             return [updateResult.ok === 1, null];
         } catch {
@@ -433,9 +433,9 @@ class User implements WithId<IUser> {
         try {
             const dbResult = await this.userCollection.findOneAndUpdate(
                 {
-                    _id: this._id
+                    _id: this._id,
                 },
-                { $set: { password: this.password } }
+                { $set: { password: this.password, }, }
             );
             if (dbResult.ok === 1) {
                 return [true, null];
@@ -479,7 +479,7 @@ class User implements WithId<IUser> {
             return true;
         }
 
-        return this._totp.validate({ token: code, window: 10 }) !== null;
+        return this._totp.validate({ token: code, window: 10, }) !== null;
     }
 
     async setUpMFA(): Promise<MethodResult<string>> {
@@ -501,14 +501,14 @@ class User implements WithId<IUser> {
             algorithm: "SHA1",
             digits: 6,
             period: 30,
-            secret: secret
+            secret: secret,
         });
 
         // 4. save this.mfa_secret to database
 
         const dbResult = await this.userCollection.findOneAndUpdate(
-            { _id: this._id },
-            { $set: { mfa_setup_secret: this.mfa_setup_secret } }
+            { _id: this._id, },
+            { $set: { mfa_setup_secret: this.mfa_setup_secret, }, }
         );
 
         // 5. return the setup url for the user to scan if the database update was successful
@@ -535,7 +535,7 @@ class User implements WithId<IUser> {
         }
 
         // 2. check if code is valid
-        if (this._setupTotp.validate({ token: code, window: 30, timestamp: Date.now() }) === null) {
+        if (this._setupTotp.validate({ token: code, window: 30, timestamp: Date.now(), }) === null) {
             console.log("Expected code" + this._setupTotp.generate());
             console.log("Actual code" + code);
             return [false, null];
@@ -548,10 +548,10 @@ class User implements WithId<IUser> {
         this._setupTotp = undefined;
 
         const dbResult = await this.userCollection.findOneAndUpdate(
-            { _id: this._id },
+            { _id: this._id, },
             {
-                $set: { mfa_secret: this.mfa_secret },
-                $unset: { mfa_setup_secret: "" }
+                $set: { mfa_secret: this.mfa_secret, },
+                $unset: { mfa_setup_secret: "", },
             }
         );
 
@@ -593,8 +593,8 @@ class User implements WithId<IUser> {
         }
 
         const dbResult = await this.userCollection.findOneAndUpdate(
-            { _id: this._id },
-            { $set: { doNotAskForMFASetupUntil: this.doNotAskForMFASetupUntil } }
+            { _id: this._id, },
+            { $set: { doNotAskForMFASetupUntil: this.doNotAskForMFASetupUntil, }, }
         );
 
         if (dbResult.ok === 1) {
@@ -619,8 +619,8 @@ class User implements WithId<IUser> {
         this._setupTotp = undefined;
 
         const dbResult = await this.userCollection.findOneAndUpdate(
-            { _id: this._id },
-            { $unset: { mfa_secret: "", mfa_setup_secret: "" } }
+            { _id: this._id, },
+            { $unset: { mfa_secret: "", mfa_setup_secret: "", }, }
         );
 
         if (dbResult.ok === 1) {
@@ -637,8 +637,8 @@ class User implements WithId<IUser> {
         this.mfa_setup_secret = undefined;
 
         const dbResult = await this.userCollection.findOneAndUpdate(
-            { _id: this._id },
-            { $unset: { mfa_setup_secret: "" } }
+            { _id: this._id, },
+            { $unset: { mfa_setup_secret: "", }, }
         );
 
         if (dbResult.ok === 1) {
@@ -670,17 +670,17 @@ class User implements WithId<IUser> {
         this.webAuthNCredentials[id] = {
             credential: credential.credential,
             authenticator: {
-                name: credential.authenticatorData
-            }
+                name: credential.authenticatorData,
+            },
         };
 
         // 5. save webAuthNCredentials to database
         const dbResult = await this.userCollection.findOneAndUpdate(
-            { _id: this._id },
+            { _id: this._id, },
             {
                 $set: {
-                    [`webAuthNCredentials.${id}`]: this.webAuthNCredentials[id]
-                }
+                    [`webAuthNCredentials.${id}`]: this.webAuthNCredentials[id],
+                },
             }
         );
 

@@ -4,14 +4,14 @@ export default {
         const rows = 32;
         const cols = 32;
         const initialColor = "#000000";
-        const img = Array.from({ length: rows }, () => Array(cols).fill(initialColor));
+        const img = Array.from({ length: rows, }, () => Array(cols).fill(initialColor));
 
         return {
             img,
             color: initialColor,
             currentIndex: 0,
             currentI: 0,
-            pixelBorder: true
+            pixelBorder: true,
         };
     },
     methods: {
@@ -22,13 +22,13 @@ export default {
         },
         setColor() {
             this.img[this.currentIndex][this.currentI] = this.color;
-        }
+        },
     },
     watch: {
         color() {
             this.setColor();
-        }
-    }
+        },
+    },
 };
 </script>
 

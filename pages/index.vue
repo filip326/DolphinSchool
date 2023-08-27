@@ -3,7 +3,7 @@ import QRCode from "qrcode";
 import { client as pwless } from "@passwordless-id/webauthn";
 
 definePageMeta({
-    layout: "login"
+    layout: "login",
 });
 </script>
 
@@ -15,7 +15,7 @@ export default {
             pwd: "",
             error: {
                 shown: false,
-                message: ""
+                message: "",
             },
             passwordless: {
                 avaible: true,
@@ -24,7 +24,7 @@ export default {
                 qr_url: "",
                 qr_code: "",
                 interval: ref<NodeJS.Timer | undefined>(undefined),
-            }
+            },
         };
     },
     async beforeMount() {
@@ -37,8 +37,8 @@ export default {
                 method: "POST",
                 body: JSON.stringify({
                     username: this.username,
-                    password: this.pwd
-                })
+                    password: this.pwd,
+                }),
             });
 
             if (response.status.value === "error") {
@@ -65,7 +65,7 @@ export default {
         },
         async loadPasswordlessQRCode() {
             const response = await useFetch("/api/auth/passwordless/init", {
-                method: "GET"
+                method: "GET",
             });
 
             if (response.status.value !== "success") {
@@ -105,7 +105,7 @@ export default {
                 }
 
                 const signed = await pwless.authenticate([ data.credId ], response.data.value?.challenge, {
-                    userVerification: "required"
+                    userVerification: "required",
                 });
 
                 await useFetch("/api/auth/passwordless/approve", {
@@ -113,8 +113,8 @@ export default {
                     body: JSON.stringify({
                         username: data.username,
                         tokenHash: response.data.value?.tokenHash,
-                        signed: signed
-                    })
+                        signed: signed,
+                    }),
                 });
 
             } catch {
@@ -126,7 +126,7 @@ export default {
                 return;
             }
 
-            const response = await useFetch("/api/auth/passwordless/login", { method: "POST", body: JSON.stringify({ token: this.passwordless.token }) });
+            const response = await useFetch("/api/auth/passwordless/login", { method: "POST", body: JSON.stringify({ token: this.passwordless.token, }), });
 
             if (response.status.value !== "success") {
                 this.error.shown = true;

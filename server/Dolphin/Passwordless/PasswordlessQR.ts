@@ -45,7 +45,7 @@ class PasswordlessQR {
                 token,
                 token_hash: tokenSHA256,
                 challenge,
-                expirery
+                expirery,
             });
 
         if (!dbResult.acknowledged) {
@@ -57,7 +57,7 @@ class PasswordlessQR {
                 token,
                 url: `${process.env.DOMAIN}/passwordless/aprove?token=${tokenSHA256}&challenge=${challenge}`,
                 challenge,
-                tokenSHA256
+                tokenSHA256,
             },
             null
         ];
@@ -75,7 +75,7 @@ class PasswordlessQR {
         const dbResult = await dolphin.database
             .collection<IPasswordlessQR>("passwordless")
             .findOne({
-                token_hash: tokenHash
+                token_hash: tokenHash,
             });
 
         if (!dbResult) {
@@ -93,14 +93,14 @@ class PasswordlessQR {
                     credentialId: solvedChallenge.credentialId,
                     authenticatorData: solvedChallenge.authenticatorData,
                     clientData: solvedChallenge.clientData,
-                    signature: solvedChallenge.signature
+                    signature: solvedChallenge.signature,
                 },
                 credentials,
                 {
                     challenge,
                     origin: process.env.DOMAIN ?? "",
                     userVerified: true,
-                    counter: -1
+                    counter: -1,
                 }
             );
 
@@ -113,15 +113,15 @@ class PasswordlessQR {
                 .collection<IPasswordlessQR>("passwordless")
                 .updateOne(
                     {
-                        token_hash: tokenHash
+                        token_hash: tokenHash,
                     },
                     {
                         $set: {
-                            user: user._id
+                            user: user._id,
                         },
                         $inc: {
-                            expirery: 1000 * 120 // add 120 seconds to expirery
-                        }
+                            expirery: 1000 * 120, // add 120 seconds to expirery
+                        },
                     }
                 );
 
@@ -142,7 +142,7 @@ class PasswordlessQR {
         const challenge = await dolphin.database
             .collection<IPasswordlessQR>("passwordless")
             .findOne({
-                token
+                token,
             });
 
         if (!challenge) {
@@ -158,7 +158,7 @@ class PasswordlessQR {
         }
 
         const user = await dolphin.database.collection<User>("users").findOne({
-            _id: challenge.user
+            _id: challenge.user,
         });
 
         if (!user) {
@@ -167,7 +167,7 @@ class PasswordlessQR {
 
         // login successful, delete token since it's single use
         await dolphin.database.collection<IPasswordlessQR>("passwordless").deleteOne({
-            token
+            token,
         });
 
         return [user, null];
@@ -185,7 +185,7 @@ class PasswordlessQR {
         const challenge = await dolphin.database
             .collection<IPasswordlessQR>("passwordless")
             .findOne({
-                token
+                token,
             });
 
         if (!challenge) {
@@ -200,7 +200,7 @@ class PasswordlessQR {
             // auth registration
             const result = await server.verifyRegistration(solvedChallenge, {
                 challenge: challenge.challenge,
-                origin: process.env.DOMAIN ?? ""
+                origin: process.env.DOMAIN ?? "",
             });
 
             if (!result) {
@@ -216,7 +216,7 @@ class PasswordlessQR {
 
             // login successful, delete token since it's single use
             await dolphin.database.collection<IPasswordlessQR>("passwordless").deleteOne({
-                token
+                token,
             });
 
             return [true, null];
@@ -229,8 +229,8 @@ class PasswordlessQR {
         const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         await dolphin.database.collection<IPasswordlessQR>("passwordless").deleteMany({
             expirery: {
-                $lt: Date.now() - 1000 * 60 * 2 // delete 2 minutes after expirery
-            }
+                $lt: Date.now() - 1000 * 60 * 2, // delete 2 minutes after expirery
+            },
         });
     }
 }

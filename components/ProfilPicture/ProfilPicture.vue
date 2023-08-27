@@ -3,12 +3,12 @@ export default {
     props: {
         rounded: {
             type: Boolean,
-            default: false
+            default: false,
         },
         img: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
     computed: {
         parsedImg(): Array<Array<string>> {
@@ -19,8 +19,8 @@ export default {
                 parsedImg.push(imgSplit.slice(i * 32, (i + 1) * 32));
             }
             return parsedImg;
-        }
-    }
+        },
+    },
 };
 </script>
 

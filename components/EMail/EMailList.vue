@@ -4,8 +4,8 @@ export default {
     props: {
         url: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
     data() {
         return {
@@ -16,7 +16,7 @@ export default {
                     sendby: "1234567890123456789",
                     timestamp: "2023-05-05",
                     read: true,
-                    stared: false
+                    stared: false,
                 },
                 {
                     id: "2",
@@ -24,7 +24,7 @@ export default {
                     sendby: "langer Name - wirklich sehr lang",
                     timestamp: "2023-05-05",
                     read: true,
-                    stared: false
+                    stared: false,
                 },
                 {
                     id: "3",
@@ -32,7 +32,7 @@ export default {
                     sendby: "heeecker",
                     timestamp: "2023-05-05",
                     read: false,
-                    stared: false
+                    stared: false,
                 },
                 {
                     id: "4",
@@ -40,7 +40,7 @@ export default {
                     sendby: "heeecker",
                     timestamp: "2023-05-05",
                     read: true,
-                    stared: false
+                    stared: false,
                 },
                 {
                     id: "5",
@@ -48,7 +48,7 @@ export default {
                     sendby: "heeecker",
                     timestamp: "2023-05-05",
                     read: false,
-                    stared: false
+                    stared: false,
                 },
                 {
                     id: "6",
@@ -56,9 +56,9 @@ export default {
                     sendby: "heeecker",
                     timestamp: "2023-05-05",
                     read: false,
-                    stared: false
+                    stared: false,
                 }
-            ]
+            ],
         };
     },
     methods: {
@@ -67,8 +67,8 @@ export default {
         },
         loadMore() {
             // todo
-        }
-    }
+        },
+    },
 };
 </script>
 

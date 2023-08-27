@@ -44,7 +44,7 @@ class Subject implements ISubject {
                 long: options.long,
                 short: options.short,
                 teacher: options.teacher,
-                main: options.main
+                main: options.main,
             });
             return [await dbResult.toArray(), null];
         } catch {
@@ -62,7 +62,7 @@ class Subject implements ISubject {
                 return [
                     new Subject(dolphin.database.collection<ISubject>("subjects"), {
                         ...subject,
-                        _id: dbResult.insertedId
+                        _id: dbResult.insertedId,
                     }),
                     null
                 ];
@@ -78,7 +78,7 @@ class Subject implements ISubject {
         const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const dbResult = await dolphin.database
             .collection<ISubject>("subjects")
-            .findOne({ _id: id });
+            .findOne({ _id: id, });
         if (dbResult) {
             return [new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult), null];
         } else {
@@ -114,8 +114,8 @@ class Subject implements ISubject {
 
         try {
             const dbResult = await this.subjectCollection.updateOne(
-                { _id: this._id },
-                { $push: { teachers: teacher._id } }
+                { _id: this._id, },
+                { $push: { teachers: teacher._id, }, }
             );
             if (dbResult.acknowledged) {
                 return [true, null];
@@ -134,8 +134,8 @@ class Subject implements ISubject {
     async removeTeacher(teacher: User): Promise<MethodResult<boolean>> {
         this.teachers = this.teachers.filter((t) => !t.equals(teacher._id));
         const dbResult = await this.subjectCollection.updateOne(
-            { _id: this._id },
-            { $pull: { teachers: teacher._id } }
+            { _id: this._id, },
+            { $pull: { teachers: teacher._id, }, }
         );
         if (dbResult.acknowledged) {
             return [true, null];
@@ -151,7 +151,7 @@ class Subject implements ISubject {
     async delete(): Promise<MethodResult<boolean>> {
         try {
             const dbResult = await this.subjectCollection.deleteOne({
-                _id: this._id
+                _id: this._id,
             });
             if (dbResult.acknowledged) {
                 return [true, null];

@@ -14,7 +14,7 @@ describe("User class", () => {
         await Dolphin.init({
             prod: false,
             DB_URL: process.env.DB_URL,
-            DB_NAME: "dolphinSchool--test-User_class"
+            DB_NAME: "dolphinSchool--test-User_class",
         });
 
         const db = Dolphin.instance!.database;
@@ -30,7 +30,7 @@ describe("User class", () => {
             username: "testUser",
             fullName: "Test User",
             type: "student",
-            password: "testPassword"
+            password: "testPassword",
         });
 
         expect(userCreateError).toBeNull();
@@ -44,7 +44,7 @@ describe("User class", () => {
             username: "testUser0",
             fullName: "Test User 0",
             type: "student",
-            password: "testPassword"
+            password: "testPassword",
         });
 
         expect(userCreateError).toBeDefined();
@@ -60,7 +60,7 @@ describe("User class", () => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             type: "invalidType",
-            password: "testPassword"
+            password: "testPassword",
         });
 
         expect(userCreateError).toBeDefined();
@@ -87,7 +87,7 @@ describe("User class", () => {
 
     it("should find a user by id", async () => {
         const dbResult = await Dolphin.instance!.database.collection("users").findOne({
-            username: "testUser0"
+            username: "testUser0",
         });
         if (!dbResult) throw new Error("User not found in database");
 
@@ -108,7 +108,7 @@ describe("User class", () => {
     });
 
     it("should list all users", async () => {
-        const [userList, userListError] = await User.listUsers({ limit: 30 });
+        const [userList, userListError] = await User.listUsers({ limit: 30, });
 
         expect(userListError).toBeNull();
         expect(userList).toBeDefined();
@@ -119,7 +119,7 @@ describe("User class", () => {
     }, 30_000);
 
     it("should list 15 users", async () => {
-        const [userList, userListError] = await User.listUsers({ limit: 15 });
+        const [userList, userListError] = await User.listUsers({ limit: 15, });
 
         expect(userListError).toBeNull();
         expect(userList).toBeDefined();
@@ -130,7 +130,7 @@ describe("User class", () => {
     });
 
     it("should list 15 users starting from the 10th user", async () => {
-        const [userList, userListError] = await User.listUsers({ limit: 15, skip: 10 });
+        const [userList, userListError] = await User.listUsers({ limit: 15, skip: 10, });
 
         expect(userListError).toBeNull();
         expect(userList).toBeDefined();

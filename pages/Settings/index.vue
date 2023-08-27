@@ -5,39 +5,39 @@ export default {
             settings: [
                 {
                     name: "Persönliche Einstellungen",
-                    link: "/settings/me"
+                    link: "/settings/me",
                 },
                 {
                     name: "Persönliche Einstellungen",
-                    link: "/settings/me"
+                    link: "/settings/me",
                 },
                 {
                     name: "Persönliche Einstellungen",
-                    link: "/settings/me"
+                    link: "/settings/me",
                 },
                 {
                     name: "Persönliche Einstellungen",
-                    link: "/settings/me"
+                    link: "/settings/me",
                 },
                 {
                     name: "Persönliche Einstellungen",
-                    link: "/settings/me"
+                    link: "/settings/me",
                 },
                 {
                     name: "Persönliche Einstellungen",
-                    link: "/settings/me"
+                    link: "/settings/me",
                 },
                 {
                     name: "Persönliche Einstellungen",
-                    link: "/settings/me"
+                    link: "/settings/me",
                 },
                 {
                     name: "Persönliche Einstellungen",
-                    link: "/settings/me"
+                    link: "/settings/me",
                 }
-            ]
+            ],
         };
-    }
+    },
 };
 </script>
 

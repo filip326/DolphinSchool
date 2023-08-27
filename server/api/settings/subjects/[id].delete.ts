@@ -1,28 +1,28 @@
 import { ObjectId } from "mongodb";
 import Subject from "../../../Dolphin/Course/Subject";
-import { Permissions } from "../../../Dolphin/Permissions/PermissionManager";
-import checkAuth from "@/server/composables/checkAuth";
 
 export default defineEventHandler(async (event) => {
-
-    const authError = (await checkAuth(event, { requirePerm: Permissions.MANAGE_SUBJECTS, throwErrOnAuthFail: true }))[1];
-    if (authError) {
-        return authError;
+    if (
+        !event.context.auth.authenticated ||
+        event.context.auth.mfa_required ||
+        !event.context.auth.user
+    ) {
+        throw createError({ statusCode: 401, message: "Unauthorized", });
     }
 
-    const { id } = getRouterParams(event);
+    const { id, } = getRouterParams(event);
 
     if (!id) {
         return createError({
             statusCode: 400,
-            statusMessage: "Bad Request"
+            statusMessage: "Bad Request",
         });
     }
 
     if (!ObjectId.isValid(id)) {
         return createError({
             statusCode: 400,
-            statusMessage: "Bad Request"
+            statusMessage: "Bad Request",
         });
     }
 
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
     if (subjectFindError || !subject) {
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
@@ -40,12 +40,12 @@ export default defineEventHandler(async (event) => {
     if (deleteError) {
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
     return deleteResult ? "Ok" : createError({
         statusCode: 500,
-        statusMessage: "Internal Server Error"
+        statusMessage: "Internal Server Error",
     });
 });

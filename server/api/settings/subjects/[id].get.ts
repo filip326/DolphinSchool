@@ -1,34 +1,31 @@
 import { ObjectId } from "mongodb";
 import Subject from "../../../Dolphin/Course/Subject";
-import checkAuth from "@/server/composables/checkAuth";
 
 
 export default defineEventHandler(async (event) => {
 
-    // check authentication
-    const authError = (await checkAuth(event))[1];
-
-    if (authError) {
-        return createError({
-            statusCode: 401,
-            statusMessage: "Unauthorized"
-        });
+    if (
+        !event.context.auth.authenticated ||
+        event.context.auth.mfa_required ||
+        !event.context.auth.user
+    ) {
+        throw createError({ statusCode: 401, message: "Unauthorized", });
     }
 
     // send subject with id
-    const { id } = getRouterParams(event);
+    const { id, } = getRouterParams(event);
 
     if (!id) {
         return createError({
             statusCode: 400,
-            statusMessage: "Bad Request"
+            statusMessage: "Bad Request",
         });
     }
 
     if (!ObjectId.isValid(id)) {
         return createError({
             statusCode: 400,
-            statusMessage: "Bad Request"
+            statusMessage: "Bad Request",
         });
     }
 
@@ -37,14 +34,14 @@ export default defineEventHandler(async (event) => {
     if (subjectFindError) {
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
     if (!subject) {
         return createError({
             statusCode: 404,
-            statusMessage: "Not Found"
+            statusMessage: "Not Found",
         });
     }
 

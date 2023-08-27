@@ -8,32 +8,32 @@ export default {
                 data: {
                     name: "Some Name",
                     username: "Example Username",
-                }
+                },
             },
             show_nav_drawer_button: false,
             navigation_items: [
-                { title: "Home", icon: "mdi-home", link: "/" },
+                { title: "Home", icon: "mdi-home", link: "/", },
                 {
                     title: "About",
                     icon: "mdi-information",
-                    link: "/"
+                    link: "/",
                 },
-                { title: "Mail", icon: "mdi-email", link: "/mail" },
+                { title: "Mail", icon: "mdi-email", link: "/mail", },
                 {
                     title: "Settings",
                     icon: "mdi-cog",
-                    link: "/settings"
+                    link: "/settings",
                 }
-            ] as { title: string; icon: `mdi-${string}`; link: string }[]
+            ] as { title: string; icon: `mdi-${string}`; link: string }[],
         };
     },
     beforeMount() {
         this.show_nav_drawer_button = window.innerWidth > 1200;
-        useFetch("/api/whoami", { method: "GET" }).then((res) => {
+        useFetch("/api/whoami", { method: "GET", }).then((res) => {
             if (res.status.value === "success") {
                 this.profile.data = {
                     name: res.data.value?.fullName ?? "",
-                    username: res.data.value?.username ?? ""
+                    username: res.data.value?.username ?? "",
                 };
 
                 if (this.profile.data.name !== "" && this.profile.data.username !== "") {
@@ -41,7 +41,7 @@ export default {
                 };
             }
         });
-    }
+    },
 };
 </script>
 

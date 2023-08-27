@@ -3,7 +3,7 @@ import { client as pwless } from "@passwordless-id/webauthn";
 
 definePageMeta({
     title: "passwordless",
-    layout: "non"
+    layout: "non",
 });
 </script>
 
@@ -22,7 +22,7 @@ export default {
                 token: "",
                 challenge: "",
                 keys: [],
-            }
+            },
         };
     },
     methods: {
@@ -54,8 +54,8 @@ export default {
                     method: "POST", body: JSON.stringify({
                         username: this.passwordlessData.username,
                         tokenHash: this.passwordlessData.token,
-                        signed: authentication
-                    })
+                        signed: authentication,
+                    }),
                 });
 
                 if (response2.status.value !== "success") {
@@ -82,7 +82,7 @@ export default {
                 return;
             }
 
-        }
+        },
     },
     async beforeMount() {
         this.continue_button.loading = true;
@@ -133,7 +133,7 @@ export default {
         this.passwordlessData.token = token;
 
         this.continue_button.loading = false;
-    }
+    },
 };
 </script>
 

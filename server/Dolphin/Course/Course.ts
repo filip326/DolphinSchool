@@ -27,8 +27,8 @@ class Course implements WithId<ICourse> {
                     .collection<ICourse>("cources")
                     .find({
                         name: {
-                            $regex: options.nameQuery ?? ""
-                        }
+                            $regex: options.nameQuery ?? "",
+                        },
                     })
                     .skip(options.skip ?? 0);
 
@@ -60,7 +60,7 @@ class Course implements WithId<ICourse> {
             try {
                 const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
                 const dbResult = await dolphin?.database.collection<ICourse>("cources").findOne({
-                    _id: options.id
+                    _id: options.id,
                 });
                 if (dbResult) {
                     const cource = new Course(
@@ -79,7 +79,7 @@ class Course implements WithId<ICourse> {
             try {
                 const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
                 const dbResult = await dolphin?.database.collection<ICourse>("cources").findOne({
-                    name: options.name
+                    name: options.name,
                 });
                 if (dbResult) {
                     const cource = new Course(
@@ -109,7 +109,7 @@ class Course implements WithId<ICourse> {
                 name: options.name,
                 subject: options.subject,
                 teacherIds: [options.teacher],
-                userIds: []
+                userIds: [],
             });
 
             if (!newCourse.acknowledged) {
@@ -121,7 +121,7 @@ class Course implements WithId<ICourse> {
                 name: options.name,
                 subject: options.subject,
                 teacherIds: [options.teacher],
-                userIds: []
+                userIds: [],
             });
 
             return [course, null];
@@ -144,7 +144,7 @@ class Course implements WithId<ICourse> {
                     {},
                     {
                         skip: options.skip,
-                        limit: options.limit || 10
+                        limit: options.limit || 10,
                     }
                 )
                 .toArray();
@@ -172,14 +172,14 @@ class Course implements WithId<ICourse> {
                     ...users.map((u) => ({
                         $or: [
                             {
-                                userIds: u._id
+                                userIds: u._id,
                             },
                             {
-                                teacherIds: u._id
+                                teacherIds: u._id,
                             }
-                        ]
+                        ],
                     }))
-                ]
+                ],
             })
             .toArray();
 

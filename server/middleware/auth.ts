@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     event.context.auth = {
         authenticated: false,
         mfa_required: false,
-        user: undefined
+        user: undefined,
     };
     // get token from cookies
     const token = parseCookies(event).token;
@@ -66,7 +66,7 @@ export default defineEventHandler(async (event) => {
             path: "/",
             sameSite: "strict",
             secure: useRuntimeConfig().prod,
-            httpOnly: true
+            httpOnly: true,
         });
         return;
     }

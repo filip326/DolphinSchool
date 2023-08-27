@@ -4,7 +4,7 @@ import { ref } from "vue";
 
 definePageMeta({
     title: "Fächer",
-    layout: "default"
+    layout: "default",
 });
 
 </script>
@@ -28,7 +28,7 @@ export default {
         await checkAuth();
 
         
-    }
+    },
 };
 
 </script>

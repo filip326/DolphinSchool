@@ -7,8 +7,7 @@
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
-        "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue .",
-        "lint-fix": "yarn lint -- --fix"
+        "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue ."
     },
     "devDependencies": {
         "@jest/globals": "^29.6.2",

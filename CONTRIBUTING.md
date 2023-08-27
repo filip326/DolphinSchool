@@ -12,7 +12,7 @@
 
 ### ESLint
 
-Never irgnore an ESLint-Errors and Warnings!
+Never irgnore an ESLint-Error or Warning.
 ESLint's rules were writen for cleaner and more readable code. Your Pullrequest won't be merged, if the linter fails.
 
 ### Filenames and Directories

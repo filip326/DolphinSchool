@@ -5,12 +5,12 @@ export default defineEventHandler(async (event) => {
     
     
     // get signed string from body
-    const { signed, tokenHash, username } = await readBody(event);
+    const { signed, tokenHash, username, } = await readBody(event);
     
     if (!signed || !tokenHash || !username) {
         return createError({
             statusCode: 400,
-            statusMessage: "Bad Request"
+            statusMessage: "Bad Request",
         });
     }
 
@@ -19,14 +19,14 @@ export default defineEventHandler(async (event) => {
     if (userFindError) {
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
     if (!user) {
         return createError({
             statusCode: 404,
-            statusMessage: "Not Found"
+            statusMessage: "Not Found",
         });
     }
     
@@ -35,14 +35,14 @@ export default defineEventHandler(async (event) => {
     if (approveError) {
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
     if (!approveResult) {
         return createError({
             statusCode: 401,
-            statusMessage: "Unauthorized"
+            statusMessage: "Unauthorized",
         });
     }
     

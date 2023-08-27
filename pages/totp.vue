@@ -21,7 +21,7 @@
 
 <script setup>
 definePageMeta({
-    layout: "login"
+    layout: "login",
 });
 </script>
 
@@ -35,13 +35,13 @@ export default {
                 // 6 digits
                 totpLength: (v) => v.length === 6 || "Der Code muss 6-stellig sein",
                 // only numbers
-                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen"
+                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen",
             },
             error: {
                 shown: false,
-                message: ""
+                message: "",
             },
-            totp: ""
+            totp: "",
         };
     },
 
@@ -53,8 +53,8 @@ export default {
             const res = await useFetch("/api/2fa-totp", {
                 method: "GET",
                 body: JSON.stringify({
-                    totp: this.totp
-                })
+                    totp: this.totp,
+                }),
             });
 
             if (res.status.value === "success") {
@@ -63,11 +63,11 @@ export default {
                 this.error.shown = true;
                 this.error.message = "Der Code ist ungültig";
             }
-        }
+        },
     },
     beforeMount() {
         checkAuth();
-    }
+    },
 };
 </script>
 

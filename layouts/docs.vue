@@ -7,9 +7,9 @@ export default {
             searchItemLink: "",
             searchWidth: false,
             items: [
-                { title: "Start", icon: "mdi-home", link: "/" }
+                { title: "Start", icon: "mdi-home", link: "/", }
                 // add routes for docs
-            ] as { title: string; icon: `mdi-${string}`; link: string }[]
+            ] as { title: string; icon: `mdi-${string}`; link: string }[],
         };
     },
     beforeMount() {
@@ -22,8 +22,8 @@ export default {
                 if (item.link === "/") return false;
                 return true;
             });
-        }
-    }
+        },
+    },
 };
 </script>
 

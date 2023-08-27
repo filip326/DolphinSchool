@@ -5,17 +5,17 @@ export default {
     props: {
         error: {
             type: Object,
-            required: true
+            required: true,
         },
         type: {
             type: String as () => ErrorType,
-            required: true
+            required: true,
         },
         fix: {
             type: String,
             required: false,
-            default: "/"
-        }
+            default: "/",
+        },
     },
     methods: {
         width(): string {
@@ -32,9 +32,9 @@ export default {
             return {
                 statusCode: this.error.statusCode ?? 500,
                 statusMessage:
-                    this.error.statusMessage ?? "Unknown Error. Please contact the support."
+                    this.error.statusMessage ?? "Unknown Error. Please contact the support.",
             };
-        }
+        },
     },
     computed: {
         title(): string {
@@ -63,8 +63,8 @@ export default {
             } else {
                 return "https://http.cat/images/500.jpg";
             }
-        }
-    }
+        },
+    },
 };
 </script>
 

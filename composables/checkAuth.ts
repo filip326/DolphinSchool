@@ -3,11 +3,11 @@ type CheckAuthResult =
 
 export default async function checkAuth(): Promise<CheckAuthResult | undefined> {
     // check login status
-    const loginStatus = await useFetch("/api/auth/login-status", { method: "GET"});
+    const loginStatus = await useFetch("/api/auth/login-status", { method: "GET",});
     if (loginStatus.status.value === "success") {
         if (loginStatus.data.value === "Logged in") {
             // return data from /api/whoami
-            const whoami = await useFetch("/api/auth/whoami", { method: "GET"});
+            const whoami = await useFetch("/api/auth/whoami", { method: "GET",});
             if (whoami.status.value === "success") {
                 return whoami.data.value ?? undefined;
             } else {

@@ -2,10 +2,10 @@ import User from "../../Dolphin/User/User";
 import Session from "../../Dolphin/Session/Session";
 
 export default eventHandler(async (event) => {
-    const { username, password } = await readBody(event);
+    const { username, password, } = await readBody(event);
 
     if (!username || !password || typeof username !== "string" || typeof password !== "string") {
-        throw createError({ statusCode: 400, message: "Invalid body" });
+        throw createError({ statusCode: 400, message: "Invalid body", });
     }
 
     const [user, findUserError] = await User.getUserByUsername(username);
@@ -13,27 +13,27 @@ export default eventHandler(async (event) => {
     if (findUserError || !user) {
         throw createError({
             statusCode: 401,
-            message: "Invalid username or password"
+            message: "Invalid username or password",
         });
     }
 
     const [passwordCorrect, passwordCheckingError] = await user.comparePassword(password);
 
     if (passwordCheckingError) {
-        throw createError({ statusCode: 500, message: "Internal server error" });
+        throw createError({ statusCode: 500, message: "Internal server error", });
     }
 
     if (!passwordCorrect) {
         throw createError({
             statusCode: 401,
-            message: "Invalid username or password"
+            message: "Invalid username or password",
         });
     }
 
     const [session, sessionCreateError] = await Session.createSession(user);
 
     if (sessionCreateError || !session) {
-        throw createError({ statusCode: 500, message: "Internal server error" });
+        throw createError({ statusCode: 500, message: "Internal server error", });
     }
 
     
@@ -44,7 +44,7 @@ export default eventHandler(async (event) => {
         secure: useRuntimeConfig().prod,
         httpOnly: true,
         sameSite: "strict",
-        path: "/"
+        path: "/",
     });
 
     if (user.mfaEnabled) {

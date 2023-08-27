@@ -15,7 +15,7 @@ describe("Session class", () => {
         await Dolphin.init({
             prod: false,
             DB_URL: process.env.DB_URL,
-            DB_NAME: "dolphinSchool--test-Session_class"
+            DB_NAME: "dolphinSchool--test-Session_class",
         });
 
         const db = Dolphin.instance!.database;
@@ -33,7 +33,7 @@ describe("Session class", () => {
             expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
             lastUsed: Date.now(),
             state: SessionState.INACTIVE,
-            type: "Session"
+            type: "Session",
         });
     });
 
