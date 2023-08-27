@@ -1,9 +1,7 @@
 import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
 
-
 export default defineEventHandler(async () => {
-    
-    const [qrLoginData, error, ] = await PasswordlessQR.requestChallenge();
+    const [qrLoginData, error] = await PasswordlessQR.requestChallenge();
 
     if (error || !qrLoginData) {
         throw createError({
@@ -18,5 +16,4 @@ export default defineEventHandler(async () => {
         challenge: qrLoginData.challenge,
         tokenHash: qrLoginData.tokenSHA256,
     };
-
 });

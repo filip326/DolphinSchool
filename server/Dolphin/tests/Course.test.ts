@@ -24,7 +24,7 @@ describe("Course class", () => {
 
     it("should create a course", async () => {
         // create a teacher
-        const [teacher, teacherCreateError,] = await User.createUser({
+        const [teacher, teacherCreateError] = await User.createUser({
             fullName: "John Doe",
             type: "teacher",
             username: "johndoe",
@@ -33,7 +33,7 @@ describe("Course class", () => {
         expect(teacherCreateError).toBeNull();
         expect(teacher).toBeDefined();
 
-        const [subject, subjectCreateError,] = await Subject.create({
+        const [subject, subjectCreateError] = await Subject.create({
             longName: "Mathematics",
             short: "M",
             main: true,
@@ -51,7 +51,7 @@ describe("Course class", () => {
         if (!subject || !subject!._id) throw Error("subject._id is undefined");
         if (!teacher || !teacher!.id) throw Error("teacher._id is undefined");
 
-        const [course, courseCreateError,] = await Course.createCource({
+        const [course, courseCreateError] = await Course.createCource({
             name: "Mathematics 1",
             subject: subject._id,
             teacher: teacher.id,

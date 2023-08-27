@@ -1,18 +1,17 @@
 import { ObjectId } from "mongodb";
 import Subject from "../../../Dolphin/Course/Subject";
 
-
 export default defineEventHandler(async (event) => {
     if (
         !event.context.auth.authenticated ||
         event.context.auth.mfa_required ||
         !event.context.auth.user
     ) {
-        throw createError({ statusCode: 401, message: "Unauthorized", });
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     // send subject with id
-    const { id, } = getRouterParams(event);
+    const { id } = getRouterParams(event);
 
     if (!id) {
         return createError({
@@ -28,7 +27,9 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const [subject, subjectFindError,] = await Subject.getSubjectById(ObjectId.createFromHexString(id));
+    const [subject, subjectFindError] = await Subject.getSubjectById(
+        ObjectId.createFromHexString(id),
+    );
 
     if (subjectFindError) {
         return createError({
@@ -50,6 +51,4 @@ export default defineEventHandler(async (event) => {
         short: subject.short,
         main: subject.main,
     };
-
-
 });

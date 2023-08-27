@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
         event.context.auth.mfa_required ||
         !event.context.auth.user
     ) {
-        throw createError({ statusCode: 401, message: "Unauthorized", });
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     // get user object
@@ -16,15 +16,15 @@ export default defineEventHandler(async (event) => {
 
     // get session object
     const token = parseCookies(event).token;
-    const [session, sessionFindError,] = await Session.findSession(token);
+    const [session, sessionFindError] = await Session.findSession(token);
 
     if (sessionFindError || !session) {
-        throw createError({ statusCode: 401, message: "Unauthorized", });
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     // check if user needs 2fa and has not passed yet
     if (session.state !== SessionState.MFA_REQ) {
-        throw createError({ statusCode: 401, message: "Unauthorized", });
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     // check if user has set up 2fa
@@ -33,17 +33,17 @@ export default defineEventHandler(async (event) => {
     }
 
     // get totp code from body
-    const { totp, } = await readBody(event);
+    const { totp } = await readBody(event);
 
     // check if totp code matches pattern
     if (!/^[0-9]{8}$/.test(totp)) {
-        throw createError({ statusCode: 400, message: "TOTP Token invalid", });
+        throw createError({ statusCode: 400, message: "TOTP Token invalid" });
     }
 
     // check if totp code is valid
 
     if (!user.checkMFA(totp)) {
-        throw createError({ statusCode: 401, message: "TOTP Token invalid", });
+        throw createError({ statusCode: 401, message: "TOTP Token invalid" });
     }
 
     // activate session

@@ -21,7 +21,7 @@ enum Permissions {
     CLASS_UPLOAD_DOCUMENTS_FOR_ALL = 1 << 19,
     CLASS_SEE_FULL_LIST = 1 << 20,
     SEE_ALL_USERS = 1 << 21,
-    MANAGE_SUBJECTS = 1 << 22
+    MANAGE_SUBJECTS = 1 << 22,
 }
 
 class PermissionManager {

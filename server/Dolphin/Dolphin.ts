@@ -33,7 +33,7 @@ class Dolphin {
                 const client = await MongoClient.connect(config.DB_URL);
                 const db = client.db(
                     config.DB_NAME +
-                        (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV")
+                        (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV"),
                 );
 
                 if (!db) return;

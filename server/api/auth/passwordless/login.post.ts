@@ -2,8 +2,7 @@ import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
 import Session from "../../../Dolphin/Session/Session";
 
 export default defineEventHandler(async (event) => {
-
-    const { token, } = await readBody(event);
+    const { token } = await readBody(event);
 
     if (!token || typeof token !== "string") {
         return createError({
@@ -13,15 +12,13 @@ export default defineEventHandler(async (event) => {
     }
 
     // check if the token is valid to login using PasswordlessQR
-    const [loginResult, loginError,] = await PasswordlessQR.login(token);
+    const [loginResult, loginError] = await PasswordlessQR.login(token);
 
     if (loginError) {
-
         return createError({
             statusCode: 500,
             statusMessage: "Internal Server Error",
         });
-
     }
 
     if (!loginResult) {
@@ -29,7 +26,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // create a new session and return login sucessful
-    const [session, sessionError,] = await Session.createSession(loginResult);
+    const [session, sessionError] = await Session.createSession(loginResult);
 
     if (sessionError || !session) {
         return createError({
@@ -49,5 +46,4 @@ export default defineEventHandler(async (event) => {
     await session.activate();
 
     return "Login successful";
-
 });

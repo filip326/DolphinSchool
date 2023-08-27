@@ -1,11 +1,52 @@
+import { H3Event } from "h3";
 import Session, { SessionState } from "../Dolphin/Session/Session";
 import User from "@/server/Dolphin/User/User";
+import { CheckAuthOptions, CheckAuthResult } from "../types/auth";
 
 export default defineEventHandler(async (event) => {
     event.context.auth = {
         authenticated: false,
         mfa_required: false,
         user: undefined,
+        checkAuth: async (event: H3Event, options: CheckAuthOptions): Promise<CheckAuthResult> => {
+            if (!event.context.auth.authenticated || !event.context.auth.mfa_required) {
+                if (options.throwErrorOnNotAuth) {
+                    throw new Error("Not authenticated");
+                }
+                return {
+                    success: false,
+                    statusCode: 401,
+                };
+            }
+
+            if (!event.context.auth.user) {
+                if (options.throwErrorOnNotAuth) {
+                    throw new Error("Not authenticated");
+                }
+                return {
+                    success: false,
+                    statusCode: 401,
+                };
+            }
+
+            if (options.minimumPermissionLevel) {
+                if (event.context.auth.user.hasPermission(options.minimumPermissionLevel)) {
+                    if (options.throwErrorOnNotAuth) {
+                        throw new Error("Not authorized");
+                    }
+                    return {
+                        success: false,
+                        statusCode: 403,
+                    };
+                }
+            }
+
+            return {
+                success: true,
+                statusCode: 200,
+                user: event.context.auth.user,
+            };
+        },
     };
     // get token from cookies
     const token = parseCookies(event).token;
@@ -19,7 +60,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // check if token is valid
-    const [session, sessionFindError,] = await Session.findSession(token);
+    const [session, sessionFindError] = await Session.findSession(token);
 
     if (sessionFindError || !session) {
         event.context.auth.authenticated = false;
@@ -39,7 +80,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // get user from session
-    const [user, userFindError,] = await User.getUserById(session.userId);
+    const [user, userFindError] = await User.getUserById(session.userId);
     if (userFindError) {
         event.context.auth.authenticated = false;
         event.context.auth.mfa_required = false;

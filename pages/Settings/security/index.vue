@@ -20,7 +20,7 @@ export default {
                 {
                     name: "Passwordless",
                     link: "/settings/security/passwordless",
-                }
+                },
             ),
         };
     },

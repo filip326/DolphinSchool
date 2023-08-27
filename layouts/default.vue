@@ -12,13 +12,13 @@ export default {
             },
             show_nav_drawer_button: false,
             navigation_items: [
-                { title: "Home", icon: "mdi-home", link: "/", },
+                { title: "Home", icon: "mdi-home", link: "/" },
                 {
                     title: "About",
                     icon: "mdi-information",
                     link: "/",
                 },
-                { title: "Mail", icon: "mdi-email", link: "/mail", },
+                { title: "Mail", icon: "mdi-email", link: "/mail" },
                 {
                     title: "Settings",
                     icon: "mdi-cog",
@@ -29,7 +29,7 @@ export default {
     },
     beforeMount() {
         this.show_nav_drawer_button = window.innerWidth > 1200;
-        useFetch("/api/whoami", { method: "GET", }).then((res) => {
+        useFetch("/api/whoami", { method: "GET" }).then((res) => {
             if (res.status.value === "success") {
                 this.profile.data = {
                     name: res.data.value?.fullName ?? "",
@@ -38,7 +38,7 @@ export default {
 
                 if (this.profile.data.name !== "" && this.profile.data.username !== "") {
                     this.profile.loaded = true;
-                };
+                }
             }
         });
     },
@@ -58,8 +58,16 @@ export default {
 
         <VNavigationDrawer v-model="show_nav_drawer_button" class="navigation__drawer">
             <VList>
-                <VListItem v-for="item in navigation_items" :key="item.title" density="compact" :to="item.link"
-                    :append-icon="item.icon" :title="item.title" rounded class="navigation__list__item" />
+                <VListItem
+                    v-for="item in navigation_items"
+                    :key="item.title"
+                    density="compact"
+                    :to="item.link"
+                    :append-icon="item.icon"
+                    :title="item.title"
+                    rounded
+                    class="navigation__list__item"
+                />
             </VList>
         </VNavigationDrawer>
 
@@ -91,6 +99,6 @@ export default {
 }
 
 .profile {
-    background-color: rgba(0, 0, 0, .3)
+    background-color: rgba(0, 0, 0, 0.3);
 }
 </style>

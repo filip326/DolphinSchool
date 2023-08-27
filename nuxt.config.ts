@@ -19,7 +19,7 @@ export default defineNuxtConfig({
         head: {
             charset: "utf-8",
             viewport: "width=device-width, initial-scale=1",
-            noscript: [{ innerHTML: "This website requires JavaScript.", },],
+            noscript: [{ innerHTML: "This website requires JavaScript." }],
             titleTemplate: "%s | DolphinSchool",
             meta: [
                 // todo @Copilot - add meta tags here (Twitter, Facebook, Google, etc.)
@@ -29,14 +29,14 @@ export default defineNuxtConfig({
             ],
         },
     },
-    css: ["~/assets/base.css",],
+    css: ["~/assets/base.css"],
     // todo Disable this for production
     //! WARNING: do not use with true in production
-    devtools: { enabled: process.env.ENVIRONMENT === "production" ? false : true, },
+    devtools: { enabled: process.env.ENVIRONMENT === "production" ? false : true },
     ssr: false,
     routeRules: {
         // Homepage pre-rendered at build time
-        "/": { prerender: true, static: true, },
+        "/": { prerender: true, static: true },
         // Product page generated on-demand, revalidates in background
         // '/products/**': { swr: true },
         // Blog post generated on-demand once until next deploy
@@ -44,12 +44,12 @@ export default defineNuxtConfig({
         // Admin dashboard renders only on client-side
         // '/admin/**': { ssr: false },
         // Add cors headers on API routes
-        "/api/**": { cors: true, },
+        "/api/**": { cors: true },
         // Redirects legacy urls
         // '/old-page': { redirect: '/new-page' }
     },
     logLevel: process.env.ENVIRONMENT === "production" ? "silent" : "verbose",
-    modules: ["nuxt-vuetify",],
+    modules: ["nuxt-vuetify"],
     vuetify: {
         icons: {
             defaultSet: "mdi",

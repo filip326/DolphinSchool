@@ -9,7 +9,7 @@ import {
     writeFileSync,
     readdirSync,
     readFileSync,
-    unlinkSync
+    unlinkSync,
 } from "fs";
 import { format as formatDate } from "date-fns";
 import { join } from "path";
@@ -238,7 +238,7 @@ class Logger {
         // if the database connection is restored
         for (const file of logFiles) {
             // read the file
-            const content = readFileSync(join(".", ".logs", file), { encoding: "utf-8", });
+            const content = readFileSync(join(".", ".logs", file), { encoding: "utf-8" });
             // split the file into lines
             const lines = content.split("\n");
             // go through all lines
@@ -274,14 +274,14 @@ class Logger {
         }
 
         const toLog = this.buildLogStr(data);
-        appendFileSync(path, toLog, { encoding: "utf-8", });
+        appendFileSync(path, toLog, { encoding: "utf-8" });
     }
 
     private static buildLogStr(data: LogData): string {
         // return level;action;shortMessage;longMessage;causedBy;
         return (
             encodeURIComponent(
-                `${data.level};${data.action};${data.shortMessage};${data.longMessage};${data.causedBy};`
+                `${data.level};${data.action};${data.shortMessage};${data.longMessage};${data.causedBy};`,
             ) + "\n"
         );
     }

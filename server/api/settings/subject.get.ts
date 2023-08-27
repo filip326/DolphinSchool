@@ -6,11 +6,11 @@ export default defineEventHandler(async (event) => {
         event.context.auth.mfa_required ||
         !event.context.auth.user
     ) {
-        throw createError({ statusCode: 401, message: "Unauthorized", });
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     // send subject list
-    const [ subjects, subjectListError, ] = await Subject.list();
+    const [subjects, subjectListError] = await Subject.list();
     if (subjectListError || !subjects) {
         return createError({
             statusCode: 500,
@@ -18,11 +18,10 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    return subjects.map(subject => ({
+    return subjects.map((subject) => ({
         id: subject._id,
         longName: subject.longName,
         short: subject.short,
         main: subject.main,
     }));
-
 });

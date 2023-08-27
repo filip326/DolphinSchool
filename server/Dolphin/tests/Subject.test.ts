@@ -22,7 +22,7 @@ describe("Subject class", () => {
     });
 
     it("should create a new subject", async () => {
-        const [subject, subjectCreateError,] = await Subject.create({
+        const [subject, subjectCreateError] = await Subject.create({
             longName: "Mathematics",
             short: "M",
             main: true,
@@ -44,7 +44,7 @@ describe("Subject class", () => {
 
     it("should create a new subject with a teacher", async () => {
         // create a teacher
-        const [teacher, teacherCreateError,] = await User.createUser({
+        const [teacher, teacherCreateError] = await User.createUser({
             fullName: "John Doe",
             type: "teacher",
             username: "johndoe",
@@ -54,7 +54,7 @@ describe("Subject class", () => {
         expect(teacher).toBeDefined();
 
         // create a subject
-        const [subject, subjectCreateError,] = await Subject.create({
+        const [subject, subjectCreateError] = await Subject.create({
             longName: "Mathematics",
             short: "M",
             main: true,
@@ -63,7 +63,7 @@ describe("Subject class", () => {
                 g: 0,
                 b: 255,
             },
-            teachers: [teacher!.id,],
+            teachers: [teacher!.id],
         });
 
         expect(subjectCreateError).toBeNull();
@@ -71,13 +71,13 @@ describe("Subject class", () => {
         expect(subject!.longName).toBe("Mathematics");
         expect(subject!.short).toBe("M");
         expect(subject!.main).toBe(true);
-        expect(subject!.teachers).toEqual([teacher!.id,]);
+        expect(subject!.teachers).toEqual([teacher!.id]);
         expect(User.getUserById(subject!.teachers[0])).resolves.toBeDefined();
     });
 
     it("should create a new subject with a teacher and remove it", async () => {
         // create a teacher
-        const [teacher, teacherCreateError,] = await User.createUser({
+        const [teacher, teacherCreateError] = await User.createUser({
             fullName: "John Doe",
             type: "teacher",
             username: "johndoe",
@@ -87,7 +87,7 @@ describe("Subject class", () => {
         expect(teacher).toBeDefined();
 
         // create a subject
-        const [subject, subjectCreateError,] = await Subject.create({
+        const [subject, subjectCreateError] = await Subject.create({
             longName: "Mathematics",
             short: "M",
             main: true,
@@ -96,7 +96,7 @@ describe("Subject class", () => {
                 g: 0,
                 b: 255,
             },
-            teachers: [teacher!.id,],
+            teachers: [teacher!.id],
         });
 
         expect(subjectCreateError).toBeNull();
@@ -104,9 +104,9 @@ describe("Subject class", () => {
         expect(subject!.longName).toBe("Mathematics");
         expect(subject!.short).toBe("M");
         expect(subject!.main).toBe(true);
-        expect(subject!.teachers).toEqual([teacher!.id,]);
+        expect(subject!.teachers).toEqual([teacher!.id]);
 
-        const [teacher2, teacher2Err,] = await User.getUserById(subject!.teachers[0]);
+        const [teacher2, teacher2Err] = await User.getUserById(subject!.teachers[0]);
         expect(teacher2Err).toBeNull();
         expect(teacher2).toBeDefined();
         expect(teacher2!._id).toEqual(teacher!.id);

@@ -9,7 +9,7 @@ export default {
     data() {
         return {
             tab: null,
-            tabs: ["Mitglieder", "Stundenplan", "Verlauf", "Anwesendheit", "Noten",],
+            tabs: ["Mitglieder", "Stundenplan", "Verlauf", "Anwesendheit", "Noten"],
             search_class: "",
             timeout: ref<any>(),
         };

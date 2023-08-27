@@ -4,11 +4,11 @@ export default defineEventHandler(async (event) => {
         event.context.auth.mfa_required ||
         !event.context.auth.user
     ) {
-        throw createError({ statusCode: 401, message: "Unauthorized", });
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     // cancel 2fa setup
-    const [result, error,] = await event.context.auth.user.cancelMFASetup();
+    const [result, error] = await event.context.auth.user.cancelMFASetup();
 
     if (error && !result) {
         throw createError({
@@ -27,5 +27,4 @@ export default defineEventHandler(async (event) => {
         statusCode: 500,
         message: "Internal Server Error",
     });
-
 });

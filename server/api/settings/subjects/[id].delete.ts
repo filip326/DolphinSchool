@@ -2,15 +2,11 @@ import { ObjectId } from "mongodb";
 import Subject from "../../../Dolphin/Course/Subject";
 
 export default defineEventHandler(async (event) => {
-    if (
-        !event.context.auth.authenticated ||
-        event.context.auth.mfa_required ||
-        !event.context.auth.user
-    ) {
-        throw createError({ statusCode: 401, message: "Unauthorized", });
+    if (!event.context.auth.authenticated || event.context.auth.mfa_required || !event.context.auth.user) {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
-    const { id, } = getRouterParams(event);
+    const { id } = getRouterParams(event);
 
     if (!id) {
         return createError({
@@ -26,7 +22,7 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const [subject, subjectFindError,] = await Subject.getSubjectById(ObjectId.createFromHexString(id));
+    const [subject, subjectFindError] = await Subject.getSubjectById(ObjectId.createFromHexString(id));
 
     if (subjectFindError || !subject) {
         return createError({
@@ -35,7 +31,7 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const [deleteResult, deleteError,] = await subject.delete();
+    const [deleteResult, deleteError] = await subject.delete();
 
     if (deleteError) {
         return createError({
@@ -44,8 +40,10 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    return deleteResult ? "Ok" : createError({
-        statusCode: 500,
-        statusMessage: "Internal Server Error",
-    });
+    return deleteResult
+        ? "Ok"
+        : createError({
+              statusCode: 500,
+              statusMessage: "Internal Server Error",
+          });
 });

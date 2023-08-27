@@ -22,23 +22,23 @@ interface SubjectSearchOptions {
 class Subject implements ISubject {
     static async list(): Promise<MethodResult<Subject[]>> {
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database.collection<ISubject>("subjects").find({});
             return [
                 (await dbResult.toArray()).map(
                     (subject) =>
-                        new Subject(dolphin.database.collection<ISubject>("subjects"), subject)
+                        new Subject(dolphin.database.collection<ISubject>("subjects"), subject),
                 ),
                 null,
             ];
         } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
     static async search(options: SubjectSearchOptions): Promise<MethodResult<ISubject[]>> {
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database.collection<ISubject>("subjects").find({
                 _id: options.id,
                 long: options.long,
@@ -46,15 +46,15 @@ class Subject implements ISubject {
                 teacher: options.teacher,
                 main: options.main,
             });
-            return [await dbResult.toArray(), null,];
+            return [await dbResult.toArray(), null];
         } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
 
     static async create(subject: ISubject): Promise<MethodResult<Subject>> {
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database
                 .collection<ISubject>("subjects")
                 .insertOne(subject);
@@ -67,22 +67,22 @@ class Subject implements ISubject {
                     null,
                 ];
             } else {
-                return [undefined, DolphinErrorTypes.FAILED,];
+                return [undefined, DolphinErrorTypes.FAILED];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
     static async getSubjectById(id: ObjectId): Promise<MethodResult<Subject>> {
-        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const dbResult = await dolphin.database
             .collection<ISubject>("subjects")
-            .findOne({ _id: id, });
+            .findOne({ _id: id });
         if (dbResult) {
-            return [new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult), null,];
+            return [new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult), null];
         } else {
-            return [undefined, DolphinErrorTypes.NOT_FOUND,];
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
         }
     }
 
@@ -114,16 +114,16 @@ class Subject implements ISubject {
 
         try {
             const dbResult = await this.subjectCollection.updateOne(
-                { _id: this._id, },
-                { $push: { teachers: teacher._id, }, }
+                { _id: this._id },
+                { $push: { teachers: teacher._id } },
             );
             if (dbResult.acknowledged) {
-                return [true, null,];
+                return [true, null];
             } else {
-                return [undefined, DolphinErrorTypes.FAILED,];
+                return [undefined, DolphinErrorTypes.FAILED];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -134,13 +134,13 @@ class Subject implements ISubject {
     async removeTeacher(teacher: User): Promise<MethodResult<boolean>> {
         this.teachers = this.teachers.filter((t) => !t.equals(teacher._id));
         const dbResult = await this.subjectCollection.updateOne(
-            { _id: this._id, },
-            { $pull: { teachers: teacher._id, }, }
+            { _id: this._id },
+            { $pull: { teachers: teacher._id } },
         );
         if (dbResult.acknowledged) {
-            return [true, null,];
+            return [true, null];
         } else {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -154,12 +154,12 @@ class Subject implements ISubject {
                 _id: this._id,
             });
             if (dbResult.acknowledged) {
-                return [true, null,];
+                return [true, null];
             } else {
-                return [undefined, DolphinErrorTypes.FAILED,];
+                return [undefined, DolphinErrorTypes.FAILED];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 }

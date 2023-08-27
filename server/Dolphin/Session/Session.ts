@@ -7,7 +7,7 @@ enum SessionState {
     INACTIVE = 0,
     ACTIVE = 1,
     MFA_REQ = 2,
-    DELETED = 3
+    DELETED = 3,
 }
 
 interface ISession {
@@ -36,7 +36,7 @@ class Session implements WithId<ISession> {
     static async createSession(
         user: User,
         expires?: number,
-        short?: boolean
+        short?: boolean,
     ): Promise<MethodResult<Session>> {
         const session: ISession = {
             type: short ? "ShortSession" : "Session",
@@ -47,7 +47,7 @@ class Session implements WithId<ISession> {
             lastUsed: Date.now(),
         };
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const collection = dolphin.database.collection("sessions");
             const dbResult = await collection.insertOne(session);
             if (dbResult.acknowledged) {
@@ -56,12 +56,12 @@ class Session implements WithId<ISession> {
                     _id: dbResult.insertedId,
                 };
 
-                return [new Session(sessionWithId), null,];
+                return [new Session(sessionWithId), null];
             } else {
-                return [undefined, DolphinErrorTypes.FAILED,];
+                return [undefined, DolphinErrorTypes.FAILED];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
@@ -71,42 +71,42 @@ class Session implements WithId<ISession> {
 
     static async findSession(token: string): Promise<MethodResult<Session>> {
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const collection = dolphin.database.collection<ISession>("sessions");
             const dbResult = await collection.findOne({
                 token: token,
             });
             if (dbResult) {
-                return [new Session(dbResult), null,];
+                return [new Session(dbResult), null];
             } else {
-                return [undefined, DolphinErrorTypes.NOT_FOUND,];
+                return [undefined, DolphinErrorTypes.NOT_FOUND];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
     static async tick() {
-        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const sessionCollection = dolphin.database.collection<ISession>("sessions");
         // set all expired sessions to deleted
         await sessionCollection.updateMany(
-            { expires: { $lt: Date.now(), }, state: SessionState.ACTIVE, },
-            { $set: { state: SessionState.DELETED, }, }
+            { expires: { $lt: Date.now() }, state: SessionState.ACTIVE },
+            { $set: { state: SessionState.DELETED } },
         );
 
         // delete all inactive session that are expired for more than 48 hours
         await sessionCollection.deleteMany({
             state: SessionState.DELETED,
-            expires: { $lt: Date.now() - 48 * 60 * 60 * 1000, },
+            expires: { $lt: Date.now() - 48 * 60 * 60 * 1000 },
         });
 
         // extend all non-expired sessions, that will expire in the next hour, and were used in the last 10 minutes by another hour
         await sessionCollection.updateMany(
             {
                 $and: [
-                    { state: SessionState.ACTIVE, }, // active
-                    { expires: { $gt: Date.now(), }, }, // not expired yet
+                    { state: SessionState.ACTIVE }, // active
+                    { expires: { $gt: Date.now() } }, // not expired yet
                     {
                         expires: {
                             $lt: Date.now() + 60 * 60 * 1000,
@@ -119,7 +119,7 @@ class Session implements WithId<ISession> {
                     }, // used in the last 10 minutes
                 ],
             },
-            { $inc: { expires: 60 * 60 * 1000, }, } // extend by 1 hour
+            { $inc: { expires: 60 * 60 * 1000 } }, // extend by 1 hour
         );
     }
 
@@ -144,78 +144,78 @@ class Session implements WithId<ISession> {
     async activate(): Promise<MethodResult<boolean>> {
         this.state = SessionState.ACTIVE;
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id, }, { $set: { state: SessionState.ACTIVE, }, });
-            return [dbResult.modifiedCount === 1, null,];
+                .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
+            return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
     async continueToMFA(): Promise<MethodResult<boolean>> {
         this.state = SessionState.MFA_REQ;
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id, }, { $set: { state: SessionState.ACTIVE, }, });
-            return [dbResult.modifiedCount === 1, null,];
+                .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
+            return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
     async reportUsage(): Promise<MethodResult<boolean>> {
         this.lastUsed = Date.now();
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id, }, { $set: { lastUsed: this.lastUsed, }, });
-            return [dbResult.modifiedCount === 1, null,];
+                .updateOne({ _id: this._id }, { $set: { lastUsed: this.lastUsed } });
+            return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
     async refresh(expries?: number): Promise<MethodResult<boolean>> {
         this.expires = expries ?? Date.now() + 1000 * 60 * 60 * 24 * 7; // 7 days
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id, }, { $set: { expires: expries, }, });
-            return [dbResult.modifiedCount === 1, null,];
+                .updateOne({ _id: this._id }, { $set: { expires: expries } });
+            return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
     async disable(): Promise<MethodResult<boolean>> {
         this.state = SessionState.DELETED;
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id, }, { $set: { state: SessionState.DELETED, }, });
-            return [dbResult.modifiedCount === 1, null,];
+                .updateOne({ _id: this._id }, { $set: { state: SessionState.DELETED } });
+            return [dbResult.modifiedCount === 1, null];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
     async destroy(): Promise<MethodResult<boolean>> {
         this.state = SessionState.DELETED;
         try {
-            const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database.collection("sessions").deleteOne({
                 _id: this._id,
             });
-            return [dbResult.acknowledged, null,];
+            return [dbResult.acknowledged, null];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED,];
+            return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 

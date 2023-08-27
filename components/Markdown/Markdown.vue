@@ -38,9 +38,9 @@ export default {
             renderer.text = (text: string) => {
                 return text.replace(/\${2}([\s\S]*?)\${2}/g, (match, code) => {
                     try {
-                        // eslint-disable-next-line quotes
                         return (
-                            "<span class=\"katex-margin\">" +
+                            // eslint-disable-next-line quotes
+                            '<span class="katex-margin">' +
                             katex.renderToString(code, {
                                 throwOnError: false,
                             }) +

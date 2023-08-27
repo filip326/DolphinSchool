@@ -6,7 +6,7 @@ export default eventHandler(async (event) => {
         event.context.auth.mfa_required ||
         !event.context.auth.user
     ) {
-        throw createError({ statusCode: 401, message: "Unauthorized", });
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     return [

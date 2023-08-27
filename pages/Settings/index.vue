@@ -16,7 +16,7 @@ export default {
                 {
                     name: "Sicherheit",
                     link: "/settings/security",
-                }
+                },
             ),
         };
     },

@@ -26,7 +26,7 @@ export default class GlobalAnalyticsManager {
     static async addRequest(event: H3Event): Promise<void> {
         const collection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>(
             "requests",
-            true
+            true,
         );
         const authenticated = event.context.auth?.authenticated;
         const doc: IRequestAnalyics = {
@@ -42,11 +42,11 @@ export default class GlobalAnalyticsManager {
     static async getRequestAmount(start: string, end: string): Promise<number> {
         const collection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>(
             "requests",
-            true
+            true,
         );
         // get the amount of requests between the start and end date
         const amount = await collection.countDocuments({
-            timestamp: { $gte: start, $lte: end, },
+            timestamp: { $gte: start, $lte: end },
         });
         return amount;
     }
@@ -54,12 +54,12 @@ export default class GlobalAnalyticsManager {
     static async getRequests(start: string, end: string): Promise<IRequestAnalyics[]> {
         const collection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>(
             "requests",
-            true
+            true,
         );
         // find the requests analytics between the start and end date
         const requests = await collection
             .find({
-                timestamp: { $gte: start, $lte: end, },
+                timestamp: { $gte: start, $lte: end },
             })
             .toArray();
         return requests;
@@ -68,18 +68,18 @@ export default class GlobalAnalyticsManager {
     static async addDaylyAnalytics(): Promise<void> {
         const collection = await GlobalAnalyticsManager.getCollection<IDailyAnalytics>(
             "dayly",
-            true
+            true,
         );
 
         const userCollection = await GlobalAnalyticsManager.getCollection<IUser>("users", false);
         const userAmount = await userCollection.countDocuments();
-        const parentAmount = await userCollection.countDocuments({ type: "parent", });
-        const studentAmount = await userCollection.countDocuments({ type: "student", });
-        const teacherAmount = await userCollection.countDocuments({ type: "teacher", });
+        const parentAmount = await userCollection.countDocuments({ type: "parent" });
+        const studentAmount = await userCollection.countDocuments({ type: "student" });
+        const teacherAmount = await userCollection.countDocuments({ type: "teacher" });
 
         const sessionCollection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>(
             "sessions",
-            true
+            true,
         );
         const sessionsAmount = await sessionCollection.countDocuments();
 
@@ -87,7 +87,7 @@ export default class GlobalAnalyticsManager {
             timestamp: new Date().toISOString(),
             requests: await GlobalAnalyticsManager.getRequestAmount(
                 new Date().toISOString(),
-                new Date().toISOString()
+                new Date().toISOString(),
             ),
             sessionsAmount: sessionsAmount,
             userAmount: userAmount,
@@ -103,12 +103,12 @@ export default class GlobalAnalyticsManager {
     static async getDaylyAnalytics(start: string, end: string): Promise<IDailyAnalytics[]> {
         const collection = await GlobalAnalyticsManager.getCollection<IDailyAnalytics>(
             "dayly",
-            true
+            true,
         );
         // find the analytics between the start and end date
         const data = await collection
             .find({
-                timestamp: { $gte: start, $lte: end, },
+                timestamp: { $gte: start, $lte: end },
             })
             .toArray();
         return data;
@@ -116,7 +116,7 @@ export default class GlobalAnalyticsManager {
 
     private static async getCollection<T extends Document>(
         subName: string,
-        analyticsPrefix: boolean
+        analyticsPrefix: boolean,
     ): Promise<Collection<T>> {
         const dolphin = Dolphin.instance;
         if (!dolphin) throw new Error("Dolphin is not initialized");

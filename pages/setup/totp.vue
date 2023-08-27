@@ -55,13 +55,13 @@ export default {
 
         async skip() {
             this.skip_button_loading = true;
-            await useFetch("/api/setup/2fa/cancel", { method: "POST", });
+            await useFetch("/api/setup/2fa/cancel", { method: "POST" });
             navigateTo("/home");
             this.skip_button_loading = false;
         },
 
         async totpSecret() {
-            const res = await useFetch("/api/setup/2fa/secret", { method: "GET", });
+            const res = await useFetch("/api/setup/2fa/secret", { method: "GET" });
             return res.data.value.secret;
         },
     },
@@ -73,44 +73,62 @@ export default {
 
         this.totpSec = await this.totpSecret();
 
-        QRCode.toDataURL(this.totpSec, {
-            errorCorrectionLevel: "L",
-            rendererOpts: { quality: 0.3, },
-            width: 128,
-            margin: 1,
-
-
-        }, (err, dataUrl) => {
-            if (err) {
-                this.error.shown = true;
-                this.error.message = "Fehler beim Laden des QR Codes. Bitte überspringen Sie die Einrichtung.";
-                return;
-            }
-            this.qr_code = dataUrl;
-        });
+        QRCode.toDataURL(
+            this.totpSec,
+            {
+                errorCorrectionLevel: "L",
+                rendererOpts: { quality: 0.3 },
+                width: 128,
+                margin: 1,
+            },
+            (err, dataUrl) => {
+                if (err) {
+                    this.error.shown = true;
+                    this.error.message =
+                        "Fehler beim Laden des QR Codes. Bitte überspringen Sie die Einrichtung.";
+                    return;
+                }
+                this.qr_code = dataUrl;
+            },
+        );
     },
 };
 </script>
 
 <template>
     <div class="loginform">
-
         <div>
             <div>
                 <h1>2FA</h1>
                 <ol>
-                    <li>Ihr Konto hat keine 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres Kontos erheblich
-                        erhöht.</li>
-                    <li>Installieren Sie eine App wie "Authy" (oder eine andere) auf Ihrem Smartphone, um die
-                        2-Faktor-Authentifizierung zu aktivieren.</li>
-                    <li>Scannen Sie den QR-Code und geben Sie den angezeigten 6-stelligen Code ein.</li>
-                    <li>Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem Smartphone für den
-                        Zugriff.</li>
+                    <li>
+                        Ihr Konto hat keine 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres
+                        Kontos erheblich erhöht.
+                    </li>
+                    <li>
+                        Installieren Sie eine App wie "Authy" (oder eine andere) auf Ihrem
+                        Smartphone, um die 2-Faktor-Authentifizierung zu aktivieren.
+                    </li>
+                    <li>
+                        Scannen Sie den QR-Code und geben Sie den angezeigten 6-stelligen Code ein.
+                    </li>
+                    <li>
+                        Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem
+                        Smartphone für den Zugriff.
+                    </li>
                 </ol>
                 <ul>
-                    <li>Das Überspringen der Einrichtung macht Ihr Konto anfälliger für Cyberangriffe.</li>
+                    <li>
+                        Das Überspringen der Einrichtung macht Ihr Konto anfälliger für
+                        Cyberangriffe.
+                    </li>
                     <li>Sie können die 2-Faktor-Authentizierung später einrichten.</li>
-                    <li><b>Nach der Einrichtung ist ein Zugriff auf das Konto nur mit Ihrem Smartphone möglich.</b></li>
+                    <li>
+                        <b
+                            >Nach der Einrichtung ist ein Zugriff auf das Konto nur mit Ihrem
+                            Smartphone möglich.</b
+                        >
+                    </li>
                 </ul>
             </div>
         </div>
@@ -124,8 +142,13 @@ export default {
                 <VProgressCircular v-else indeterminate color="primary" />
             </div>
 
-            <VTextField v-model="code" label="Code" name="code" type="text"
-                :rules="[rules.required, rules.totpLength, rules.totpNumbers]" />
+            <VTextField
+                v-model="code"
+                label="Code"
+                name="code"
+                type="text"
+                :rules="[rules.required, rules.totpLength, rules.totpNumbers]"
+            />
 
             <VBtn type="submit" color="primary" class="mr-4">2FA-Aktivieren</VBtn>
             <VBtn @click.prevent="skip()" :loading="skip_button_loading">Überspringen</VBtn>

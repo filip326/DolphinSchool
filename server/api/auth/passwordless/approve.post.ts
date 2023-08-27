@@ -2,11 +2,9 @@ import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
 import User from "../../../Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {
-    
-    
     // get signed string from body
-    const { signed, tokenHash, username, } = await readBody(event);
-    
+    const { signed, tokenHash, username } = await readBody(event);
+
     if (!signed || !tokenHash || !username) {
         return createError({
             statusCode: 400,
@@ -14,7 +12,7 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const [ user, userFindError, ] = await User.getUserByUsername(username);
+    const [user, userFindError] = await User.getUserByUsername(username);
 
     if (userFindError) {
         return createError({
@@ -29,9 +27,9 @@ export default defineEventHandler(async (event) => {
             statusMessage: "Not Found",
         });
     }
-    
+
     // verify signed string
-    const [ approveResult, approveError, ] = await PasswordlessQR.approve(user, tokenHash, signed);
+    const [approveResult, approveError] = await PasswordlessQR.approve(user, tokenHash, signed);
     if (approveError) {
         return createError({
             statusCode: 500,
@@ -45,7 +43,6 @@ export default defineEventHandler(async (event) => {
             statusMessage: "Unauthorized",
         });
     }
-    
-    return "Ok";
 
+    return "Ok";
 });

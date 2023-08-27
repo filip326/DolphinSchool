@@ -33,9 +33,9 @@ export default {
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true
+            throwErrorOnNotAuthenticated: true,
         });
-    }
+    },
 };
 </script>
 
@@ -52,14 +52,14 @@ export default {
     async beforeMount() {
         const auth = await checkAuth({
             redirectOnMfaRequired: false,
-            throwErrorOnNotAuthenticated: false
+            throwErrorOnNotAuthenticated: false,
         });
 
         // add this, if it is a login page
         // if (auth.authenticated && !auth.mfa_required) {
         //     navigateTo("/home");
         // }
-    }
+    },
 };
 </script>
 

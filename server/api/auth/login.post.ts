@@ -2,13 +2,13 @@ import User from "../../Dolphin/User/User";
 import Session from "../../Dolphin/Session/Session";
 
 export default eventHandler(async (event) => {
-    const { username, password, } = await readBody(event);
+    const { username, password } = await readBody(event);
 
     if (!username || !password || typeof username !== "string" || typeof password !== "string") {
-        throw createError({ statusCode: 400, message: "Invalid body", });
+        throw createError({ statusCode: 400, message: "Invalid body" });
     }
 
-    const [user, findUserError,] = await User.getUserByUsername(username);
+    const [user, findUserError] = await User.getUserByUsername(username);
 
     if (findUserError || !user) {
         throw createError({
@@ -17,10 +17,10 @@ export default eventHandler(async (event) => {
         });
     }
 
-    const [passwordCorrect, passwordCheckingError,] = await user.comparePassword(password);
+    const [passwordCorrect, passwordCheckingError] = await user.comparePassword(password);
 
     if (passwordCheckingError) {
-        throw createError({ statusCode: 500, message: "Internal server error", });
+        throw createError({ statusCode: 500, message: "Internal server error" });
     }
 
     if (!passwordCorrect) {
@@ -30,15 +30,14 @@ export default eventHandler(async (event) => {
         });
     }
 
-    const [session, sessionCreateError,] = await Session.createSession(user);
+    const [session, sessionCreateError] = await Session.createSession(user);
 
     if (sessionCreateError || !session) {
-        throw createError({ statusCode: 500, message: "Internal server error", });
+        throw createError({ statusCode: 500, message: "Internal server error" });
     }
 
-    
     const token = session.token;
-    
+
     setCookie(event, "token", token, {
         maxAge: 30 * 24 * 60 * 60, // 30 days
         secure: useRuntimeConfig().prod,
@@ -52,7 +51,7 @@ export default eventHandler(async (event) => {
         return "continue with 2fa";
     }
     await session.activate();
-    
+
     if (user.askForMFASetup) {
         return "continue with 2fa setup";
     }

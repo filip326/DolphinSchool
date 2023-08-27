@@ -8,7 +8,6 @@ definePageMeta({
 </script>
 
 <script>
-
 export default {
     data() {
         return {
@@ -27,31 +26,36 @@ export default {
     },
     methods: {
         async approve() {
-
             this.continue_button.loading = true;
 
-            if (!this.passwordlessData.token
-                || !this.passwordlessData.username
-                || !this.passwordlessData.challenge
-                || !this.passwordlessData.keys
-                || !pwless.isAvailable()
-                || !pwless.isLocalAuthenticator()) {
+            if (
+                !this.passwordlessData.token ||
+                !this.passwordlessData.username ||
+                !this.passwordlessData.challenge ||
+                !this.passwordlessData.keys ||
+                !pwless.isAvailable() ||
+                !pwless.isLocalAuthenticator()
+            ) {
                 this.continue_button.loading = false;
                 console.error("passwordless checks failed");
                 navigateTo("/passwordless/not-avaible");
                 return;
             }
 
-
             try {
-                const authentication = await pwless.authenticate(this.passwordlessData.keys, this.passwordlessData.challenge, {
-                    timeout: 60_000,
-                    userVerification: "required",
-                    authenticatorType: "local",
-                });
+                const authentication = await pwless.authenticate(
+                    this.passwordlessData.keys,
+                    this.passwordlessData.challenge,
+                    {
+                        timeout: 60_000,
+                        userVerification: "required",
+                        authenticatorType: "local",
+                    },
+                );
 
                 const response2 = await useFetch("/api/auth/passwordless/approve", {
-                    method: "POST", body: JSON.stringify({
+                    method: "POST",
+                    body: JSON.stringify({
                         username: this.passwordlessData.username,
                         tokenHash: this.passwordlessData.token,
                         signed: authentication,
@@ -71,9 +75,6 @@ export default {
                     navigateTo("/passwordless/not-avaible");
                     return;
                 }
-
-
-
             } catch (err) {
                 this.continue_button.loading = false;
                 console.log("passwordless failed");
@@ -81,7 +82,6 @@ export default {
                 navigateTo("/passwordless/not-avaible");
                 return;
             }
-
         },
     },
     async beforeMount() {
@@ -109,7 +109,7 @@ export default {
         }
 
         this.passwordlessData.username = data.username;
-        this.passwordlessData.keys = [data.credId,];
+        this.passwordlessData.keys = [data.credId];
 
         if (!this.passwordlessData.keys || this.passwordlessData.keys.length === 0) {
             this.continue_button.loading = false;
@@ -149,8 +149,11 @@ export default {
         <VCardText>
             <VAlert v-if="error" type="error" :text="error_message" />
             <ul>
-                <li>Prüfe die URL in der Adresszeile des Browsers. Logge dich <u>nicht</u> ein, wenn du dir nicht sicher
-                    bist, dass du auf der offiziellen Website von DolphinSchool bist.</li>
+                <li>
+                    Prüfe die URL in der Adresszeile des Browsers. Logge dich <u>nicht</u> ein, wenn
+                    du dir nicht sicher bist, dass du auf der offiziellen Website von DolphinSchool
+                    bist.
+                </li>
                 <li>Drücke nun auf den Button weiter.</li>
                 <li>Du wirst automatisch angemeldet.</li>
             </ul>
@@ -158,8 +161,9 @@ export default {
 
         <VCardActions>
             <VSpacer />
-            <VBtn color="secondary" @click="approve" :loading="continue_button.loading">Anmeldung bestätigen</VBtn>
+            <VBtn color="secondary" @click="approve" :loading="continue_button.loading"
+                >Anmeldung bestätigen</VBtn
+            >
         </VCardActions>
-
     </VCard>
 </template>

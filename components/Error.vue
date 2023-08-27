@@ -28,7 +28,7 @@ export default {
         valError(): {
             statusCode: number;
             statusMessage: string;
-            } {
+        } {
             return {
                 statusCode: this.error.statusCode ?? 500,
                 statusMessage:
@@ -83,11 +83,15 @@ export default {
             <p>If this error persists, please contact the support or try again later.</p>
         </VCardText>
         <VCardActions>
-            <VBtn variant="tonal" width="100%" @click="
-                clearError({
-                    redirect: fix
-                })
-                ">
+            <VBtn
+                variant="tonal"
+                width="100%"
+                @click="
+                    clearError({
+                        redirect: fix,
+                    })
+                "
+            >
                 Zurück
             </VBtn>
         </VCardActions>
