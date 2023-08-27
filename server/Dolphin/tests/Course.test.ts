@@ -13,7 +13,7 @@ describe("Course class", () => {
         await Dolphin.init({
             prod: false,
             DB_URL: process.env.DB_URL,
-            DB_NAME: "dolphinSchool--test--Course_class"
+            DB_NAME: "dolphinSchool--test--Course_class",
         });
 
         const db = Dolphin.instance!.database;
@@ -24,25 +24,25 @@ describe("Course class", () => {
 
     it("should create a course", async () => {
         // create a teacher
-        const [teacher, teacherCreateError] = await User.createUser({
+        const [teacher, teacherCreateError,] = await User.createUser({
             fullName: "John Doe",
             type: "teacher",
-            username: "johndoe"
+            username: "johndoe",
         });
 
         expect(teacherCreateError).toBeNull();
         expect(teacher).toBeDefined();
 
-        const [subject, subjectCreateError] = await Subject.create({
+        const [subject, subjectCreateError,] = await Subject.create({
             longName: "Mathematics",
             short: "M",
             main: true,
             color: {
                 r: 0,
                 g: 0,
-                b: 255
+                b: 255,
             },
-            teachers: []
+            teachers: [],
         });
 
         expect(subjectCreateError).toBeNull();
@@ -51,10 +51,10 @@ describe("Course class", () => {
         if (!subject || !subject!._id) throw Error("subject._id is undefined");
         if (!teacher || !teacher!.id) throw Error("teacher._id is undefined");
 
-        const [course, courseCreateError] = await Course.createCource({
+        const [course, courseCreateError,] = await Course.createCource({
             name: "Mathematics 1",
             subject: subject._id,
-            teacher: teacher.id
+            teacher: teacher.id,
         });
 
         expect(courseCreateError).toBeNull();

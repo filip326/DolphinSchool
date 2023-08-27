@@ -44,7 +44,7 @@ class Session implements WithId<ISession> {
             userId: user._id,
             expires: expires ?? Date.now() + 604_800_000, // 7 days
             state: SessionState.INACTIVE,
-            lastUsed: Date.now()
+            lastUsed: Date.now(),
         };
         try {
             const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
@@ -53,15 +53,15 @@ class Session implements WithId<ISession> {
             if (dbResult.acknowledged) {
                 const sessionWithId: WithId<ISession> = {
                     ...session,
-                    _id: dbResult.insertedId
+                    _id: dbResult.insertedId,
                 };
 
-                return [new Session(sessionWithId), null];
+                return [new Session(sessionWithId), null,];
             } else {
-                return [undefined, DolphinErrorTypes.FAILED];
+                return [undefined, DolphinErrorTypes.FAILED,];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 
@@ -74,15 +74,15 @@ class Session implements WithId<ISession> {
             const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const collection = dolphin.database.collection<ISession>("sessions");
             const dbResult = await collection.findOne({
-                token: token
+                token: token,
             });
             if (dbResult) {
-                return [new Session(dbResult), null];
+                return [new Session(dbResult), null,];
             } else {
-                return [undefined, DolphinErrorTypes.NOT_FOUND];
+                return [undefined, DolphinErrorTypes.NOT_FOUND,];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 
@@ -91,35 +91,35 @@ class Session implements WithId<ISession> {
         const sessionCollection = dolphin.database.collection<ISession>("sessions");
         // set all expired sessions to deleted
         await sessionCollection.updateMany(
-            { expires: { $lt: Date.now() }, state: SessionState.ACTIVE },
-            { $set: { state: SessionState.DELETED } }
+            { expires: { $lt: Date.now(), }, state: SessionState.ACTIVE, },
+            { $set: { state: SessionState.DELETED, }, }
         );
 
         // delete all inactive session that are expired for more than 48 hours
         await sessionCollection.deleteMany({
             state: SessionState.DELETED,
-            expires: { $lt: Date.now() - 48 * 60 * 60 * 1000 }
+            expires: { $lt: Date.now() - 48 * 60 * 60 * 1000, },
         });
 
         // extend all non-expired sessions, that will expire in the next hour, and were used in the last 10 minutes by another hour
         await sessionCollection.updateMany(
             {
                 $and: [
-                    { state: SessionState.ACTIVE }, // active
-                    { expires: { $gt: Date.now() } }, // not expired yet
+                    { state: SessionState.ACTIVE, }, // active
+                    { expires: { $gt: Date.now(), }, }, // not expired yet
                     {
                         expires: {
-                            $lt: Date.now() + 60 * 60 * 1000
-                        }
+                            $lt: Date.now() + 60 * 60 * 1000,
+                        },
                     }, // will expire in the next hour
                     {
                         lastUsed: {
-                            $gt: Date.now() - 10 * 60 * 1000
-                        }
-                    } // used in the last 10 minutes
-                ]
+                            $gt: Date.now() - 10 * 60 * 1000,
+                        },
+                    }, // used in the last 10 minutes
+                ],
             },
-            { $inc: { expires: 60 * 60 * 1000 } } // extend by 1 hour
+            { $inc: { expires: 60 * 60 * 1000, }, } // extend by 1 hour
         );
     }
 
@@ -147,10 +147,10 @@ class Session implements WithId<ISession> {
             const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
-            return [dbResult.modifiedCount === 1, null];
+                .updateOne({ _id: this._id, }, { $set: { state: SessionState.ACTIVE, }, });
+            return [dbResult.modifiedCount === 1, null,];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 
@@ -160,10 +160,10 @@ class Session implements WithId<ISession> {
             const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
-            return [dbResult.modifiedCount === 1, null];
+                .updateOne({ _id: this._id, }, { $set: { state: SessionState.ACTIVE, }, });
+            return [dbResult.modifiedCount === 1, null,];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 
@@ -173,10 +173,10 @@ class Session implements WithId<ISession> {
             const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id }, { $set: { lastUsed: this.lastUsed } });
-            return [dbResult.modifiedCount === 1, null];
+                .updateOne({ _id: this._id, }, { $set: { lastUsed: this.lastUsed, }, });
+            return [dbResult.modifiedCount === 1, null,];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 
@@ -186,10 +186,10 @@ class Session implements WithId<ISession> {
             const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id }, { $set: { expires: expries } });
-            return [dbResult.modifiedCount === 1, null];
+                .updateOne({ _id: this._id, }, { $set: { expires: expries, }, });
+            return [dbResult.modifiedCount === 1, null,];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 
@@ -199,10 +199,10 @@ class Session implements WithId<ISession> {
             const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id }, { $set: { state: SessionState.DELETED } });
-            return [dbResult.modifiedCount === 1, null];
+                .updateOne({ _id: this._id, }, { $set: { state: SessionState.DELETED, }, });
+            return [dbResult.modifiedCount === 1, null,];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 
@@ -211,11 +211,11 @@ class Session implements WithId<ISession> {
         try {
             const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
             const dbResult = await dolphin.database.collection("sessions").deleteOne({
-                _id: this._id
+                _id: this._id,
             });
-            return [dbResult.acknowledged, null];
+            return [dbResult.acknowledged, null,];
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 

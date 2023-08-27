@@ -2,7 +2,7 @@
 import QRCode from "qrcode";
 
 definePageMeta({
-    layout: "login"
+    layout: "login",
 });
 </script>
 
@@ -16,7 +16,7 @@ export default {
             rules: {
                 required: (v) => !!v || "Dieses Feld ist erforderlich!",
                 totpLength: (v) => v.length === 6 || "Der Code muss 6-stellig sein!",
-                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!"
+                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!",
             },
             userInfo: {
                 fullName: "" | undefined,
@@ -24,7 +24,7 @@ export default {
             },
             error: {
                 shown: false,
-                message: ""
+                message: "",
             },
             skip_button_loading: false,
         };
@@ -37,14 +37,14 @@ export default {
             const res = await useFetch("/api/setup/2fa/confirm", {
                 method: "POST",
                 body: JSON.stringify({
-                    totp: this.code
-                })
+                    totp: this.code,
+                }),
             });
 
             if (res.status.value !== "success" || res.data.value !== "Ok") {
                 this.error = {
                     shown: true,
-                    message: "Ungültiger TOTP-Code! Versuchen Sie es bitte erneut."
+                    message: "Ungültiger TOTP-Code! Versuchen Sie es bitte erneut.",
                 };
                 this.qr_code = tempQRCode;
                 return;
@@ -55,29 +55,29 @@ export default {
 
         async skip() {
             this.skip_button_loading = true;
-            await useFetch("/api/setup/2fa/cancel", { method: "POST" });
+            await useFetch("/api/setup/2fa/cancel", { method: "POST", });
             navigateTo("/home");
             this.skip_button_loading = false;
         },
 
         async totpSecret() {
-            const res = await useFetch("/api/setup/2fa/secret", { method: "GET" });
+            const res = await useFetch("/api/setup/2fa/secret", { method: "GET", });
             return res.data.value.secret;
-        }
+        },
     },
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true
+            throwErrorOnNotAuthenticated: true,
         });
 
         this.totpSec = await this.totpSecret();
 
         QRCode.toDataURL(this.totpSec, {
             errorCorrectionLevel: "L",
-            rendererOpts: { quality: 0.3 },
+            rendererOpts: { quality: 0.3, },
             width: 128,
-            margin: 1
+            margin: 1,
 
 
         }, (err, dataUrl) => {

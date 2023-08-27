@@ -27,8 +27,8 @@ class Course implements WithId<ICourse> {
                     .collection<ICourse>("cources")
                     .find({
                         name: {
-                            $regex: options.nameQuery ?? ""
-                        }
+                            $regex: options.nameQuery ?? "",
+                        },
                     })
                     .skip(options.skip ?? 0);
 
@@ -40,14 +40,14 @@ class Course implements WithId<ICourse> {
                         (cource) =>
                             new Course(dolphin.database.collection<ICourse>("cources"), cource)
                     ),
-                    null
+                    null,
                 ];
             } catch {
-                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
             }
         }
 
-        return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+        return [undefined, DolphinErrorTypes.INVALID_ARGUMENT,];
     }
 
     /**
@@ -60,18 +60,18 @@ class Course implements WithId<ICourse> {
             try {
                 const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
                 const dbResult = await dolphin?.database.collection<ICourse>("cources").findOne({
-                    _id: options.id
+                    _id: options.id,
                 });
                 if (dbResult) {
                     const cource = new Course(
                         dolphin.database.collection<ICourse>("cources"),
                         dbResult
                     );
-                    return [cource, null];
+                    return [cource, null,];
                 }
-                return [undefined, DolphinErrorTypes.NOT_FOUND];
+                return [undefined, DolphinErrorTypes.NOT_FOUND,];
             } catch {
-                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
             }
         }
 
@@ -79,22 +79,22 @@ class Course implements WithId<ICourse> {
             try {
                 const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
                 const dbResult = await dolphin?.database.collection<ICourse>("cources").findOne({
-                    name: options.name
+                    name: options.name,
                 });
                 if (dbResult) {
                     const cource = new Course(
                         dolphin.database.collection<ICourse>("cources"),
                         dbResult
                     );
-                    return [cource, null];
+                    return [cource, null,];
                 }
-                return [undefined, DolphinErrorTypes.NOT_FOUND];
+                return [undefined, DolphinErrorTypes.NOT_FOUND,];
             } catch {
-                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
             }
         }
 
-        return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+        return [undefined, DolphinErrorTypes.INVALID_ARGUMENT,];
     }
 
     /**
@@ -108,25 +108,25 @@ class Course implements WithId<ICourse> {
             const newCourse = await dolphin?.database.collection<ICourse>("cources").insertOne({
                 name: options.name,
                 subject: options.subject,
-                teacherIds: [options.teacher],
-                userIds: []
+                teacherIds: [options.teacher,],
+                userIds: [],
             });
 
             if (!newCourse.acknowledged) {
-                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
             }
 
             const course = new Course(dolphin.database.collection<ICourse>("cources"), {
                 _id: newCourse.insertedId,
                 name: options.name,
                 subject: options.subject,
-                teacherIds: [options.teacher],
-                userIds: []
+                teacherIds: [options.teacher,],
+                userIds: [],
             });
 
-            return [course, null];
+            return [course, null,];
         } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
         }
     }
 
@@ -144,7 +144,7 @@ class Course implements WithId<ICourse> {
                     {},
                     {
                         skip: options.skip,
-                        limit: options.limit || 10
+                        limit: options.limit || 10,
                     }
                 )
                 .toArray();
@@ -152,10 +152,10 @@ class Course implements WithId<ICourse> {
                 courses.map(
                     (course) => new Course(dolphin.database.collection<ICourse>("cources"), course)
                 ),
-                null
+                null,
             ];
         } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
         }
     }
 
@@ -172,14 +172,14 @@ class Course implements WithId<ICourse> {
                     ...users.map((u) => ({
                         $or: [
                             {
-                                userIds: u._id
+                                userIds: u._id,
                             },
                             {
-                                teacherIds: u._id
-                            }
-                        ]
-                    }))
-                ]
+                                teacherIds: u._id,
+                            },
+                        ],
+                    })),
+                ],
             })
             .toArray();
 

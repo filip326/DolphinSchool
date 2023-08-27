@@ -3,16 +3,16 @@ export default {
     data() {
         return {
             tab: "ungelesen",
-            show_floating_action_btn: false
+            show_floating_action_btn: false,
         };
     },
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true
+            throwErrorOnNotAuthenticated: true,
         });
         this.show_floating_action_btn = window.innerWidth < 600;
-    }
+    },
 };
 </script>
 

@@ -5,15 +5,15 @@ export default {
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true
+            throwErrorOnNotAuthenticated: true,
         });
     },
     data() {
         return {
             absender: "Du",
-            empfaenger: ""
+            empfaenger: "",
         };
-    }
+    },
 };
 </script>
 

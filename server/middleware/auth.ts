@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     event.context.auth = {
         authenticated: false,
         mfa_required: false,
-        user: undefined
+        user: undefined,
     };
     // get token from cookies
     const token = parseCookies(event).token;
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // check if token is valid
-    const [session, sessionFindError] = await Session.findSession(token);
+    const [session, sessionFindError,] = await Session.findSession(token);
 
     if (sessionFindError || !session) {
         event.context.auth.authenticated = false;
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // get user from session
-    const [user, userFindError] = await User.getUserById(session.userId);
+    const [user, userFindError,] = await User.getUserById(session.userId);
     if (userFindError) {
         event.context.auth.authenticated = false;
         event.context.auth.mfa_required = false;
@@ -66,7 +66,7 @@ export default defineEventHandler(async (event) => {
             path: "/",
             sameSite: "strict",
             secure: useRuntimeConfig().prod,
-            httpOnly: true
+            httpOnly: true,
         });
         return;
     }

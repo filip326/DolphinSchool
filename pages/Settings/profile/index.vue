@@ -3,14 +3,14 @@ export default {
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true
+            throwErrorOnNotAuthenticated: true,
         });
     },
     data() {
         return {
-            settings: Array<{ name: string; link: string }>()
+            settings: Array<{ name: string; link: string }>(),
         };
-    }
+    },
 };
 </script>
 

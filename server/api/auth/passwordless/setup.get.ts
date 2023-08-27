@@ -7,15 +7,15 @@ export default defineEventHandler(async (event) => {
         event.context.auth.mfa_required ||
         !event.context.auth.user
     ) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
+        throw createError({ statusCode: 401, message: "Unauthorized", });
     }
 
-    const [qrLoginData, error] = await PasswordlessQR.requestChallenge();
+    const [qrLoginData, error,] = await PasswordlessQR.requestChallenge();
 
     if (error || !qrLoginData) {
         throw createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
         rp: useRuntimeConfig().public.DOMAIN,
         token: qrLoginData.token,
         url: qrLoginData.url,
-        challenge: qrLoginData.challenge
+        challenge: qrLoginData.challenge,
     };
 
 });

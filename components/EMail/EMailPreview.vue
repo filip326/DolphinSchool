@@ -8,22 +8,22 @@ export default {
     props: {
         id: {
             type: String,
-            required: true
+            required: true,
         },
         subject: {
             type: String,
-            required: true
+            required: true,
         },
         sendby: {
             type: String,
-            required: true
+            required: true,
         },
         timestamp: {
             type: String,
-            required: true
+            required: true,
         },
         unread: Boolean,
-        stared: Boolean
+        stared: Boolean,
     },
     data() {
         const width = ref(0);
@@ -35,7 +35,7 @@ export default {
         });
         return {
             width,
-            hover: false
+            hover: false,
         };
     },
     methods: {
@@ -47,8 +47,8 @@ export default {
         },
         onEmailSelected(email: string) {
             this.$emit("email_clicked", email);
-        }
-    }
+        },
+    },
 };
 </script>
 

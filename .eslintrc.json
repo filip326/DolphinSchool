@@ -1,68 +1,79 @@
 {
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:vue/vue3-essential"
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:vue/vue3-essential"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "parser": "@typescript-eslint/parser",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "vue"],
+  "rules": {
+    "indent": ["error", 4, { "SwitchCase": 1 }],
+    "linebreak-style": ["error", "windows"],
+    "quotes": ["error", "double"],
+    "semi": ["error", "always"],
+    "no-extra-semi": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-async-promise-executor": "off",
+    "vue/multi-word-component-names": "off",
+    "vue/valid-v-on": "off",
+    "no-undef": "off",
+    "switch-colon-spacing": "warn",
+    "comma-dangle": [
+      "warn",
+      {
+        "arrays": "always",
+        "objects": "always",
+        "imports": "never",
+        "exports": "never",
+        "functions": "never"
+      }
     ],
-    "parserOptions": {
-        "ecmaVersion": "latest",
-        "parser": "@typescript-eslint/parser",
-        "sourceType": "module"
-    },
-    "plugins": ["@typescript-eslint", "vue"],
-    "rules": {
-        "indent": ["error", 4, { "SwitchCase": 1 }],
-        "linebreak-style": ["error", "windows"],
-        "quotes": ["error", "double"],
-        "semi": ["error", "always"],
-        "no-extra-semi": "off",
-        "@typescript-eslint/no-explicit-any": "off",
-        "no-async-promise-executor": "off",
-        "vue/multi-word-component-names": "off",
-        "vue/valid-v-on": "off",
-        "no-undef": "off",
-        "switch-colon-spacing": "warn",
-        "@typescript-eslint/naming-convention": ["error", 
-            // variables
-            {
-                "selector": "variable",
-                "format": ["camelCase", "PascalCase", "UPPER_CASE"]
-            },
-            // class, enum, interface, type alias
-            {
-                "selector": "class",
-                "format": ["PascalCase"]
-            },
-            {
-                "selector": "enum",
-                "format": ["PascalCase"]
-            },
-            {
-                "selector": "enumMember",
-                "format": ["UPPER_CASE"]
-            },
-            {
-                "selector": "interface",
-                "format": ["PascalCase"]
-            },
-            {
-                "selector": "typeAlias",
-                "format": ["PascalCase"]
-            },
-            // functions and methods
-            {
-                "selector": "parameter",
-                "format": ["camelCase"]
-            },
-            {
-                "selector": "function",
-                "format": ["camelCase"]
-            },
-            {
-                "selector": "classMethod",
-                "format": ["camelCase"]
-            }
+    "@typescript-eslint/naming-convention": [
+      "error",
+      // variables
+      {
+        "selector": "variable",
+        "format": ["camelCase"]
+      },
+      // class, enum, interface, type alias
+      {
+        "selector": "class",
+        "format": ["PascalCase"]
+      },
+      {
+        "selector": "enum",
+        "format": ["PascalCase"]
+      },
+      {
+        "selector": "enumMember",
+        "format": ["UPPER_CASE"]
+      },
+      {
+        "selector": "interface",
+        "format": ["PascalCase"]
+      },
+      {
+        "selector": "typeAlias",
+        "format": ["PascalCase"]
+      },
+      // functions and methods
+      {
+        "selector": "parameter",
+        "format": ["camelCase"]
+      },
+      {
+        "selector": "function",
+        "format": ["camelCase"]
+      },
+      {
+        "selector": "classMethod",
+        "format": ["camelCase"]
+      }
     ]
-    },
-    "ignorePatterns": ["node_modules/", ".nuxt/", "dist/"]
+  },
+  "ignorePatterns": ["node_modules/", ".nuxt/", "dist/"]
 }

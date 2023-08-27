@@ -4,7 +4,7 @@ import { Collection, Db } from "mongodb";
 import { randomBytes } from "node:crypto";
 import Dolphin from "../Dolphin";
 
-const FAILED_ATTEMTS_ALLOWED = 5;
+const failedAttemtsAllowed = 5;
 
 class BruteForceProtection {
     private bruteForceProtection: Collection<BruteForceProtectionEntry>;
@@ -32,22 +32,22 @@ class BruteForceProtection {
                 const dbResult = await this.bruteForceProtection.findOne({
                     username: username,
                     expires: {
-                        $gt: Date.now()
-                    }
+                        $gt: Date.now(),
+                    },
                 });
 
                 if (!dbResult) {
-                    return [true, null];
+                    return [true, null,];
                 }
 
-                if (dbResult.failedAttemts >= FAILED_ATTEMTS_ALLOWED) {
-                    return [false, null];
+                if (dbResult.failedAttemts >= failedAttemtsAllowed) {
+                    return [false, null,];
                 }
 
                 // if there is a BruteForceProtectionEntry, but less than 3 failed attempts, return true
-                return [true, null];
+                return [true, null,];
             } catch {
-                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
             }
         }
 
@@ -56,7 +56,7 @@ class BruteForceProtection {
             const dbResult = this.bruteForceProtectionBypass.findOne({
                 username: username,
                 token: bypassToken,
-                expires: { $gt: Date.now() }
+                expires: { $gt: Date.now(), },
             });
 
             // if device token is not valid, check if login is allowed without deviceToken
@@ -66,21 +66,21 @@ class BruteForceProtection {
             const dbResult2 = await this.bruteForceProtection.findOne({
                 username: username,
                 token: bypassToken,
-                expires: { $gt: Date.now() }
+                expires: { $gt: Date.now(), },
             });
 
             if (!dbResult2) {
-                return [true, null];
+                return [true, null,];
             }
 
-            if (dbResult2.failedAttemts >= FAILED_ATTEMTS_ALLOWED) {
-                return [false, null];
+            if (dbResult2.failedAttemts >= failedAttemtsAllowed) {
+                return [false, null,];
             }
 
             // if device token is valid and less than 3 failed attempts, return true
-            return [true, null];
+            return [true, null,];
         } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
         }
     }
 
@@ -95,8 +95,8 @@ class BruteForceProtection {
                     username: username,
                     token: bypassToken,
                     expires: {
-                        $gt: Date.now()
-                    }
+                        $gt: Date.now(),
+                    },
                 });
                 if (!dbResult) return this.reportFailedLoginAttempt(username);
 
@@ -105,8 +105,8 @@ class BruteForceProtection {
                     username: username,
                     token: bypassToken,
                     expires: {
-                        $gt: Date.now()
-                    }
+                        $gt: Date.now(),
+                    },
                 });
 
                 // if there is no BruteForceProtectionEntry, create one, valid for 3 hours
@@ -116,10 +116,10 @@ class BruteForceProtection {
                             username: username,
                             token: bypassToken,
                             failedAttemts: 1,
-                            expires: Date.now() + 3 * 60 * 60 * 1000
+                            expires: Date.now() + 3 * 60 * 60 * 1000,
                         });
                     } catch {
-                        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+                        return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
                     }
                 }
                 // if there already is a BruteforceProtectionEntry, increment failed attempts and exceed expiration to 3 hours
@@ -128,31 +128,31 @@ class BruteForceProtection {
                         await this.bruteForceProtection.updateOne(
                             {
                                 username: username,
-                                token: bypassToken
+                                token: bypassToken,
                             },
                             {
                                 $inc: {
-                                    failedAttemts: 1
+                                    failedAttemts: 1,
                                 },
                                 $set: {
-                                    expires: Date.now() + 3 * 60 * 60 * 1000
-                                }
+                                    expires: Date.now() + 3 * 60 * 60 * 1000,
+                                },
                             }
                         );
                     } catch {
-                        return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+                        return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
                     }
                 }
             } catch {
-                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
             }
         }
 
         // do the same with username and without deviceToken
         const dbResult = await this.bruteForceProtection.findOne({
             username: username,
-            token: { $exists: false },
-            expires: { $gt: Date.now() }
+            token: { $exists: false, },
+            expires: { $gt: Date.now(), },
         });
 
         // if there is a valid BruteForceProtectionEntry, increment failed attempts and exceed expiration to 3 hours
@@ -161,18 +161,18 @@ class BruteForceProtection {
                 await this.bruteForceProtection.updateOne(
                     {
                         username: username,
-                        token: { $exists: false }
+                        token: { $exists: false, },
                     },
                     {
-                        $inc: { failedAttemts: 1 },
+                        $inc: { failedAttemts: 1, },
                         $set: {
-                            expires: Date.now() + 3 * 60 * 60 * 1000
-                        }
+                            expires: Date.now() + 3 * 60 * 60 * 1000,
+                        },
                     }
                 );
-                return [true, null];
+                return [true, null,];
             } catch {
-                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
             }
         }
         // if there is no valid BruteForceProtectionEntry, create one, valid for 3 hours
@@ -181,11 +181,11 @@ class BruteForceProtection {
                 await this.bruteForceProtection.insertOne({
                     username: username,
                     failedAttemts: 1,
-                    expires: Date.now() + 3 * 60 * 60 * 1000
+                    expires: Date.now() + 3 * 60 * 60 * 1000,
                 });
-                return [true, null];
+                return [true, null,];
             } catch {
-                return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+                return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
             }
         }
     }
@@ -202,11 +202,11 @@ class BruteForceProtection {
             await this.bruteForceProtectionBypass.insertOne({
                 username: username,
                 token: token,
-                expires: Date.now() + 30 * 24 * 60 * 60 * 1000
+                expires: Date.now() + 30 * 24 * 60 * 60 * 1000,
             });
-            return [token, null];
+            return [token, null,];
         } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
         }
     }
 
@@ -219,25 +219,25 @@ class BruteForceProtection {
             const dbResult = await this.bruteForceProtectionBypass.findOne({
                 username: username,
                 token: bypassToken,
-                expires: { $gt: Date.now() }
+                expires: { $gt: Date.now(), },
             });
-            if (!dbResult) return [false, null];
+            if (!dbResult) return [false, null,];
 
             // if token exists, exceed expiration to 30 days
             const dbResult2 = await this.bruteForceProtectionBypass.updateOne(
                 {
                     username: username,
-                    token: bypassToken
+                    token: bypassToken,
                 },
                 {
                     $set: {
-                        expires: Date.now() + 30 * 24 * 60 * 60 * 1000
-                    }
+                        expires: Date.now() + 30 * 24 * 60 * 60 * 1000,
+                    },
                 }
             );
-            return [dbResult2.acknowledged, null];
+            return [dbResult2.acknowledged, null,];
         } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
         }
     }
 
@@ -248,11 +248,11 @@ class BruteForceProtection {
         try {
             // clean up expired BruteForceProtectionEntries
             await this.bruteForceProtection.deleteMany({
-                expires: { $lt: Date.now() }
+                expires: { $lt: Date.now(), },
             });
             // clean up expired BruteForceProtectionBypass Tokens
             await this.bruteForceProtectionBypass.deleteMany({
-                expires: { $lt: Date.now() }
+                expires: { $lt: Date.now(), },
             });
         } catch {
             // do nothing

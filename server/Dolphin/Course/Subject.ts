@@ -29,10 +29,10 @@ class Subject implements ISubject {
                     (subject) =>
                         new Subject(dolphin.database.collection<ISubject>("subjects"), subject)
                 ),
-                null
+                null,
             ];
         } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
         }
     }
 
@@ -44,11 +44,11 @@ class Subject implements ISubject {
                 long: options.long,
                 short: options.short,
                 teacher: options.teacher,
-                main: options.main
+                main: options.main,
             });
-            return [await dbResult.toArray(), null];
+            return [await dbResult.toArray(), null,];
         } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR,];
         }
     }
 
@@ -62,15 +62,15 @@ class Subject implements ISubject {
                 return [
                     new Subject(dolphin.database.collection<ISubject>("subjects"), {
                         ...subject,
-                        _id: dbResult.insertedId
+                        _id: dbResult.insertedId,
                     }),
-                    null
+                    null,
                 ];
             } else {
-                return [undefined, DolphinErrorTypes.FAILED];
+                return [undefined, DolphinErrorTypes.FAILED,];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 
@@ -78,11 +78,11 @@ class Subject implements ISubject {
         const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
         const dbResult = await dolphin.database
             .collection<ISubject>("subjects")
-            .findOne({ _id: id });
+            .findOne({ _id: id, });
         if (dbResult) {
-            return [new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult), null];
+            return [new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult), null,];
         } else {
-            return [undefined, DolphinErrorTypes.NOT_FOUND];
+            return [undefined, DolphinErrorTypes.NOT_FOUND,];
         }
     }
 
@@ -114,16 +114,16 @@ class Subject implements ISubject {
 
         try {
             const dbResult = await this.subjectCollection.updateOne(
-                { _id: this._id },
-                { $push: { teachers: teacher._id } }
+                { _id: this._id, },
+                { $push: { teachers: teacher._id, }, }
             );
             if (dbResult.acknowledged) {
-                return [true, null];
+                return [true, null,];
             } else {
-                return [undefined, DolphinErrorTypes.FAILED];
+                return [undefined, DolphinErrorTypes.FAILED,];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 
@@ -134,13 +134,13 @@ class Subject implements ISubject {
     async removeTeacher(teacher: User): Promise<MethodResult<boolean>> {
         this.teachers = this.teachers.filter((t) => !t.equals(teacher._id));
         const dbResult = await this.subjectCollection.updateOne(
-            { _id: this._id },
-            { $pull: { teachers: teacher._id } }
+            { _id: this._id, },
+            { $pull: { teachers: teacher._id, }, }
         );
         if (dbResult.acknowledged) {
-            return [true, null];
+            return [true, null,];
         } else {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 
@@ -151,15 +151,15 @@ class Subject implements ISubject {
     async delete(): Promise<MethodResult<boolean>> {
         try {
             const dbResult = await this.subjectCollection.deleteOne({
-                _id: this._id
+                _id: this._id,
             });
             if (dbResult.acknowledged) {
-                return [true, null];
+                return [true, null,];
             } else {
-                return [undefined, DolphinErrorTypes.FAILED];
+                return [undefined, DolphinErrorTypes.FAILED,];
             }
         } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.FAILED,];
         }
     }
 }

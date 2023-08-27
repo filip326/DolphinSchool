@@ -1,7 +1,7 @@
 <script setup>
 definePageMeta({
     title: "passwordless",
-    layout: "non"
+    layout: "non",
 });
 </script>
 

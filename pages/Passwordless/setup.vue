@@ -2,7 +2,7 @@
 import { client as pwless } from "@passwordless-id/webauthn";
 definePageMeta({
     title: "passwordless",
-    layout: "login"
+    layout: "login",
 });
 </script>
 
@@ -42,7 +42,7 @@ export default {
 
             localStorage.setItem("passwordless", JSON.stringify({
                 username: this.username,
-                credId: credentials.credential.id
+                credId: credentials.credential.id,
             }));
 
             // send credentials to server
@@ -51,9 +51,9 @@ export default {
                 body: JSON.stringify(
                     {
                         challenge: credentials,
-                        token: this.token
+                        token: this.token,
                     }
-                )
+                ),
             });
 
             if (response.status.value !== "success") {
@@ -64,12 +64,12 @@ export default {
             // redirect to dashboard
             navigateTo("/passwordless/setup-success");
 
-        }
+        },
     },
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true
+            throwErrorOnNotAuthenticated: true,
         });
 
         if (!pwless.isAvailable()) {
@@ -82,7 +82,7 @@ export default {
             return;
         }
 
-        const response = await useFetch("/api/auth/passwordless/setup", { method: "GET" });
+        const response = await useFetch("/api/auth/passwordless/setup", { method: "GET", });
         if (response.status.value !== "success") {
             navigateTo("/passwordless/not-avaible");
             return;
@@ -98,7 +98,7 @@ export default {
         }
 
         this.loading = false;
-    }
+    },
 };
 </script>
 

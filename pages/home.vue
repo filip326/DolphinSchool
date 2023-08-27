@@ -13,44 +13,44 @@ export default {
                     links: [
                         {
                             href: "/mail",
-                            text: "Aufrufen"
+                            text: "Aufrufen",
                         },
                         {
                             href: "/mail/write",
-                            text: "Neue Mail"
-                        }
-                    ]
+                            text: "Neue Mail",
+                        },
+                    ],
                 },
                 {
                     title: "Einstellungen",
                     links: [
                         {
                             href: "/settings",
-                            text: "Aufrufen"
+                            text: "Aufrufen",
                         },
                         {
                             href: "/settings/2fa",
-                            text: "2FA"
+                            text: "2FA",
                         },
                         {
                             href: "/settings/password",
-                            text: "Passwort ändern"
-                        }
-                    ]
-                }
-            ]
+                            text: "Passwort ändern",
+                        },
+                    ],
+                },
+            ],
         };
     },
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true
+            throwErrorOnNotAuthenticated: true,
         });
         this.passwordless_setup =
             window.localStorage.getItem("passwordless") != null ||
             !pwless.isAvailable() ||
             !pwless.isLocalAuthenticator();
-    }
+    },
 };
 </script>
 

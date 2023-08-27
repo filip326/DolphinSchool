@@ -4,16 +4,16 @@ export default {
     props: {
         title: {
             type: String,
-            required: true
+            required: true,
         },
         links: {
             type: Array<{
                 href: string;
                 text: string;
             }>,
-            required: true
-        }
-    }
+            required: true,
+        },
+    },
 };
 </script>
 

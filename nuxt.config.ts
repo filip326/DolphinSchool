@@ -12,31 +12,31 @@ export default defineNuxtConfig({
         //! WARNING: use false only in development, since it disables important security features
         prod: process.env.ENVIRONMENT === "production" ? true : false,
         public: {
-            DOMAIN: process.env.DOMAIN ?? "http://127.0.0.1:3000/"
-        }
+            DOMAIN: process.env.DOMAIN ?? "http://127.0.0.1:3000/",
+        },
     },
     app: {
         head: {
             charset: "utf-8",
             viewport: "width=device-width, initial-scale=1",
-            noscript: [{ innerHTML: "This website requires JavaScript." }],
+            noscript: [{ innerHTML: "This website requires JavaScript.", },],
             titleTemplate: "%s | DolphinSchool",
             meta: [
                 // todo @Copilot - add meta tags here (Twitter, Facebook, Google, etc.)
             ],
             link: [
                 // todo @Copilot - add link tags here (favicon, etc.)
-            ]
-        }
+            ],
+        },
     },
-    css: ["~/assets/base.css"],
+    css: ["~/assets/base.css",],
     // todo Disable this for production
     //! WARNING: do not use with true in production
-    devtools: { enabled: process.env.ENVIRONMENT === "production" ? false : true },
+    devtools: { enabled: process.env.ENVIRONMENT === "production" ? false : true, },
     ssr: false,
     routeRules: {
         // Homepage pre-rendered at build time
-        "/": { prerender: true, static: true },
+        "/": { prerender: true, static: true, },
         // Product page generated on-demand, revalidates in background
         // '/products/**': { swr: true },
         // Blog post generated on-demand once until next deploy
@@ -44,19 +44,19 @@ export default defineNuxtConfig({
         // Admin dashboard renders only on client-side
         // '/admin/**': { ssr: false },
         // Add cors headers on API routes
-        "/api/**": { cors: true }
+        "/api/**": { cors: true, },
         // Redirects legacy urls
         // '/old-page': { redirect: '/new-page' }
     },
     logLevel: process.env.ENVIRONMENT === "production" ? "silent" : "verbose",
-    modules: ["nuxt-vuetify"],
+    modules: ["nuxt-vuetify",],
     vuetify: {
         icons: {
             defaultSet: "mdi",
             aliases: aliases,
             sets: {
-                mdi: mdi
-            }
+                mdi: mdi,
+            },
         },
         theme: {
             defaultTheme: "dolphinTheme",
@@ -71,10 +71,10 @@ export default defineNuxtConfig({
                         error: "#ef2d13", // Rot
                         info: "#2196f3", // Grün
                         success: "#19c719", // Helles Blau
-                        warning: "#fb8200" // Orange
-                    }
-                }
-            }
-        }
-    }
+                        warning: "#fb8200", // Orange
+                    },
+                },
+            },
+        },
+    },
 });

@@ -8,39 +8,39 @@ export default defineEventHandler(async (event) => {
         event.context.auth.mfa_required ||
         !event.context.auth.user
     ) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
+        throw createError({ statusCode: 401, message: "Unauthorized", });
     }
 
     // send subject with id
-    const { id } = getRouterParams(event);
+    const { id, } = getRouterParams(event);
 
     if (!id) {
         return createError({
             statusCode: 400,
-            statusMessage: "Bad Request"
+            statusMessage: "Bad Request",
         });
     }
 
     if (!ObjectId.isValid(id)) {
         return createError({
             statusCode: 400,
-            statusMessage: "Bad Request"
+            statusMessage: "Bad Request",
         });
     }
 
-    const [subject, subjectFindError] = await Subject.getSubjectById(ObjectId.createFromHexString(id));
+    const [subject, subjectFindError,] = await Subject.getSubjectById(ObjectId.createFromHexString(id));
 
     if (subjectFindError) {
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
     if (!subject) {
         return createError({
             statusCode: 404,
-            statusMessage: "Not Found"
+            statusMessage: "Not Found",
         });
     }
 

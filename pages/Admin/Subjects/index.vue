@@ -4,7 +4,7 @@ import { ref } from "vue";
 
 definePageMeta({
     title: "Fächer",
-    layout: "default"
+    layout: "default",
 });
 
 </script>
@@ -22,14 +22,14 @@ export default {
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true
+            throwErrorOnNotAuthenticated: true,
         });
     },
     data() {
         return {
             subjects: ref<ISubject[]>([]),
         };
-    }
+    },
 };
 
 </script>

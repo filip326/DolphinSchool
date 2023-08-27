@@ -20,7 +20,7 @@ export default async function checkAuth(options: {
         throw createError({
             statusCode: 500,
             statusMessage: "Internal server error",
-            fatal: true
+            fatal: true,
         });
     }
 
@@ -31,13 +31,13 @@ export default async function checkAuth(options: {
                     throw createError({
                         statusCode: 401,
                         statusMessage: "Not authenticated",
-                        fatal: true
+                        fatal: true,
                     });
                 }
                 return {
                     authenticated: false,
                     mfa_required: false,
-                    user: {}
+                    user: {},
                 };
             case 403:
                 if (options.redirectOnMfaRequired) {
@@ -46,13 +46,13 @@ export default async function checkAuth(options: {
                 return {
                     authenticated: false,
                     mfa_required: true,
-                    user: {}
+                    user: {},
                 };
             default:
                 throw createError({
                     statusCode: 500,
                     statusMessage: "Internal server error",
-                    fatal: true
+                    fatal: true,
                 });
         }
     } else {
@@ -64,14 +64,14 @@ export default async function checkAuth(options: {
                     username: whoamiRes.data.value?.user?.username,
                     full_name: whoamiRes.data.value?.user?.full_name,
                     type: whoamiRes.data.value?.user?.type,
-                    mfa_enabled: whoamiRes.data.value?.user?.mfa_enabled
-                }
+                    mfa_enabled: whoamiRes.data.value?.user?.mfa_enabled,
+                },
             };
         } else {
             return {
                 authenticated: false,
                 mfa_required: false,
-                user: {}
+                user: {},
             };
         }
     }

@@ -7,45 +7,45 @@ export default defineEventHandler(async (event) => {
         event.context.auth.mfa_required ||
         !event.context.auth.user
     ) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
+        throw createError({ statusCode: 401, message: "Unauthorized", });
     }
 
-    const { id } = getRouterParams(event);
+    const { id, } = getRouterParams(event);
 
     if (!id) {
         return createError({
             statusCode: 400,
-            statusMessage: "Bad Request"
+            statusMessage: "Bad Request",
         });
     }
 
     if (!ObjectId.isValid(id)) {
         return createError({
             statusCode: 400,
-            statusMessage: "Bad Request"
+            statusMessage: "Bad Request",
         });
     }
 
-    const [subject, subjectFindError] = await Subject.getSubjectById(ObjectId.createFromHexString(id));
+    const [subject, subjectFindError,] = await Subject.getSubjectById(ObjectId.createFromHexString(id));
 
     if (subjectFindError || !subject) {
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
-    const [deleteResult, deleteError] = await subject.delete();
+    const [deleteResult, deleteError,] = await subject.delete();
 
     if (deleteError) {
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
     return deleteResult ? "Ok" : createError({
         statusCode: 500,
-        statusMessage: "Internal Server Error"
+        statusMessage: "Internal Server Error",
     });
 });

@@ -3,7 +3,7 @@ export default {
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true
+            throwErrorOnNotAuthenticated: true,
         });
     },
     data() {
@@ -11,15 +11,15 @@ export default {
             settings: Array<{ name: string; link: string }>(
                 {
                     name: "Persönliche Einstellungen",
-                    link: "/settings/profile"
+                    link: "/settings/profile",
                 },
                 {
                     name: "Sicherheit",
-                    link: "/settings/security"
+                    link: "/settings/security",
                 }
-            )
+            ),
         };
-    }
+    },
 };
 </script>
 

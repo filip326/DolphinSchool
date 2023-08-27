@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
         event.context.auth.mfa_required ||
         !event.context.auth.user
     ) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
+        throw createError({ statusCode: 401, message: "Unauthorized", });
     }
 
     // get user with id
@@ -15,23 +15,23 @@ export default defineEventHandler(async (event) => {
 
     // check if id is valid hex ObjectId
     if (/^[0-9a-fA-F]{24}$/.test(userId) === false) {
-        throw createError({ statusCode: 400, message: "Invalid user id" });
+        throw createError({ statusCode: 400, message: "Invalid user id", });
     }
 
     if (ObjectId.isValid(userId) === false) {
-        throw createError({ statusCode: 400, message: "Invalid user id" });
+        throw createError({ statusCode: 400, message: "Invalid user id", });
     }
 
     // get user
-    const [userWithId, userFindError] = await User.getUserById(new ObjectId(userId));
+    const [userWithId, userFindError,] = await User.getUserById(new ObjectId(userId));
     if (userFindError || !userWithId) {
-        throw createError({ statusCode: 404, message: "User not found" });
+        throw createError({ statusCode: 404, message: "User not found", });
     }
 
     // reply with user data
     return {
         username: userWithId.username,
         fullName: userWithId.fullName,
-        type: userWithId.type
+        type: userWithId.type,
     };
 });

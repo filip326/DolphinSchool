@@ -34,7 +34,7 @@ export default class GlobalAnalyticsManager {
             path: event.path,
             method: event.node.req.method ?? "unknown",
             auth: authenticated ?? false,
-            userId: event.context.auth?.user?._id ?? undefined
+            userId: event.context.auth?.user?._id ?? undefined,
         };
         await collection.insertOne(doc);
     }
@@ -46,7 +46,7 @@ export default class GlobalAnalyticsManager {
         );
         // get the amount of requests between the start and end date
         const amount = await collection.countDocuments({
-            timestamp: { $gte: start, $lte: end }
+            timestamp: { $gte: start, $lte: end, },
         });
         return amount;
     }
@@ -59,7 +59,7 @@ export default class GlobalAnalyticsManager {
         // find the requests analytics between the start and end date
         const requests = await collection
             .find({
-                timestamp: { $gte: start, $lte: end }
+                timestamp: { $gte: start, $lte: end, },
             })
             .toArray();
         return requests;
@@ -73,9 +73,9 @@ export default class GlobalAnalyticsManager {
 
         const userCollection = await GlobalAnalyticsManager.getCollection<IUser>("users", false);
         const userAmount = await userCollection.countDocuments();
-        const parentAmount = await userCollection.countDocuments({ type: "parent" });
-        const studentAmount = await userCollection.countDocuments({ type: "student" });
-        const teacherAmount = await userCollection.countDocuments({ type: "teacher" });
+        const parentAmount = await userCollection.countDocuments({ type: "parent", });
+        const studentAmount = await userCollection.countDocuments({ type: "student", });
+        const teacherAmount = await userCollection.countDocuments({ type: "teacher", });
 
         const sessionCollection = await GlobalAnalyticsManager.getCollection<IRequestAnalyics>(
             "sessions",
@@ -94,8 +94,8 @@ export default class GlobalAnalyticsManager {
             userAmountByType: {
                 parent: parentAmount,
                 student: studentAmount,
-                teacher: teacherAmount
-            }
+                teacher: teacherAmount,
+            },
         };
         await collection.insertOne(doc);
     }
@@ -108,7 +108,7 @@ export default class GlobalAnalyticsManager {
         // find the analytics between the start and end date
         const data = await collection
             .find({
-                timestamp: { $gte: start, $lte: end }
+                timestamp: { $gte: start, $lte: end, },
             })
             .toArray();
         return data;

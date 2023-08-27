@@ -3,7 +3,7 @@ export default {
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true
+            throwErrorOnNotAuthenticated: true,
         });
     },
     data() {
@@ -11,19 +11,19 @@ export default {
             settings: Array<{ name: string; link: string }>(
                 {
                     name: "Passwort ändern",
-                    link: "/settings/security/change-password"
+                    link: "/settings/security/change-password",
                 },
                 {
                     name: "2FA",
-                    link: "/settings/security/mfa"
+                    link: "/settings/security/mfa",
                 },
                 {
                     name: "Passwordless",
-                    link: "/settings/security/passwordless"
+                    link: "/settings/security/passwordless",
                 }
-            )
+            ),
         };
-    }
+    },
 };
 </script>
 

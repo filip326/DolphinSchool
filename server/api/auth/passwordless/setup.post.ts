@@ -7,19 +7,19 @@ export default defineEventHandler(async (event) => {
         event.context.auth.mfa_required ||
         !event.context.auth.user
     ) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
+        throw createError({ statusCode: 401, message: "Unauthorized", });
     }
 
     // get signed challenge and token
-    const { token, challenge } = await readBody(event);
+    const { token, challenge, } = await readBody(event);
 
     // register user
-    const [ success, error ] = await PasswordlessQR.register(event.context.auth.user, token, challenge);
+    const [ success, error, ] = await PasswordlessQR.register(event.context.auth.user, token, challenge);
 
     if (error || !success) {
         throw createError({
             statusCode: 400,
-            message: "Bad Request"
+            message: "Bad Request",
         });
     }
 

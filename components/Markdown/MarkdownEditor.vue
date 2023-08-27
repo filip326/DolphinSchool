@@ -4,9 +4,9 @@ export default {
     data() {
         return {
             md: "",
-            tab: null
+            tab: null,
         };
-    }
+    },
 };
 </script>
 

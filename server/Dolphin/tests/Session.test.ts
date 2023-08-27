@@ -16,7 +16,7 @@ describe("Session class", () => {
         await Dolphin.init({
             prod: false,
             DB_URL: process.env.DB_URL,
-            DB_NAME: "dolphinSchool--test-Session_class"
+            DB_NAME: "dolphinSchool--test-Session_class",
         });
 
         const db = Dolphin.instance!.database;
@@ -34,17 +34,17 @@ describe("Session class", () => {
             expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
             lastUsed: Date.now(),
             state: SessionState.INACTIVE,
-            type: "Session"
+            type: "Session",
         });
     });
 
     it("should create a session", async () => {
 
-        const [user, userGetError ] = await User.getUserByUsername("testUser0");
+        const [user, userGetError, ] = await User.getUserByUsername("testUser0");
 
         if (userGetError || !user) throw Error(userGetError);
 
-        const [session, sessionCreateError] = await Session.createSession(
+        const [session, sessionCreateError,] = await Session.createSession(
             user
         );
 
@@ -54,7 +54,7 @@ describe("Session class", () => {
     });
 
     it("should get a session", async () => {
-        const [sessionFound, sessionFoundError] = await Session.findSession("testToken");
+        const [sessionFound, sessionFoundError,] = await Session.findSession("testToken");
         expect(sessionFoundError).toBeNull();
         expect(sessionFound).toBeDefined();
         expect(sessionFound).toHaveProperty("userId");
@@ -63,15 +63,15 @@ describe("Session class", () => {
 
     it("should delete a session", async () => {
         
-        const [session, sessionFoundError] = await Session.findSession("testToken");
+        const [session, sessionFoundError,] = await Session.findSession("testToken");
 
         if (sessionFoundError || !session) throw Error(sessionFoundError);
 
-        const [destroyed, destroyedError] = await session.destroy();
+        const [destroyed, destroyedError,] = await session.destroy();
         expect(destroyedError).toBeNull();
         expect(destroyed).toBeTruthy();
 
-        const [sessionFound, sessionFoundError2] = await Session.findSession(session!.token);
+        const [sessionFound, sessionFoundError2,] = await Session.findSession(session!.token);
         expect(sessionFoundError2).not.toBeNull();
         expect(sessionFoundError2).toBe(DolphinErrorTypes.NOT_FOUND);
         expect(sessionFound).toBeUndefined();
@@ -79,25 +79,25 @@ describe("Session class", () => {
 
     it("should activate a session", async () => {
 
-        const [ session, sessionFoundError ] = await Session.findSession("testToken");
+        const [ session, sessionFoundError, ] = await Session.findSession("testToken");
 
         if (sessionFoundError || !session) throw Error(sessionFoundError);
 
         expect(session).toHaveProperty("state", SessionState.INACTIVE);
 
-        const [activated, activatedError] = await session.activate();
+        const [activated, activatedError,] = await session.activate();
 
         expect(activatedError).toBeNull();
         expect(activated).toBeTruthy();
 
-        const [sessionFound, sessionFoundError2] = await Session.findSession(session.token);
+        const [sessionFound, sessionFoundError2,] = await Session.findSession(session.token);
         expect(sessionFoundError2).toBeNull();
         expect(sessionFound).toHaveProperty("state", SessionState.ACTIVE);
     });
 
     it("should report usage to a session", async () => {
 
-        const [ session, sessionFoundError ] = await Session.findSession("testToken");
+        const [ session, sessionFoundError, ] = await Session.findSession("testToken");
 
         if (sessionFoundError || !session) throw Error(sessionFoundError);
 
@@ -117,13 +117,13 @@ describe("Session class", () => {
 
     it("should refresh a session", async () => {
 
-        const [ session, sessionFoundError ] = await Session.findSession("testToken");
+        const [ session, sessionFoundError, ] = await Session.findSession("testToken");
 
         if (sessionFoundError || !session) throw Error(sessionFoundError);
 
         expect(session.expires).toBeLessThanOrEqual(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 days
 
-        const [refreshed, refreshedError] = await session.refresh();
+        const [refreshed, refreshedError,] = await session.refresh();
 
         expect(refreshedError).toBeNull();
         expect(refreshed).toBeTruthy();
