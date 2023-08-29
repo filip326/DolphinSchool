@@ -4,21 +4,23 @@ export default {
     data() {
         return {
             show_nav_drawer_button: false,
-            navigation_items: [
-                { title: "Home", icon: "mdi-home", link: "/" },
-                {
-                    title: "About",
-                    icon: "mdi-information",
-                    link: "/",
-                },
-                { title: "Mail", icon: "mdi-email", link: "/mail" },
-                {
-                    title: "Settings",
-                    icon: "mdi-cog",
-                    link: "/settings",
-                },
-            ] as { title: string; icon: `mdi-${string}`; link: string }[],
+            show_logout_button: false,
         };
+    },
+    methods: {
+        async logout() {
+            const res = await useFetch("/api/auth/logout", {
+                method: "GET",
+            });
+
+            if (res.status.value == "success") {
+                this.$router.push("/");
+            }
+        },
+    },
+    beforeMount() {
+        this.show_nav_drawer_button = window.innerWidth > 1200;
+        this.show_logout_button = window.innerWidth > 1200;
     },
 };
 </script>
@@ -31,10 +33,14 @@ export default {
             <VImg src="/img/School/DolphinSchool_light.png" />
 
             <VAppBarTitle> DolphinSchool </VAppBarTitle>
+
+            <VSpacer />
+
+            <VIcon style="margin-right: 14px" :v-if="show_logout_button" icon="mdi-logout" @click="logout" />
         </VAppBar>
 
         <VNavigationDrawer v-model="show_nav_drawer_button" class="navigation__drawer">
-            <NavDrawerContent :navigation_items="navigation_items" />
+            <NavDrawerContent :auth="true" />
         </VNavigationDrawer>
 
         <VMain>

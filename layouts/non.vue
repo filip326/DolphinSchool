@@ -4,16 +4,6 @@ export default {
     data() {
         return {
             show_nav_drawer_button: false,
-            navigation_items: [
-                { title: "Home", icon: "mdi-home", link: "/" },
-                {
-                    title: "About",
-                    icon: "mdi-information",
-                    link: "/",
-                },
-                { title: "Impress", icon: "mdi-at", link: "/" },
-                { title: "Policy", icon: "mdi-security", link: "/" },
-            ] as { title: string; icon: `mdi-${string}`; link: string }[],
         };
     },
     beforeMount() {
@@ -33,7 +23,7 @@ export default {
         </VAppBar>
 
         <VNavigationDrawer v-model="show_nav_drawer_button" class="navigation__drawer">
-            <NavDrawerContent :navigation_items="navigation_items" />
+            <NavDrawerContent :auth="false" />
         </VNavigationDrawer>
 
         <VMain>
