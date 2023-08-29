@@ -1,10 +1,14 @@
 export default defineEventHandler(async (event) => {
-    if (!event.context.auth.authenticated || event.context.auth.mfa_required || !event.context.auth.user) {
+    // check authentication
+    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    if (!checkAuthResult.success || !checkAuthResult.user) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
+    // get user object
+    const user = checkAuthResult.user;
 
     // cancel 2fa setup
-    const [result, error] = await event.context.auth.user.cancelMFASetup();
+    const [result, error] = await user.cancelMFASetup();
 
     if (error && !result) {
         throw createError({
@@ -13,7 +17,7 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    await event.context.auth.user.doNotAskForMFASetup("7d");
+    await user.doNotAskForMFASetup("7d");
 
     if (result && !error) {
         return "Ok";

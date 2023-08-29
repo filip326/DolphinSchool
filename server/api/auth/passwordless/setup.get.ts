@@ -1,9 +1,13 @@
 import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
 
 export default defineEventHandler(async (event) => {
-    if (!event.context.auth.authenticated || event.context.auth.mfa_required || !event.context.auth.user) {
+    // check authentication
+    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    if (!checkAuthResult.success || !checkAuthResult.user) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
+    // get user object
+    const user = checkAuthResult.user;
 
     const [qrLoginData, error] = await PasswordlessQR.requestChallenge();
 
@@ -15,7 +19,7 @@ export default defineEventHandler(async (event) => {
     }
 
     return {
-        username: event.context.auth.user.username,
+        username: user.username,
         rp: useRuntimeConfig().public.DOMAIN,
         token: qrLoginData.token,
         url: qrLoginData.url,

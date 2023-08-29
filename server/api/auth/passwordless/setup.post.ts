@@ -1,15 +1,19 @@
 import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
 
 export default defineEventHandler(async (event) => {
-    if (!event.context.auth.authenticated || event.context.auth.mfa_required || !event.context.auth.user) {
+    // check authentication
+    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    if (!checkAuthResult.success || !checkAuthResult.user) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
+    // get user object
+    const user = checkAuthResult.user;
 
     // get signed challenge and token
     const { token, challenge } = await readBody(event);
 
     // register user
-    const [success, error] = await PasswordlessQR.register(event.context.auth.user, token, challenge);
+    const [success, error] = await PasswordlessQR.register(user, token, challenge);
 
     if (error || !success) {
         throw createError({

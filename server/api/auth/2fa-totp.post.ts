@@ -2,13 +2,13 @@ import { SessionState } from "../../Dolphin/Session/Session";
 import Session from "../../Dolphin/Session/Session";
 
 export default defineEventHandler(async (event) => {
-    // check authentication without 2fa
-    if (!event.context.auth.authenticated || event.context.auth.mfa_required || !event.context.auth.user) {
+    // check authentication
+    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    if (!checkAuthResult.success || !checkAuthResult.user) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
-
     // get user object
-    const user = event.context.auth.user;
+    const user = checkAuthResult.user;
 
     // get session object
     const token = parseCookies(event).token;
