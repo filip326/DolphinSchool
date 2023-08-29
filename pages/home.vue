@@ -29,11 +29,11 @@ export default {
                             text: "Aufrufen",
                         },
                         {
-                            href: "/settings/2fa",
+                            href: "/settings/security/totp/setup",
                             text: "2FA",
                         },
                         {
-                            href: "/settings/password",
+                            href: "/settings/security/chpwd",
                             text: "Passwort ändern",
                         },
                     ],
