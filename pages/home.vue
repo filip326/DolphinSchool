@@ -41,12 +41,14 @@ export default {
             ],
         };
     },
-    async beforeMount() {
+    async beforeCreate() {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
             redirectOnPwdChange: true,
         });
+    },
+    async beforeMount() {
         this.passwordless_setup =
             window.localStorage.getItem("passwordless") != null ||
             !pwless.isAvailable() ||

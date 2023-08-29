@@ -104,7 +104,7 @@ export default {
             return res.data.value.secret;
         },
     },
-    async beforeMount() {
+    async beforeCreate() {
         const checkAuthRes = await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
@@ -115,7 +115,8 @@ export default {
             await navigateTo("/settings/security/totp/disable");
             return;
         }
-
+    },
+    async beforeMount() {
         const resTOTPSec = await this.totpSecret();
         if (!resTOTPSec) {
             this.error.shown = true;

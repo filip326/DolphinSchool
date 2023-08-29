@@ -74,7 +74,7 @@ export default {
             navigateTo("/home");
         },
     },
-    async beforeMount() {
+    async beforeCreate() {
         const checkAuthRes = await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,

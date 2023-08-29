@@ -27,7 +27,7 @@ export default {
             },
         };
     },
-    async beforeMount() {
+    async beforeCreate() {
         const auth = await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: false,
@@ -36,6 +36,8 @@ export default {
         if (auth.authenticated && !auth.mfa_required) {
             navigateTo("/home");
         }
+    },
+    async beforeMount() {
         await this.loadPasswordlessQRCode();
     },
     methods: {

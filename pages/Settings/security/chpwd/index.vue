@@ -59,7 +59,7 @@ export default {
             }
         },
     },
-    async beforeMount() {
+    async beforeCreate() {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,

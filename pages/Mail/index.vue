@@ -6,13 +6,15 @@ export default {
             show_floating_action_btn: false,
         };
     },
-    async beforeMount() {
+    beforeMount() {
+        this.show_floating_action_btn = window.innerWidth < 600;
+    },
+    async beforeCreate() {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
             redirectOnPwdChange: true,
         });
-        this.show_floating_action_btn = window.innerWidth < 600;
     },
 };
 </script>

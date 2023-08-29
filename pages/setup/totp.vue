@@ -65,13 +65,14 @@ export default {
             return res.data.value.secret;
         },
     },
-    async beforeMount() {
+    async beforeCreate() {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
             redirectOnPwdChangeRequired: true,
         });
-
+    },
+    async beforeMount() {
         this.totpSec = await this.totpSecret();
 
         QRCode.toDataURL(

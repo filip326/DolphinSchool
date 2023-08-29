@@ -79,7 +79,7 @@ export default {
             }
         },
     },
-    async beforeMount() {
+    async beforeCreate() {
         const auth = await checkAuth({
             redirectOnMfaRequired: false,
             throwErrorOnNotAuthenticated: false,

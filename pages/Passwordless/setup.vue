@@ -65,13 +65,14 @@ export default {
             navigateTo("/passwordless/setup-success");
         },
     },
-    async beforeMount() {
+    async beforeCreate() {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
             redirectOnPwdChange: true,
         });
-
+    },
+    async beforeMount() {
         if (!pwless.isAvailable()) {
             navigateTo("/passwordless/not-avaible");
             return;
