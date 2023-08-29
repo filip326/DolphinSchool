@@ -4,10 +4,12 @@ export default {
     data() {
         return {
             show_nav_drawer_button: false,
+            show_appbar_title: false,
         };
     },
-    beforeMount() {
+    mounted() {
         this.show_nav_drawer_button = window.innerWidth > 1200;
+        this.show_appbar_title = window.innerWidth > 1200;
     },
 };
 </script>
@@ -19,7 +21,7 @@ export default {
 
             <VImg src="/img/School/DolphinSchool_light.png" />
 
-            <VAppBarTitle> DolphinSchool </VAppBarTitle>
+            <VAppBarTitle class="title__app_bar"> DolphinSchool </VAppBarTitle>
         </VAppBar>
 
         <VNavigationDrawer v-model="show_nav_drawer_button" class="navigation__drawer">
@@ -39,15 +41,6 @@ export default {
     max-width: 64px !important;
 }
 
-.navigation__list {
-    text-decoration: none;
-}
-
-.navigation__list__item {
-    text-decoration: none;
-    margin: 5px 10px;
-}
-
 .content__wrapper {
     display: flex;
     align-items: center;
@@ -56,5 +49,11 @@ export default {
     width: 100%;
     padding: 10px;
     transition: filter 50ms;
+}
+
+@media screen and (max-width: 900px) {
+    .title__app_bar {
+        display: none;
+    }
 }
 </style>

@@ -4,7 +4,6 @@ export default {
     data() {
         return {
             show_nav_drawer_button: false,
-            show_logout_button: false,
         };
     },
     methods: {
@@ -18,9 +17,8 @@ export default {
             }
         },
     },
-    beforeMount() {
+    mounted() {
         this.show_nav_drawer_button = window.innerWidth > 1200;
-        this.show_logout_button = window.innerWidth > 1200;
     },
 };
 </script>
@@ -32,11 +30,11 @@ export default {
 
             <VImg src="/img/School/DolphinSchool_light.png" />
 
-            <VAppBarTitle> DolphinSchool </VAppBarTitle>
+            <VAppBarTitle class="title__app_bar"> DolphinSchool </VAppBarTitle>
 
             <VSpacer />
 
-            <VIcon style="margin-right: 14px" :v-if="show_logout_button" icon="mdi-logout" @click="logout" />
+            <VIcon style="margin-right: 14px" icon="mdi-logout" @click="logout" />
         </VAppBar>
 
         <VNavigationDrawer v-model="show_nav_drawer_button" class="navigation__drawer">
@@ -59,5 +57,11 @@ export default {
 .content__wrapper {
     padding: 10px;
     transition: filter 50ms;
+}
+
+@media screen and (max-width: 900px) {
+    .title__app_bar {
+        display: none;
+    }
 }
 </style>
