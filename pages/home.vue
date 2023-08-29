@@ -45,6 +45,7 @@ export default {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChange: true,
         });
         this.passwordless_setup =
             window.localStorage.getItem("passwordless") != null ||

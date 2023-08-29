@@ -83,6 +83,7 @@ export default {
         const auth = await checkAuth({
             redirectOnMfaRequired: false,
             throwErrorOnNotAuthenticated: false,
+            redirectOnPwdChange: true,
         });
         if (!auth.authenticated && !auth.mfa_required) {
             navigateTo("/");

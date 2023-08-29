@@ -69,6 +69,7 @@ export default {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChangeRequired: true,
         });
 
         this.totpSec = await this.totpSecret();

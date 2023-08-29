@@ -3,6 +3,7 @@ export default {
     async beforeMount() {
         await checkAuth({
             redirectOnMfaRequired: true,
+            redirectOnPwdChange: true,
             throwErrorOnNotAuthenticated: true,
         });
     },

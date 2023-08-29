@@ -17,6 +17,7 @@ type CheckAuthResult = {
 interface Auth {
     authenticated: boolean | false;
     mfa_required?: boolean;
+    change_password_required?: boolean;
     user?: User;
     checkAuth: (event: H3Event, options: CheckAuthOptions) => Promise<CheckAuthResult>;
 }

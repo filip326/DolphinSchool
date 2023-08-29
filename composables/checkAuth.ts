@@ -1,6 +1,7 @@
 type CheckAuthResult = {
     authenticated: boolean;
     mfa_required?: boolean;
+    password_change_required?: boolean;
     user: {
         username?: string;
         full_name?: string;
@@ -12,6 +13,7 @@ type CheckAuthResult = {
 export default async function checkAuth(options: {
     throwErrorOnNotAuthenticated?: boolean;
     redirectOnMfaRequired?: boolean;
+    redirectOnPwdChange?: boolean;
 }): Promise<CheckAuthResult> {
     const whoamiRes = await useFetch("/api/auth/whoami");
 
@@ -44,6 +46,28 @@ export default async function checkAuth(options: {
         };
     } else {
         if (whoamiRes.data.value?.authenticated) {
+            if (whoamiRes.data.value.change_password_required) {
+                if (options.redirectOnPwdChange) {
+                    await navigateTo("/setup/chpwd");
+                    return {
+                        authenticated: false,
+                        password_change_required: true,
+                        user: {},
+                    };
+                }
+
+                return {
+                    authenticated: false,
+                    password_change_required: true,
+                    user: {
+                        username: whoamiRes.data.value?.user?.username,
+                        full_name: whoamiRes.data.value?.user?.full_name,
+                        type: whoamiRes.data.value?.user?.type,
+                        mfa_enabled: whoamiRes.data.value?.user?.mfa_enabled,
+                    },
+                };
+            }
+
             return {
                 authenticated: true,
                 user: {

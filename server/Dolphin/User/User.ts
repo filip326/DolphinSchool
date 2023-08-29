@@ -24,6 +24,8 @@ interface IUser {
     permissions: number;
     nickname?: string;
 
+    changePasswordRequired: boolean;
+
     // student properties
     parents?: ObjectId[];
 
@@ -131,6 +133,7 @@ class User implements WithId<IUser> {
             username: options.username,
             password: passwordHash,
             permissions: options.permissions ?? 0,
+            changePasswordRequired: true,
         };
 
         // check if user type is valid
@@ -168,6 +171,8 @@ class User implements WithId<IUser> {
     username: string;
     password: string;
     permissions: number;
+
+    changePasswordRequired: boolean;
 
     mfa_secret?: string;
     mfa_setup_secret?: string;
@@ -209,6 +214,8 @@ class User implements WithId<IUser> {
         this.password = user.password;
         this.username = user.username;
         this.permissions = user.permissions;
+
+        this.changePasswordRequired = user.changePasswordRequired;
 
         this.parents = user.parents;
         this.students = user.students;
@@ -381,6 +388,19 @@ class User implements WithId<IUser> {
 
     isParent(): boolean {
         return this.type === "parent";
+    }
+
+    async setPasswordChangeRequired(required: boolean): Promise<MethodResult<boolean>> {
+        this.changePasswordRequired = required;
+        try {
+            const updateResult = await this.userCollection.findOneAndUpdate(
+                { _id: this._id },
+                { $set: { changePasswordRequired: this.changePasswordRequired } },
+            );
+            return [updateResult.ok === 1, null];
+        } catch {
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+        }
     }
 
     /**

@@ -10,6 +10,7 @@ export default {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChange: true,
         });
         this.show_floating_action_btn = window.innerWidth < 600;
     },

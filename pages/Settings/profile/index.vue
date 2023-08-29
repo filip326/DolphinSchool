@@ -4,6 +4,7 @@ export default {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChange: true,
         });
     },
     data() {

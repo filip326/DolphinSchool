@@ -88,6 +88,7 @@ export default {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChange: true,
         });
 
         this.continue_button.loading = true;

@@ -7,6 +7,7 @@ export default defineEventHandler(async (event) => {
     event.context.auth = {
         authenticated: false,
         user: undefined,
+        change_password_required: false,
         mfa_required: false,
         checkAuth: async (event: H3Event, options: CheckAuthOptions): Promise<CheckAuthResult> => {
             if (!event.context.auth.authenticated) {
@@ -85,6 +86,10 @@ export default defineEventHandler(async (event) => {
         event.context.auth.mfa_required = false;
         event.context.auth.user = undefined;
         return;
+    }
+
+    if (user.changePasswordRequired) {
+        event.context.auth.change_password_required = true;
     }
 
     // check if user needs 2fa and has not passed yet

@@ -13,6 +13,7 @@ async function main() {
         type: "student",
         password: await hash("password", 10),
         permissions: 0,
+        changePasswordRequired: true,
     };
 
     const client = await MongoClient.connect(DB_URL);

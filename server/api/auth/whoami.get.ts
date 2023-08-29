@@ -2,6 +2,7 @@ export default eventHandler(async (event) => {
     return {
         authenticated: event.context.auth.authenticated,
         mfa_required: event.context.auth.mfa_required,
+        change_password_required: event.context.auth.change_password_required,
         user: {
             username: event.context.auth.user?.username,
             full_name: event.context.auth.user?.fullName,
