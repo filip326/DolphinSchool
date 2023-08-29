@@ -14,6 +14,20 @@ export default {
                 required: (v) => !!v || "Dieses Feld ist erforderlich!",
                 wiederholen: (v) => v === this.new_pwd || "Die Passwörter stimmen nicht überein!",
                 notsame: (v) => v !== this.old_pwd || "Das neue Passwort muss sich vom alten unterscheiden!",
+                password: (v) => {
+                    if (v.length < 10) {
+                        return "Das Passwort muss mindestens 10 Zeichen lang sein!";
+                    }
+                    if (!/[a-z]/.test(v)) {
+                        return "Das Passwort muss mindestens einen Kleinbuchstaben (a-z) enthalten!";
+                    }
+                    if (!/[A-Z]/.test(v)) {
+                        return "Das Passwort muss mindestens einen Großbuchstaben (A-Z) enthalten!";
+                    }
+                    if (!/[0-9]/.test(v)) {
+                        return "Das Passwort muss mindestens eine Ziffer (0-9) enthalten!";
+                    }
+                },
             },
             error: {
                 shown: false,
@@ -74,7 +88,7 @@ export default {
                     </p>
                 </div>
                 <ul>
-                    <li>Das Passwort muss mindestens 8 Zeichen lang sein.</li>
+                    <li>Das Passwort muss mindestens 10 Zeichen lang sein.</li>
                     <li>Das Passwort muss mindestens einen Kleinbuchstaben (a-z) enthalten.</li>
                     <li>Das Passwort muss mindestens einen Großbuchstaben (A-Z) enthalten.</li>
                     <li>Das Passwort muss mindestens eine Ziffer (0-9) enthalten.</li>
@@ -106,9 +120,13 @@ export default {
                 v-model="new_pwd"
                 label="neues Passwort"
                 type="password"
-                :rules="[rules.required, rules.notsame]"
+                :rules="[rules.required, rules.notsame, rules.password]"
             />
-            <VTextField label="Passwort wiederholen" type="password" :rules="[rules.required, rules.wiederholen]" />
+            <VTextField
+                label="Passwort wiederholen"
+                type="password"
+                :rules="[rules.required, rules.wiederholen, rules.password]"
+            />
 
             <VBtn type="submit" color="primary" class="mr-4">Passwort ändern</VBtn>
         </VForm>

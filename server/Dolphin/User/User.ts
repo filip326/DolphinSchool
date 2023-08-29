@@ -409,7 +409,7 @@ class User implements WithId<IUser> {
      */
     async setPassword(password: string): Promise<MethodResult<boolean>> {
         // check some password requirements
-        if (password.length < 8) {
+        if (password.length < 10) {
             return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
         if (!/[a-z]/.test(password)) {
