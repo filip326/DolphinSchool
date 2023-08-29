@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
     // check authentication
-    if (!event.context.auth.authenticated || !event.context.auth.user) {
+    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    if (!checkAuthResult.success || !checkAuthResult.user) {
         return {
             statusCode: 401,
             statusMessage: "Not authenticated",
@@ -8,7 +9,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // check if user needs 2fa
-    if (event.context.auth.mfa_required && event.context.auth.user.mfaEnabled) {
+    if (event.context.auth.mfa_required && checkAuthResult.user.mfaEnabled) {
         return {
             statusCode: 403,
             statusMessage: "2FA required",

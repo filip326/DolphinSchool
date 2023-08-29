@@ -3,7 +3,6 @@ import User from "../Dolphin/User/User";
 import { Permissions } from "../Dolphin/Permissions/PermissionManager";
 
 interface CheckAuthOptions {
-    throwErrorOnNotAuth?: boolean;
     minimumPermissionLevel?: Permissions;
 }
 

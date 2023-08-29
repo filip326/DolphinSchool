@@ -20,7 +20,7 @@ export default defineNuxtConfig({
             charset: "utf-8",
             viewport: "width=device-width, initial-scale=1",
             noscript: [{ innerHTML: "This website requires JavaScript." }],
-            titleTemplate: "%s | DolphinSchool",
+            titleTemplate: "DolphinSchool",
             meta: [
                 // todo @Copilot - add meta tags here (Twitter, Facebook, Google, etc.)
             ],

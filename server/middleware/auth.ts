@@ -9,10 +9,7 @@ export default defineEventHandler(async (event) => {
         mfa_required: false,
         user: undefined,
         checkAuth: async (event: H3Event, options: CheckAuthOptions): Promise<CheckAuthResult> => {
-            if (!event.context.auth.authenticated || !event.context.auth.mfa_required) {
-                if (options.throwErrorOnNotAuth) {
-                    throw new Error("Not authenticated");
-                }
+            if (!event.context.auth.authenticated || event.context.auth.mfa_required) {
                 return {
                     success: false,
                     statusCode: 401,
@@ -20,9 +17,6 @@ export default defineEventHandler(async (event) => {
             }
 
             if (!event.context.auth.user) {
-                if (options.throwErrorOnNotAuth) {
-                    throw new Error("Not authenticated");
-                }
                 return {
                     success: false,
                     statusCode: 401,
@@ -31,9 +25,6 @@ export default defineEventHandler(async (event) => {
 
             if (options.minimumPermissionLevel) {
                 if (event.context.auth.user.hasPermission(options.minimumPermissionLevel)) {
-                    if (options.throwErrorOnNotAuth) {
-                        throw new Error("Not authorized");
-                    }
                     return {
                         success: false,
                         statusCode: 403,
