@@ -33,7 +33,7 @@ export default defineNuxtConfig({
     // todo Disable this for production
     //! WARNING: do not use with true in production
     devtools: { enabled: process.env.ENVIRONMENT === "production" ? false : true },
-    ssr: false,
+    ssr: process.env.SSR === "true" ? true : false,
     routeRules: {
         // Homepage pre-rendered at build time
         "/": { prerender: true, static: true },

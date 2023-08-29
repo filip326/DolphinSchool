@@ -63,6 +63,36 @@ export default {
 
 <template>
     <div class="loginform">
+        <div>
+            <div>
+                <h1>Passwort ändern</h1>
+                <div>
+                    <p>Bevor Sie weitergeleitet werden, müssen Sie Ihr Passwort ändern.</p>
+                    <p>
+                        Beachten Sie die folgenden Regeln für Ihres Passwort. Sie können Ihr Passwort jederzeit in den
+                        Einstellungen ändern.
+                    </p>
+                </div>
+                <ul>
+                    <li>Das Passwort muss mindestens 8 Zeichen lang sein.</li>
+                    <li>Das Passwort muss mindestens einen Kleinbuchstaben (a-z) enthalten.</li>
+                    <li>Das Passwort muss mindestens einen Großbuchstaben (A-Z) enthalten.</li>
+                    <li>Das Passwort muss mindestens eine Ziffer (0-9) enthalten.</li>
+                </ul>
+                <div>
+                    <p>
+                        Es wird empfohlen neben einem sicherem Passwort die Zwei-Faktor-Authentifizierung in den
+                        Einstellungen zu aktivieren. Weitere Informationen finden Sie beispielsweise auf der
+                        <a
+                            href="https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Informationen-und-Empfehlungen/Cyber-Sicherheitsempfehlungen/Accountschutz/Sichere-Passwoerter-erstellen/sichere-passwoerter-erstellen_node.html"
+                        >
+                            Website des BSI
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <VForm @submit.prevent="changePassword()">
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
 
