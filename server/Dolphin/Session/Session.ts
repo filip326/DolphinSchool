@@ -156,7 +156,7 @@ class Session implements WithId<ISession> {
             const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database
                 .collection("sessions")
-                .updateOne({ _id: this._id }, { $set: { state: SessionState.ACTIVE } });
+                .updateOne({ _id: this._id }, { $set: { state: SessionState.MFA_REQ } });
             return [dbResult.modifiedCount === 1, null];
         } catch {
             return [undefined, DolphinErrorTypes.FAILED];

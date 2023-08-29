@@ -1,10 +1,19 @@
 export default defineEventHandler(async (event) => {
     // check authentication
     const checkAuthResult = await event.context.auth.checkAuth(event, {});
-    if (!checkAuthResult.success || !checkAuthResult.user) {
+
+    // check if authentication failed and mfa is not required
+    if (!checkAuthResult.success && !event.context.auth.mfa_required) {
         return {
             statusCode: 401,
-            statusMessage: "Not authenticated",
+            statusMessage: "Unauthorized",
+        };
+    }
+
+    if (!checkAuthResult.user) {
+        return {
+            statusCode: 401,
+            statusMessage: "Unauthorized",
         };
     }
 

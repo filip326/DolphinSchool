@@ -4,9 +4,10 @@ import Session from "../../Dolphin/Session/Session";
 export default defineEventHandler(async (event) => {
     // check authentication
     const checkAuthResult = await event.context.auth.checkAuth(event, {});
-    if (!checkAuthResult.success || !checkAuthResult.user) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
+    if (!checkAuthResult.user) {
+        throw createError({ statusCode: 401, message: "Unauthorized 1" });
     }
+
     // get user object
     const user = checkAuthResult.user;
 
@@ -15,24 +16,24 @@ export default defineEventHandler(async (event) => {
     const [session, sessionFindError] = await Session.findSession(token);
 
     if (sessionFindError || !session) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
+        throw createError({ statusCode: 401, message: "Unauthorized 2" });
     }
 
     // check if user needs 2fa and has not passed yet
     if (session.state !== SessionState.MFA_REQ) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
+        throw createError({ statusCode: 401, message: "Unauthorized 3" });
     }
 
     // check if user has set up 2fa
     if (!user.mfaEnabled) {
-        return "2fa not set up";
+        throw createError({ statusCode: 403, message: "MFA Not set up" });
     }
 
     // get totp code from body
     const { totp } = await readBody(event);
 
     // check if totp code matches pattern
-    if (!/^[0-9]{8}$/.test(totp)) {
+    if (!/^[0-9]{6}$/.test(totp)) {
         throw createError({ statusCode: 400, message: "TOTP Token invalid" });
     }
 

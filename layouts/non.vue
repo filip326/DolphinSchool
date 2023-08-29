@@ -33,18 +33,7 @@ export default {
         </VAppBar>
 
         <VNavigationDrawer v-model="show_nav_drawer_button" class="navigation__drawer">
-            <VList>
-                <VListItem
-                    v-for="item in navigation_items"
-                    :key="item.title"
-                    density="compact"
-                    :to="item.link"
-                    :append-icon="item.icon"
-                    :title="item.title"
-                    rounded
-                    class="navigation__list__item"
-                />
-            </VList>
+            <NavDrawerContent :navigation_items="navigation_items" />
         </VNavigationDrawer>
 
         <VMain>

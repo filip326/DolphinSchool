@@ -6,10 +6,18 @@ import { CheckAuthOptions, CheckAuthResult } from "../types/auth";
 export default defineEventHandler(async (event) => {
     event.context.auth = {
         authenticated: false,
-        mfa_required: false,
         user: undefined,
+        mfa_required: false,
         checkAuth: async (event: H3Event, options: CheckAuthOptions): Promise<CheckAuthResult> => {
-            if (!event.context.auth.authenticated || event.context.auth.mfa_required) {
+            if (!event.context.auth.authenticated) {
+                if (event.context.auth.mfa_required) {
+                    return {
+                        success: false,
+                        statusCode: 401,
+                        user: event.context.auth.user,
+                    };
+                }
+
                 return {
                     success: false,
                     statusCode: 401,

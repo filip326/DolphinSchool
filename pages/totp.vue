@@ -1,6 +1,6 @@
 <template>
     <div class="loginform small">
-        <VForm @submit.prevent>
+        <VForm @submit.prevent="login">
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
 
             <h1>2-Faktor Authentizierung</h1>
@@ -15,13 +15,13 @@
                 type="text"
                 label="2FA-Code"
                 v-model="totp"
-                placeholder="12345678"
+                placeholder="123456"
                 hint="Geben Sie hier den Code ein."
                 :rules="[rules.required, rules.totpLength, rules.totpNumbers]"
             >
             </VTextField>
 
-            <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
+            <VBtn :loading="button.loading" type="submit" size="large" variant="outlined">Einloggen</VBtn>
         </VForm>
     </div>
 </template>
@@ -48,6 +48,9 @@ export default {
                 shown: false,
                 message: "",
             },
+            button: {
+                loading: false,
+            },
             totp: "",
         };
     },
@@ -57,12 +60,16 @@ export default {
             this.error.shown = false;
             this.error.message = "";
 
-            const res = await useFetch("/api/2fa-totp", {
-                method: "GET",
+            this.button.loading = true;
+
+            const res = await useFetch("/api/auth/2fa-totp", {
+                method: "POST",
                 body: JSON.stringify({
                     totp: this.totp,
                 }),
             });
+
+            this.button.loading = false;
 
             if (res.status.value === "success") {
                 navigateTo("/home");
@@ -75,8 +82,11 @@ export default {
     async beforeMount() {
         const auth = await checkAuth({
             redirectOnMfaRequired: false,
-            throwErrorOnNotAuthenticated: true,
+            throwErrorOnNotAuthenticated: false,
         });
+        if (!auth.authenticated && !auth.mfa_required) {
+            navigateTo("/");
+        }
         if (auth.authenticated && !auth.mfa_required) {
             navigateTo("/home");
         }
