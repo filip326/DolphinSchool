@@ -70,12 +70,11 @@ export default {
 </script>
 
 <template>
-    <div class="loginform">
-        <div>
+    <div class="settings_form">
+        <section class="settings_info">
             <div>
                 <h1>Passwort ändern</h1>
                 <div>
-                    <p>Bevor Sie weitergeleitet werden, müssen Sie Ihr Passwort ändern.</p>
                     <p>
                         Beachten Sie die folgenden Regeln für Ihres Passwort. Sie können Ihr Passwort jederzeit in den
                         Einstellungen ändern.
@@ -99,14 +98,14 @@ export default {
                     </p>
                 </div>
             </div>
-        </div>
+        </section>
 
         <VForm @submit.prevent="changePassword()">
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
 
             <p>
-                Sie müssen Ihr Passwort ändern. Geben Sie Ihr bisheriges Passwort ein. Wählen Sie anschließend ein neues
-                Passwort und wiederholen Sie dieses.
+                Geben Sie Ihr bisheriges Passwort ein. Wählen Sie anschließend ein neues Passwort und wiederholen Sie
+                dieses.
             </p>
 
             <VTextField v-model="old_pwd" label="bisheriges Passwort" type="password" :rules="[rules.required]" />
@@ -126,3 +125,7 @@ export default {
         </VForm>
     </div>
 </template>
+
+<style scoped>
+@import url("../../../../assets/settings.css");
+</style>

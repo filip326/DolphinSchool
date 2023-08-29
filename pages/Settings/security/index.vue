@@ -16,7 +16,7 @@ export default {
                 },
                 {
                     name: "2FA",
-                    link: "/settings/security/totp",
+                    link: "/settings/security/totp/setup",
                 },
                 {
                     name: "Passwordless",
