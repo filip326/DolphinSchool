@@ -1,0 +1,12 @@
+.nuxt
+.output
+.eslintignore
+.eslintrc.js
+.gitignore
+.npmrc
+.prettierignore
+.prettierrc.js
+CODEOWNERS
+jest.config.js
+LICENSE
+yarn.lock

@@ -8,7 +8,8 @@
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
         "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue .",
-        "lint-fix": "yarn lint -- --fix"
+        "lint-fix": "yarn lint -- --fix",
+        "start": "node .output/server/index.mjs"
     },
     "devDependencies": {
         "@jest/globals": "^29.6.2",
