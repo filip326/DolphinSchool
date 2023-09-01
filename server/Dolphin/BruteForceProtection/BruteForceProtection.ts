@@ -17,19 +17,13 @@ class BruteForceProtection {
         this.bruteForceProtectionBypass = database.collection("bruteForceProtectionBypass");
     }
 
-    public static getInstance(dolphin: Dolphin): BruteForceProtection {
-        if (BruteForceProtection.instance) {
-            return BruteForceProtection.instance;
-        }
-
-        BruteForceProtection.instance = new BruteForceProtection(dolphin.database);
-        return BruteForceProtection.instance;
-    }
-
-    async isLoginAllowed(username: string, bypassToken?: string): Promise<MethodResult<boolean>> {
+    static async isLoginAllowed(username: string, bypassToken?: string): Promise<MethodResult<boolean>> {
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+        const bruteForceProtection = dolphin.database.collection<BruteForceProtectionEntry>("bruteForceProtection");
+        const bruteForceProtectionBypass = dolphin.database.collection<BruteForceProtectionBypassEntry>("bruteForceProtectionBypass");
         if (!bypassToken) {
             try {
-                const dbResult = await this.bruteForceProtection.findOne({
+                const dbResult = await bruteForceProtection.findOne({
                     username: username,
                     expires: {
                         $gt: Date.now(),
@@ -53,7 +47,7 @@ class BruteForceProtection {
 
         // check if device Token is valid
         try {
-            const dbResult = this.bruteForceProtectionBypass.findOne({
+            const dbResult = bruteForceProtectionBypass.findOne({
                 username: username,
                 token: bypassToken,
                 expires: { $gt: Date.now() },
@@ -63,7 +57,7 @@ class BruteForceProtection {
             if (!dbResult) return this.isLoginAllowed(username);
 
             // if device token is valid, check if login is allowed with deviceToken
-            const dbResult2 = await this.bruteForceProtection.findOne({
+            const dbResult2 = await bruteForceProtection.findOne({
                 username: username,
                 token: bypassToken,
                 expires: { $gt: Date.now() },
@@ -84,21 +78,24 @@ class BruteForceProtection {
         }
     }
 
-    async reportFailedLoginAttempt(username: string, bypassToken?: string): Promise<MethodResult<boolean>> {
+    static async reportFailedLoginAttempt(username: string, bypassToken?: string): Promise<MethodResult<boolean>> {
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+        const bruteForceProtection = dolphin.database.collection<BruteForceProtectionEntry>("bruteForceProtection");
+        const bruteForceProtectionBypass = dolphin.database.collection<BruteForceProtectionBypassEntry>("bruteForceProtectionBypass");
         if (bypassToken) {
             // check if device Token is valid
             try {
-                const dbResult = this.bruteForceProtectionBypass.findOne({
+                const dbResult = bruteForceProtectionBypass.findOne({
                     username: username,
                     token: bypassToken,
                     expires: {
                         $gt: Date.now(),
                     },
                 });
-                if (!dbResult) return this.reportFailedLoginAttempt(username);
+                if (!dbResult) return BruteForceProtection.reportFailedLoginAttempt(username);
 
                 // if device token is valid, check if there already is a BruteForceProtectionEntry
-                const dbResult2 = await this.bruteForceProtection.findOne({
+                const dbResult2 = await bruteForceProtection.findOne({
                     username: username,
                     token: bypassToken,
                     expires: {
@@ -109,7 +106,7 @@ class BruteForceProtection {
                 // if there is no BruteForceProtectionEntry, create one, valid for 3 hours
                 if (!dbResult2) {
                     try {
-                        await this.bruteForceProtection.insertOne({
+                        await bruteForceProtection.insertOne({
                             username: username,
                             token: bypassToken,
                             failedAttemts: 1,
@@ -122,7 +119,7 @@ class BruteForceProtection {
                 // if there already is a BruteforceProtectionEntry, increment failed attempts and exceed expiration to 3 hours
                 else {
                     try {
-                        await this.bruteForceProtection.updateOne(
+                        await bruteForceProtection.updateOne(
                             {
                                 username: username,
                                 token: bypassToken,
@@ -146,7 +143,7 @@ class BruteForceProtection {
         }
 
         // do the same with username and without deviceToken
-        const dbResult = await this.bruteForceProtection.findOne({
+        const dbResult = await bruteForceProtection.findOne({
             username: username,
             token: { $exists: false },
             expires: { $gt: Date.now() },
@@ -155,7 +152,7 @@ class BruteForceProtection {
         // if there is a valid BruteForceProtectionEntry, increment failed attempts and exceed expiration to 3 hours
         if (dbResult) {
             try {
-                await this.bruteForceProtection.updateOne(
+                await bruteForceProtection.updateOne(
                     {
                         username: username,
                         token: { $exists: false },
@@ -175,7 +172,7 @@ class BruteForceProtection {
         // if there is no valid BruteForceProtectionEntry, create one, valid for 3 hours
         else {
             try {
-                await this.bruteForceProtection.insertOne({
+                await bruteForceProtection.insertOne({
                     username: username,
                     failedAttemts: 1,
                     expires: Date.now() + 3 * 60 * 60 * 1000,
