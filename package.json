@@ -10,7 +10,8 @@
         "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue .",
         "lint-fix": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue . --fix",
         "prepare": "husky install",
-        "create-dummy-student": "ts-node ./scripts/createStudent.ts"
+        "create-dummy-student": "ts-node ./scripts/createStudent.ts",
+        "start": "node .output/server/index.mjs"
     },
     "devDependencies": {
         "@jest/globals": "^29.6.2",
