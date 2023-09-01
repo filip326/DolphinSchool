@@ -1,14 +1,16 @@
 enum DolphinErrorTypes {
-    Failed = 0,
-    NotFound = 1,
-    InvalidParameter = 2,
-    AlreadyExists = 3,
-    DatabaseConnectionFailed = 4,
-    DatabaseQueryFailed = 5
+    FAILED = "FAILED",
+    DATABASE_ERROR = "DATABASE_ERROR",
+    NOT_FOUND = "NOT_FOUND",
+    ALREADY_EXISTS = "ALREADY_EXISTS",
+    NOT_SUPPORTED = "NOT_SUPPORTED",
+    NOT_ACTIVE = "NOT_ACTIVE",
+    NOT_AUTHORIZED = "NOT_AUTHORIZED",
+    NOT_AUTHENTICATED = "NOT_AUTHENTICATED",
+    INVALID_ARGUMENT = "INVALID_ARGUMENT",
+    INVALID_TYPE = "INVALID_TYPE",
 }
 
-type DolphinError = [DolphinErrorTypes, string?];
-
-type MethodResult<T> = [T, null] | [undefined, Error];
+type MethodResult<T> = [T, null] | [undefined, DolphinErrorTypes];
 export default MethodResult;
-export { DolphinError, DolphinErrorTypes };
+export { DolphinErrorTypes };

@@ -2,7 +2,7 @@
 import { client as pwless } from "@passwordless-id/webauthn";
 definePageMeta({
     title: "passwordless",
-    layout: "login"
+    layout: "login",
 });
 </script>
 
@@ -19,7 +19,6 @@ export default {
     },
     methods: {
         async setupPasswordless() {
-
             this.loading = true;
 
             // check if passwordless is available
@@ -40,20 +39,21 @@ export default {
             // create new credential
             const credentials = await pwless.register(this.username, this.challenge);
 
-            localStorage.setItem("passwordless", JSON.stringify({
-                username: this.username,
-                credId: credentials.credential.id
-            }));
+            localStorage.setItem(
+                "passwordless",
+                JSON.stringify({
+                    username: this.username,
+                    credId: credentials.credential.id,
+                }),
+            );
 
             // send credentials to server
             const response = await useFetch("/api/auth/passwordless/setup", {
                 method: "post",
-                body: JSON.stringify(
-                    {
-                        challenge: credentials,
-                        token: this.token
-                    }
-                )
+                body: JSON.stringify({
+                    challenge: credentials,
+                    token: this.token,
+                }),
             });
 
             if (response.status.value !== "success") {
@@ -63,12 +63,16 @@ export default {
 
             // redirect to dashboard
             navigateTo("/passwordless/setup-success");
-
-        }
+        },
+    },
+    async beforeCreate() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChange: true,
+        });
     },
     async beforeMount() {
-        await checkAuth();
-
         if (!pwless.isAvailable()) {
             navigateTo("/passwordless/not-avaible");
             return;
@@ -95,39 +99,36 @@ export default {
         }
 
         this.loading = false;
-    }
+    },
 };
 </script>
 
 <template>
     <div class="loginform">
         <div>
-            <h1>passwordless Login </h1>
+            <h1>passwordless Login</h1>
             <p>
                 Mit passwordless Login können Sie sich auf diesem Gerät ohne Passwort anmelden. Zusätzlich können Sie
-                sich auf anderen Geräten durch scannen des QR-Codes sehr einfach und sicher anmelden. Aktivieren Sie diese
-                Funktion nur, wenn Sie eine sichere Bildschirmsperre eingerichtet haben.
+                sich auf anderen Geräten durch scannen des QR-Codes sehr einfach und sicher anmelden. Aktivieren Sie
+                diese Funktion nur, wenn Sie eine sichere Bildschirmsperre eingerichtet haben.
             </p>
             <p>
-                <b>Wichtig:</b> Falls Sie sich entscheiden das Passwort zu deaktivieren, können Sie sich nur noch anmelden,
-                indem Sie mit diesem Gerät den QR-Code scannen. Auf diesem Gerät bleiben Sie angemeldet. Benutzen Sie diese
-                Option <u>nur</u>, wenn es sich um Ihr Smartphone handelt.
+                <b>Wichtig:</b> Falls Sie sich entscheiden das Passwort zu deaktivieren, können Sie sich nur noch
+                anmelden, indem Sie mit diesem Gerät den QR-Code scannen. Auf diesem Gerät bleiben Sie angemeldet.
+                Benutzen Sie diese Option <u>nur</u>, wenn es sich um Ihr Smartphone handelt.
             </p>
-
         </div>
         <VForm @submit.prevent="setupPasswordless()">
             <h1>Einrichten:</h1>
             <VCheckbox label="Dies ist mein eigenes, privates Gerät" />
             <VCheckbox
-                label="Ich habe auf diesem Gerät eine sichere Bildschirmsperre (PIN, Passwort, Fingerabdruck oder Gesichtserkennung) eingerichtet" />
+                label="Ich habe auf diesem Gerät eine sichere Bildschirmsperre (PIN, Passwort, Fingerabdruck oder Gesichtserkennung) eingerichtet"
+            />
             <VCheckbox
-                label="Die Anmeldung mit Passwort nach der Einrichtung deaktivieren. Dadurch kann ich mich nur noch anmelden, in dem ich mit diesem Gerät den QR-Code scanne. Dies erhöht die Kontosicherheit erheblich." />
-            <VBtn type="submit" :loading="loading" color="primary">
-                Einrichten
-            </VBtn>
-            <VBtn type="button">
-                Überspringen
-            </VBtn>
+                label="Die Anmeldung mit Passwort nach der Einrichtung deaktivieren. Dadurch kann ich mich nur noch anmelden, in dem ich mit diesem Gerät den QR-Code scanne. Dies erhöht die Kontosicherheit erheblich."
+            />
+            <VBtn type="submit" :loading="loading" color="primary"> Einrichten </VBtn>
+            <VBtn type="button"> Überspringen </VBtn>
         </VForm>
     </div>
 </template>

@@ -1,11 +1,52 @@
+import { H3Event } from "h3";
 import Session, { SessionState } from "../Dolphin/Session/Session";
 import User from "@/server/Dolphin/User/User";
+import { CheckAuthOptions, CheckAuthResult } from "../types/auth";
 
 export default defineEventHandler(async (event) => {
     event.context.auth = {
         authenticated: false,
+        user: undefined,
+        change_password_required: false,
         mfa_required: false,
-        user: undefined
+        checkAuth: async (event: H3Event, options: CheckAuthOptions): Promise<CheckAuthResult> => {
+            if (!event.context.auth.authenticated) {
+                if (event.context.auth.mfa_required) {
+                    return {
+                        success: false,
+                        statusCode: 401,
+                        user: event.context.auth.user,
+                    };
+                }
+
+                return {
+                    success: false,
+                    statusCode: 401,
+                };
+            }
+
+            if (!event.context.auth.user) {
+                return {
+                    success: false,
+                    statusCode: 401,
+                };
+            }
+
+            if (options.minimumPermissionLevel) {
+                if (event.context.auth.user.hasPermission(options.minimumPermissionLevel)) {
+                    return {
+                        success: false,
+                        statusCode: 403,
+                    };
+                }
+            }
+
+            return {
+                success: true,
+                statusCode: 200,
+                user: event.context.auth.user,
+            };
+        },
     };
     // get token from cookies
     const token = parseCookies(event).token;
@@ -21,7 +62,7 @@ export default defineEventHandler(async (event) => {
     // check if token is valid
     const [session, sessionFindError] = await Session.findSession(token);
 
-    if (sessionFindError) {
+    if (sessionFindError || !session) {
         event.context.auth.authenticated = false;
         event.context.auth.mfa_required = false;
         event.context.auth.user = undefined;
@@ -47,6 +88,10 @@ export default defineEventHandler(async (event) => {
         return;
     }
 
+    if (user.changePasswordRequired) {
+        event.context.auth.change_password_required = true;
+    }
+
     // check if user needs 2fa and has not passed yet
     if (session.state === SessionState.MFA_REQ) {
         event.context.auth.authenticated = false;
@@ -66,7 +111,7 @@ export default defineEventHandler(async (event) => {
             path: "/",
             sameSite: "strict",
             secure: useRuntimeConfig().prod,
-            httpOnly: true
+            httpOnly: true,
         });
         return;
     }

@@ -2,13 +2,12 @@ import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
 import Session from "../../../Dolphin/Session/Session";
 
 export default defineEventHandler(async (event) => {
-
     const { token } = await readBody(event);
 
     if (!token || typeof token !== "string") {
         return createError({
             statusCode: 400,
-            statusMessage: "Bad Request"
+            statusMessage: "Bad Request",
         });
     }
 
@@ -16,12 +15,10 @@ export default defineEventHandler(async (event) => {
     const [loginResult, loginError] = await PasswordlessQR.login(token);
 
     if (loginError) {
-
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
-
     }
 
     if (!loginResult) {
@@ -31,10 +28,10 @@ export default defineEventHandler(async (event) => {
     // create a new session and return login sucessful
     const [session, sessionError] = await Session.createSession(loginResult);
 
-    if (sessionError) {
+    if (sessionError || !session) {
         return createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
@@ -43,11 +40,10 @@ export default defineEventHandler(async (event) => {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
-        maxAge: 60 * 60 * 24 * 7 // 7 days
+        maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
     await session.activate();
 
     return "Login successful";
-
 });

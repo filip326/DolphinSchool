@@ -1,15 +1,11 @@
 export default defineEventHandler(async (event) => {
     // check authentication
-    if (
-        !event.context.auth.authenticated ||
-        event.context.auth.mfa_required ||
-        !event.context.auth.user
-    ) {
+    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    if (!checkAuthResult.success || !checkAuthResult.user) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
-
-    // get objects
-    const user = event.context.auth.user;
+    // get user object
+    const user = checkAuthResult.user;
 
     // check if user is setting up 2fa
     if (!user.isSettingUp2fa) {
@@ -23,7 +19,6 @@ export default defineEventHandler(async (event) => {
 
     // get password (1st factor) and totp (2nd factor) from body
     const { totp } = await readBody(event);
-
 
     // check if totp code matches pattern
     if (!/^[0-9]{6}$/.test(totp)) {

@@ -2,19 +2,11 @@ import Dolphin from "../Dolphin";
 import { config } from "dotenv";
 config();
 
-import {
-    mkdirSync,
-    existsSync,
-    appendFileSync,
-    writeFileSync,
-    readdirSync,
-    readFileSync,
-    unlinkSync
-} from "fs";
+import { mkdirSync, existsSync, appendFileSync, writeFileSync, readdirSync, readFileSync, unlinkSync } from "fs";
 import { format as formatDate } from "date-fns";
 import { join } from "path";
 
-const DATE_FORMAT_STR = "dd MM yyyy HH:mm:ss";
+const dateFormatString = "dd MM yyyy HH:mm:ss";
 
 type LogLevel =
     | "DEBUG" // Debug messages, are not saved in production. Valid for 10 minutes before removal.
@@ -30,7 +22,7 @@ type LogLevel =
 // AccountCreated = 0,
 // AccountDeleted = 1,
 enum Action {
-    DolphinUNDEFINED = 0
+    DOLPHIN_UNDEFINED = 0,
 }
 
 interface LogData {
@@ -71,10 +63,10 @@ class Logger {
         if (!dolphin) {
             await Logger.logToFS({
                 level: "ERROR",
-                action: Action.DolphinUNDEFINED,
+                action: Action.DOLPHIN_UNDEFINED,
                 shortMessage: "Dolphin is undefiend",
                 longMessage: "Dolphin is undefined",
-                causedBy: "Logger.getLogs"
+                causedBy: "Logger.getLogs",
             });
             return;
         }
@@ -88,8 +80,8 @@ class Logger {
         // drop all logs, where deleteBy is smaller than now
         await collection.deleteMany({
             deleteBy: {
-                $lte: Date.now()
-            }
+                $lte: Date.now(),
+            },
         });
     }
 
@@ -99,10 +91,10 @@ class Logger {
         if (!dolphin) {
             await Logger.logToFS({
                 level: "ERROR",
-                action: Action.DolphinUNDEFINED,
+                action: Action.DOLPHIN_UNDEFINED,
                 shortMessage: "Dolphin is undefiend",
                 longMessage: "Dolphin is undefined",
-                causedBy: "Logger.getLogs"
+                causedBy: "Logger.getLogs",
             });
             return;
         }
@@ -120,8 +112,8 @@ class Logger {
             .find({
                 timestamp: {
                     $gte: from.getTime(),
-                    $lte: to.getTime()
-                }
+                    $lte: to.getTime(),
+                },
             })
             .toArray();
 
@@ -183,7 +175,7 @@ class Logger {
             longMessage: data.longMessage,
             causedBy: data.causedBy,
             archived: false,
-            deleteBy
+            deleteBy,
         };
 
         // insert the log
@@ -257,7 +249,7 @@ class Logger {
                     action: decodedFields[1] as unknown as Action,
                     shortMessage: decodedFields[2],
                     longMessage: decodedFields[3],
-                    causedBy: decodedFields[4]
+                    causedBy: decodedFields[4],
                 };
 
                 // log the data to the database
@@ -281,7 +273,7 @@ class Logger {
         // return level;action;shortMessage;longMessage;causedBy;
         return (
             encodeURIComponent(
-                `${data.level};${data.action};${data.shortMessage};${data.longMessage};${data.causedBy};`
+                `${data.level};${data.action};${data.shortMessage};${data.longMessage};${data.causedBy};`,
             ) + "\n"
         );
     }
@@ -309,7 +301,7 @@ class Logger {
         // if there is no log file that is not older than 1 hour and has less than 100 lines, create a new one
         const timestamp = Date.now();
         const path = join(".", ".logs", `dolphin-logs-${timestamp}.log`);
-        writeFileSync(path, `${formatDate(new Date(), DATE_FORMAT_STR)} Begin of log\n`);
+        writeFileSync(path, `${formatDate(new Date(), dateFormatString)} Begin of log\n`);
         return path;
     }
 }

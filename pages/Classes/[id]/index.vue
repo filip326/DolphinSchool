@@ -1,11 +1,18 @@
 <script lang="ts">
 export default {
+    async beforeCreate() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChange: true,
+        });
+    },
     data() {
         return {
             tab: null,
             tabs: ["Mitglieder", "Stundenplan", "Verlauf", "Anwesendheit", "Noten"],
             search_class: "",
-            timeout: ref<any>()
+            timeout: ref<any>(),
         };
     },
     methods: {
@@ -19,8 +26,8 @@ export default {
             this.timeout = setTimeout(() => {
                 this.search();
             }, 500);
-        }
-    }
+        },
+    },
 };
 </script>
 
@@ -33,12 +40,7 @@ export default {
 
         <VCardText>
             <!-- tabs -->
-            <VTabs
-                v-model="tab"
-                background-color="transparent"
-                color="secondary"
-                slider-color="secondary"
-            >
+            <VTabs v-model="tab" background-color="transparent" color="secondary" slider-color="secondary">
                 <VTab v-for="tab in tabs" :key="tab">
                     {{ tab }}
                 </VTab>

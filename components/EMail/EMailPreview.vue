@@ -8,22 +8,22 @@ export default {
     props: {
         id: {
             type: String,
-            required: true
+            required: true,
         },
         subject: {
             type: String,
-            required: true
+            required: true,
         },
         sendby: {
             type: String,
-            required: true
+            required: true,
         },
         timestamp: {
             type: String,
-            required: true
+            required: true,
         },
         unread: Boolean,
-        stared: Boolean
+        stared: Boolean,
     },
     data() {
         const width = ref(0);
@@ -35,7 +35,7 @@ export default {
         });
         return {
             width,
-            hover: false
+            hover: false,
         };
     },
     methods: {
@@ -47,8 +47,8 @@ export default {
         },
         onEmailSelected(email: string) {
             this.$emit("email_clicked", email);
-        }
-    }
+        },
+    },
 };
 </script>
 
@@ -58,13 +58,7 @@ export default {
             <!-- if message is already read -->
             <v-btn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </v-btn>
             <!-- if message is not read yet -->
-            <v-btn
-                density="comfortable"
-                icon="mdi-email-alert-outline"
-                v-if="unread"
-                class="unread"
-            >
-            </v-btn>
+            <v-btn density="comfortable" icon="mdi-email-alert-outline" v-if="unread" class="unread"> </v-btn>
         </div>
         <div class="sendby" @click="onEmailSelected(id)">
             {{ sendby }}
@@ -85,14 +79,7 @@ export default {
                 v-if="!stared"
             >
             </v-btn>
-            <v-btn
-                density="comfortable"
-                variant="plain"
-                elevation="0"
-                class="delete"
-                icon="mdi-star"
-                v-if="stared"
-            >
+            <v-btn density="comfortable" variant="plain" elevation="0" class="delete" icon="mdi-star" v-if="stared">
             </v-btn>
         </div>
         <div class="deleteMail mail-button">
@@ -114,13 +101,7 @@ export default {
                 <!-- if message is already read -->
                 <v-btn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </v-btn>
                 <!-- if message is not read yet -->
-                <v-btn
-                    density="comfortable"
-                    icon="mdi-email-alert-outline"
-                    v-if="unread"
-                    class="unread"
-                >
-                </v-btn>
+                <v-btn density="comfortable" icon="mdi-email-alert-outline" v-if="unread" class="unread"> </v-btn>
             </div>
             <div class="sendby">
                 {{ sendby }}
@@ -143,14 +124,7 @@ export default {
                     v-if="!stared"
                 >
                 </v-btn>
-                <v-btn
-                    density="comfortable"
-                    variant="plain"
-                    elevation="0"
-                    class="delete"
-                    icon="mdi-star"
-                    v-if="stared"
-                >
+                <v-btn density="comfortable" variant="plain" elevation="0" class="delete" icon="mdi-star" v-if="stared">
                 </v-btn>
             </div>
             <div class="deleteMail mail-button">

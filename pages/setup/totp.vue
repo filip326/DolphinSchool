@@ -2,7 +2,7 @@
 import QRCode from "qrcode";
 
 definePageMeta({
-    layout: "login"
+    layout: "login",
 });
 </script>
 
@@ -16,7 +16,7 @@ export default {
             rules: {
                 required: (v) => !!v || "Dieses Feld ist erforderlich!",
                 totpLength: (v) => v.length === 6 || "Der Code muss 6-stellig sein!",
-                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!"
+                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!",
             },
             userInfo: {
                 fullName: "" | undefined,
@@ -24,7 +24,7 @@ export default {
             },
             error: {
                 shown: false,
-                message: ""
+                message: "",
             },
             skip_button_loading: false,
         };
@@ -37,14 +37,14 @@ export default {
             const res = await useFetch("/api/setup/2fa/confirm", {
                 method: "POST",
                 body: JSON.stringify({
-                    totp: this.code
-                })
+                    totp: this.code,
+                }),
             });
 
             if (res.status.value !== "success" || res.data.value !== "Ok") {
                 this.error = {
                     shown: true,
-                    message: "Ungültiger TOTP-Code! Versuchen Sie es bitte erneut."
+                    message: "Ungültiger TOTP-Code! Versuchen Sie es bitte erneut.",
                 };
                 this.qr_code = tempQRCode;
                 return;
@@ -63,51 +63,65 @@ export default {
         async totpSecret() {
             const res = await useFetch("/api/setup/2fa/secret", { method: "GET" });
             return res.data.value.secret;
-        }
+        },
+    },
+    async beforeCreate() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChangeRequired: true,
+        });
     },
     async beforeMount() {
-        await checkAuth();
-
         this.totpSec = await this.totpSecret();
 
-        QRCode.toDataURL(this.totpSec, {
-            errorCorrectionLevel: "L",
-            rendererOpts: { quality: 0.3 },
-            width: 128,
-            margin: 1
-
-
-        }, (err, dataUrl) => {
-            if (err) {
-                this.error.shown = true;
-                this.error.message = "Fehler beim Laden des QR Codes. Bitte überspringen Sie die Einrichtung.";
-                return;
-            }
-            this.qr_code = dataUrl;
-        });
+        QRCode.toDataURL(
+            this.totpSec,
+            {
+                errorCorrectionLevel: "L",
+                rendererOpts: { quality: 0.3 },
+                width: 128,
+                margin: 1,
+            },
+            (err, dataUrl) => {
+                if (err) {
+                    this.error.shown = true;
+                    this.error.message = "Fehler beim Laden des QR Codes. Bitte überspringen Sie die Einrichtung.";
+                    return;
+                }
+                this.qr_code = dataUrl;
+            },
+        );
     },
 };
 </script>
 
 <template>
     <div class="loginform">
-
         <div>
             <div>
                 <h1>2FA</h1>
                 <ol>
-                    <li>Ihr Konto hat keine 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres Kontos erheblich
-                        erhöht.</li>
-                    <li>Installieren Sie eine App wie "Authy" (oder eine andere) auf Ihrem Smartphone, um die
-                        2-Faktor-Authentifizierung zu aktivieren.</li>
+                    <li>
+                        Ihr Konto hat keine 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres Kontos erheblich
+                        erhöht.
+                    </li>
+                    <li>
+                        Installieren Sie eine App wie "Authy" (oder eine andere) auf Ihrem Smartphone, um die
+                        2-Faktor-Authentifizierung zu aktivieren.
+                    </li>
                     <li>Scannen Sie den QR-Code und geben Sie den angezeigten 6-stelligen Code ein.</li>
-                    <li>Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem Smartphone für den
-                        Zugriff.</li>
+                    <li>
+                        Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem Smartphone für den
+                        Zugriff.
+                    </li>
                 </ol>
                 <ul>
                     <li>Das Überspringen der Einrichtung macht Ihr Konto anfälliger für Cyberangriffe.</li>
                     <li>Sie können die 2-Faktor-Authentizierung später einrichten.</li>
-                    <li><b>Nach der Einrichtung ist ein Zugriff auf das Konto nur mit Ihrem Smartphone möglich.</b></li>
+                    <li>
+                        <b>Nach der Einrichtung ist ein Zugriff auf das Konto nur mit Ihrem Smartphone möglich.</b>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -121,8 +135,13 @@ export default {
                 <VProgressCircular v-else indeterminate color="primary" />
             </div>
 
-            <VTextField v-model="code" label="Code" name="code" type="text"
-                :rules="[rules.required, rules.totpLength, rules.totpNumbers]" />
+            <VTextField
+                v-model="code"
+                label="Code"
+                name="code"
+                type="text"
+                :rules="[rules.required, rules.totpLength, rules.totpNumbers]"
+            />
 
             <VBtn type="submit" color="primary" class="mr-4">2FA-Aktivieren</VBtn>
             <VBtn @click.prevent="skip()" :loading="skip_button_loading">Überspringen</VBtn>

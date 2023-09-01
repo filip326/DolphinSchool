@@ -12,7 +12,7 @@ describe("Subject class", () => {
         await Dolphin.init({
             prod: false,
             DB_URL: process.env.DB_URL,
-            DB_NAME: "dolphinSchool--test--Subject_class"
+            DB_NAME: "dolphinSchool--test--Subject_class",
         });
 
         const db = Dolphin.instance!.database;
@@ -29,9 +29,9 @@ describe("Subject class", () => {
             color: {
                 r: 0,
                 g: 0,
-                b: 255
+                b: 255,
             },
-            teachers: []
+            teachers: [],
         });
 
         expect(subjectCreateError).toBeNull();
@@ -47,7 +47,7 @@ describe("Subject class", () => {
         const [teacher, teacherCreateError] = await User.createUser({
             fullName: "John Doe",
             type: "teacher",
-            username: "johndoe"
+            username: "johndoe",
         });
 
         expect(teacherCreateError).toBeNull();
@@ -61,9 +61,9 @@ describe("Subject class", () => {
             color: {
                 r: 0,
                 g: 0,
-                b: 255
+                b: 255,
             },
-            teachers: [teacher!.id]
+            teachers: [teacher!.id],
         });
 
         expect(subjectCreateError).toBeNull();
@@ -80,7 +80,7 @@ describe("Subject class", () => {
         const [teacher, teacherCreateError] = await User.createUser({
             fullName: "John Doe",
             type: "teacher",
-            username: "johndoe"
+            username: "johndoe",
         });
 
         expect(teacherCreateError).toBeNull();
@@ -94,9 +94,9 @@ describe("Subject class", () => {
             color: {
                 r: 0,
                 g: 0,
-                b: 255
+                b: 255,
             },
-            teachers: [teacher!.id]
+            teachers: [teacher!.id],
         });
 
         expect(subjectCreateError).toBeNull();

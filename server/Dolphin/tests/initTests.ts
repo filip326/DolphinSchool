@@ -1,12 +1,11 @@
-
 // functions userfull for tests
 
 import { hash } from "bcrypt";
 import { IUser } from "../User/User";
 
 /**
- * 
- * @param amount 
+ *
+ * @param amount
  * @returns as many dummy users as specified in amount
  */
 async function manyDummyUsers(amount: number): Promise<IUser[]> {

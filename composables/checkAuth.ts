@@ -1,35 +1,96 @@
-type CheckAuthResult =
-    { username: string, fullName: string };
+type CheckAuthResult = {
+    authenticated: boolean;
+    mfa_required?: boolean;
+    password_change_required?: boolean;
+    user: {
+        username?: string;
+        full_name?: string;
+        type?: "student" | "teacher" | "parent";
+        mfa_enabled?: boolean;
+    };
+};
 
-export default async function checkAuth(): Promise<CheckAuthResult | undefined> {
-    // check login status
-    const loginStatus = await useFetch("/api/auth/login-status", { method: "GET"});
-    if (loginStatus.status.value === "success") {
-        if (loginStatus.data.value === "Logged in") {
-            // return data from /api/whoami
-            const whoami = await useFetch("/api/auth/whoami", { method: "GET"});
-            if (whoami.status.value === "success") {
-                return whoami.data.value ?? undefined;
-            } else {
-                return undefined;
-            }
-        }
+export default async function checkAuth(options: {
+    throwErrorOnNotAuthenticated?: boolean;
+    redirectOnMfaRequired?: boolean;
+    redirectOnPwdChange?: boolean;
+}): Promise<CheckAuthResult> {
+    const whoamiRes = await useFetch("/api/auth/whoami");
 
-        if (loginStatus.data.value === "2fa required") {
-            if(window.location.pathname !== "/totp")
-                navigateTo("/totp");
-            return undefined;
-        }
-
-        if (loginStatus.data.value === "Login required") {
-            if(window.location.pathname !== "/")
-                navigateTo("/");
-            return undefined;
-        }
-
-        return undefined;
+    if (whoamiRes.status.value != "success") {
+        throw createError({
+            statusCode: 500,
+            statusMessage: "Internal server error",
+            fatal: true,
+        });
     }
+    if (whoamiRes.data.value?.mfa_required) {
+        if (options.redirectOnMfaRequired) {
+            await navigateTo("/totp");
+            return {
+                authenticated: false,
+                mfa_required: true,
+                user: {},
+            };
+        }
 
-    return undefined;
+        return {
+            authenticated: false,
+            mfa_required: true,
+            user: {
+                username: whoamiRes.data.value?.user?.username,
+                full_name: whoamiRes.data.value?.user?.full_name,
+                type: whoamiRes.data.value?.user?.type,
+                mfa_enabled: whoamiRes.data.value?.user?.mfa_enabled,
+            },
+        };
+    } else {
+        if (whoamiRes.data.value?.authenticated) {
+            if (whoamiRes.data.value.change_password_required) {
+                if (options.redirectOnPwdChange) {
+                    await navigateTo("/setup/chpwd");
+                    return {
+                        authenticated: false,
+                        password_change_required: true,
+                        user: {},
+                    };
+                }
 
+                return {
+                    authenticated: false,
+                    password_change_required: true,
+                    user: {
+                        username: whoamiRes.data.value?.user?.username,
+                        full_name: whoamiRes.data.value?.user?.full_name,
+                        type: whoamiRes.data.value?.user?.type,
+                        mfa_enabled: whoamiRes.data.value?.user?.mfa_enabled,
+                    },
+                };
+            }
+
+            return {
+                authenticated: true,
+                user: {
+                    username: whoamiRes.data.value?.user?.username,
+                    full_name: whoamiRes.data.value?.user?.full_name,
+                    type: whoamiRes.data.value?.user?.type,
+                    mfa_enabled: whoamiRes.data.value?.user?.mfa_enabled,
+                },
+            };
+        } else {
+            if (options.throwErrorOnNotAuthenticated) {
+                throw createError({
+                    statusCode: 401,
+                    statusMessage: "Unauthorized",
+                    fatal: true,
+                });
+            }
+
+            return {
+                authenticated: false,
+                mfa_required: false,
+                user: {},
+            };
+        }
+    }
 }

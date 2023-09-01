@@ -1,23 +1,20 @@
 import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
-import checkAuth from "../../../composables/checkAuth";
-
 
 export default defineEventHandler(async (event) => {
-
-    const [user, authError] = await checkAuth(event);
-    if (authError) {
-        throw createError({
-            statusCode: 401,
-            message: "Unauthorized"
-        });
+    // check authentication
+    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    if (!checkAuthResult.success || !checkAuthResult.user) {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
+    // get user object
+    const user = checkAuthResult.user;
 
     const [qrLoginData, error] = await PasswordlessQR.requestChallenge();
 
-    if (error) {
+    if (error || !qrLoginData) {
         throw createError({
             statusCode: 500,
-            statusMessage: "Internal Server Error"
+            statusMessage: "Internal Server Error",
         });
     }
 
@@ -26,7 +23,6 @@ export default defineEventHandler(async (event) => {
         rp: useRuntimeConfig().public.DOMAIN,
         token: qrLoginData.token,
         url: qrLoginData.url,
-        challenge: qrLoginData.challenge
+        challenge: qrLoginData.challenge,
     };
-
 });

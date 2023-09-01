@@ -1,9 +1,5 @@
 {
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:vue/vue3-essential"
-    ],
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:vue/vue3-essential"],
     "parserOptions": {
         "ecmaVersion": "latest",
         "parser": "@typescript-eslint/parser",
@@ -11,7 +7,6 @@
     },
     "plugins": ["@typescript-eslint", "vue"],
     "rules": {
-        "indent": ["error", 4, { "SwitchCase": 1 }],
         "linebreak-style": ["error", "windows"],
         "quotes": ["error", "double"],
         "semi": ["error", "always"],
@@ -21,7 +16,49 @@
         "vue/multi-word-component-names": "off",
         "vue/valid-v-on": "off",
         "no-undef": "off",
-        "switch-colon-spacing": "warn"
+        "switch-colon-spacing": "warn",
+        "@typescript-eslint/naming-convention": [
+            "error",
+            // variables
+            {
+                "selector": "variable",
+                "format": ["camelCase"]
+            },
+            // class, enum, interface, type alias
+            {
+                "selector": "class",
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "enum",
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "enumMember",
+                "format": ["UPPER_CASE"]
+            },
+            {
+                "selector": "interface",
+                "format": ["PascalCase"]
+            },
+            {
+                "selector": "typeAlias",
+                "format": ["PascalCase"]
+            },
+            // functions and methods
+            {
+                "selector": "parameter",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "function",
+                "format": ["camelCase"]
+            },
+            {
+                "selector": "classMethod",
+                "format": ["camelCase"]
+            }
+        ]
     },
     "ignorePatterns": ["node_modules/", ".nuxt/", "dist/"]
 }

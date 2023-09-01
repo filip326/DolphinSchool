@@ -3,7 +3,7 @@ import QRCode from "qrcode";
 import { client as pwless } from "@passwordless-id/webauthn";
 
 definePageMeta({
-    layout: "login"
+    layout: "login",
 });
 </script>
 
@@ -15,7 +15,7 @@ export default {
             pwd: "",
             error: {
                 shown: false,
-                message: ""
+                message: "",
             },
             passwordless: {
                 avaible: true,
@@ -24,11 +24,20 @@ export default {
                 qr_url: "",
                 qr_code: "",
                 interval: ref<NodeJS.Timer | undefined>(undefined),
-            }
+            },
         };
     },
+    async beforeCreate() {
+        const auth = await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: false,
+            redirectOnPwdChange: true,
+        });
+        if (auth.authenticated && !auth.mfa_required) {
+            navigateTo("/home");
+        }
+    },
     async beforeMount() {
-        await checkAuth();
         await this.loadPasswordlessQRCode();
     },
     methods: {
@@ -37,8 +46,8 @@ export default {
                 method: "POST",
                 body: JSON.stringify({
                     username: this.username,
-                    password: this.pwd
-                })
+                    password: this.pwd,
+                }),
             });
 
             if (response.status.value === "error") {
@@ -65,7 +74,7 @@ export default {
         },
         async loadPasswordlessQRCode() {
             const response = await useFetch("/api/auth/passwordless/init", {
-                method: "GET"
+                method: "GET",
             });
 
             if (response.status.value !== "success") {
@@ -104,8 +113,8 @@ export default {
                     return;
                 }
 
-                const signed = await pwless.authenticate([ data.credId ], response.data.value?.challenge, {
-                    userVerification: "required"
+                const signed = await pwless.authenticate([data.credId], response.data.value?.challenge, {
+                    userVerification: "required",
                 });
 
                 await useFetch("/api/auth/passwordless/approve", {
@@ -113,10 +122,9 @@ export default {
                     body: JSON.stringify({
                         username: data.username,
                         tokenHash: response.data.value?.tokenHash,
-                        signed: signed
-                    })
+                        signed: signed,
+                    }),
                 });
-
             } catch {
                 return;
             }
@@ -126,7 +134,10 @@ export default {
                 return;
             }
 
-            const response = await useFetch("/api/auth/passwordless/login", { method: "POST", body: JSON.stringify({ token: this.passwordless.token }) });
+            const response = await useFetch("/api/auth/passwordless/login", {
+                method: "POST",
+                body: JSON.stringify({ token: this.passwordless.token }),
+            });
 
             if (response.status.value !== "success") {
                 this.error.shown = true;
@@ -145,7 +156,6 @@ export default {
                 return;
             }
         },
-
     },
 
     beforeUnmount() {
@@ -159,17 +169,30 @@ export default {
         <VForm @submit.prevent="login">
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
             <h1>Login</h1>
-            <VTextField label="Benutzername" v-model="username" placeholder="max.mustermann"
-                hint="Ihr Benutzername besteht aus Ihrem Vor- und Nachnamen, durch einen Punkt getrennt."></VTextField>
-            <VTextField label="Passwort" v-model="pwd" type="password" placeholder="P@55w0rt"
-                hint="Geben Sie hier Ihr Passwort ein."></VTextField>
+            <VTextField
+                label="Benutzername"
+                v-model="username"
+                placeholder="max.mustermann"
+                hint="Ihr Benutzername besteht aus Ihrem Vor- und Nachnamen, durch einen Punkt getrennt."
+            ></VTextField>
+            <VTextField
+                label="Passwort"
+                v-model="pwd"
+                type="password"
+                placeholder="P@55w0rt"
+                hint="Geben Sie hier Ihr Passwort ein."
+            ></VTextField>
             <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
             <NuxtLink to="/support">Ich kann mich nicht einloggen</NuxtLink>
         </VForm>
         <div>
             <h1>passwordless</h1>
-            <VAlert v-if="passwordless.avaible" type="info" variant="text"
-                text="passwordless funktioniert nur, wenn Sie es zuvor eingerichtet haben!" />
+            <VAlert
+                v-if="passwordless.avaible"
+                type="info"
+                variant="text"
+                text="passwordless funktioniert nur, wenn Sie es zuvor eingerichtet haben!"
+            />
             <VAler v-else type="error" variant="text" text="passwordless ist nicht verfügbar!" />
             <p v-if="passwordless.avaible">
                 Scanne den QR Code mit der Kamera deines Smartphones und folge den Anweisungen auf dem Bildschirm.

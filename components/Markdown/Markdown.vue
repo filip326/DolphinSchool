@@ -14,8 +14,8 @@ export default {
     props: {
         md: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
     data() {
         const rendered = "";
@@ -25,7 +25,7 @@ export default {
         });
 
         return {
-            rendered_html: rendered
+            rendered_html: rendered,
         };
     },
 
@@ -33,16 +33,16 @@ export default {
         render() {
             marked.use(markedLinkifyIt());
             const renderer = new marked.Renderer({
-                headerIds: false
+                headerIds: false,
             });
             renderer.text = (text: string) => {
                 return text.replace(/\${2}([\s\S]*?)\${2}/g, (match, code) => {
                     try {
-                        // eslint-disable-next-line quotes
                         return (
-                            "<span class=\"katex-margin\">" +
+                            // eslint-disable-next-line quotes
+                            '<span class="katex-margin">' +
                             katex.renderToString(code, {
-                                throwOnError: false
+                                throwOnError: false,
                             }) +
                             "</span>"
                         );
@@ -53,7 +53,7 @@ export default {
             };
             const mded = marked(this.md, {
                 breaks: true,
-                renderer: renderer
+                renderer: renderer,
             });
             this.rendered_html = DOMPurify.sanitize(emojify(mded), {
                 // ? Maybe doing it later
@@ -64,16 +64,16 @@ export default {
                     html: true,
                     svg: true,
                     mathMl: true,
-                    svgFilters: false
-                }
+                    svgFilters: false,
+                },
             });
-        }
+        },
     },
     watch: {
         md() {
             this.render();
-        }
-    }
+        },
+    },
 };
 </script>
 

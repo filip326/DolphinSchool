@@ -5,17 +5,17 @@ export default {
     props: {
         error: {
             type: Object,
-            required: true
+            required: true,
         },
         type: {
             type: String as () => ErrorType,
-            required: true
+            required: true,
         },
         fix: {
             type: String,
             required: false,
-            default: "/"
-        }
+            default: "/",
+        },
     },
     methods: {
         width(): string {
@@ -28,13 +28,12 @@ export default {
         valError(): {
             statusCode: number;
             statusMessage: string;
-            } {
+        } {
             return {
                 statusCode: this.error.statusCode ?? 500,
-                statusMessage:
-                    this.error.statusMessage ?? "Unknown Error. Please contact the support."
+                statusMessage: this.error.statusMessage ?? "Unknown Error. Please contact the support.",
             };
-        }
+        },
     },
     computed: {
         title(): string {
@@ -63,8 +62,8 @@ export default {
             } else {
                 return "https://http.cat/images/500.jpg";
             }
-        }
-    }
+        },
+    },
 };
 </script>
 
@@ -83,11 +82,15 @@ export default {
             <p>If this error persists, please contact the support or try again later.</p>
         </VCardText>
         <VCardActions>
-            <VBtn variant="tonal" width="100%" @click="
-                clearError({
-                    redirect: fix
-                })
-                ">
+            <VBtn
+                variant="tonal"
+                width="100%"
+                @click="
+                    clearError({
+                        redirect: fix,
+                    })
+                "
+            >
                 Zurück
             </VBtn>
         </VCardActions>

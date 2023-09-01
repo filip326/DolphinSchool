@@ -1,19 +1,21 @@
-import checkAuth from "@/server/composables/checkAuth";
-
 export default defineEventHandler(async (event) => {
-
-    // get auth
-    const [user, authError] = await checkAuth(event);
-
-    if (authError) {
-        throw createError({
-            statusCode: 401,
-            message: "Unauthorized"
-        });
+    // check authentication
+    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    if (!checkAuthResult.success || !checkAuthResult.user) {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
+    // get user object
+    const user = checkAuthResult.user;
 
     // cancel 2fa setup
     const [result, error] = await user.cancelMFASetup();
+
+    if (error && !result) {
+        throw createError({
+            statusCode: 500,
+            message: "Internal Server Error",
+        });
+    }
 
     await user.doNotAskForMFASetup("7d");
 
@@ -23,7 +25,6 @@ export default defineEventHandler(async (event) => {
 
     throw createError({
         statusCode: 500,
-        message: "Internal Server Error"
+        message: "Internal Server Error",
     });
-
 });

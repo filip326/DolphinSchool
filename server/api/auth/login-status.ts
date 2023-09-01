@@ -1,16 +1,32 @@
 export default defineEventHandler(async (event) => {
-    // return true, if the server expects a second factor of authentication (2FA)
-    // return false, if the server does not expect a second factor of authentication (2FA) or the user is not authenticated
-
     // check authentication
-    if (!event.context.auth.authenticated || !event.context.auth.user) {
-        return "Login required";
+    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+
+    // check if authentication failed and mfa is not required
+    if (!checkAuthResult.success && !event.context.auth.mfa_required) {
+        return {
+            statusCode: 401,
+            statusMessage: "Unauthorized",
+        };
+    }
+
+    if (!checkAuthResult.user) {
+        return {
+            statusCode: 401,
+            statusMessage: "Unauthorized",
+        };
     }
 
     // check if user needs 2fa
-    if (event.context.auth.mfa_required && event.context.auth.user.mfaEnabled) {
-        return "2fa required";
+    if (event.context.auth.mfa_required && checkAuthResult.user.mfaEnabled) {
+        return {
+            statusCode: 403,
+            statusMessage: "2FA required",
+        };
     }
 
-    return "Logged in";
+    return {
+        statusCode: 200,
+        statusMessage: "OK",
+    };
 });

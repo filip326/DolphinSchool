@@ -1,9 +1,16 @@
 <script lang="ts">
 export default {
+    async beforeCreate() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            redirectOnPwdChange: true,
+            throwErrorOnNotAuthenticated: true,
+        });
+    },
     data() {
         return {
             search_class: "",
-            timeout: null as NodeJS.Timeout | null
+            timeout: null as NodeJS.Timeout | null,
         };
     },
     methods: {
@@ -17,8 +24,8 @@ export default {
             this.timeout = setTimeout(() => {
                 this.search();
             }, 500);
-        }
-    }
+        },
+    },
 };
 </script>
 

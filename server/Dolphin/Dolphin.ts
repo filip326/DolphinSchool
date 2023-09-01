@@ -1,5 +1,4 @@
 import { MongoClient, Db } from "mongodb";
-import GlobalAnalyticsManager from "./Analytics/GlobalAnalyticsManager";
 
 class Dolphin {
     ready: boolean = false;
@@ -13,8 +12,9 @@ class Dolphin {
     }
 
     private constructor(db: Db, client: MongoClient, cb: (dolphin: Dolphin) => void) {
-        if (Dolphin._instance)
-            throw new Error("Dolphin instance already exists! Class Dolphin is a singleton!");
+        if (Dolphin.instance && Dolphin.instance.ready) {
+            console.log("Dolphin instance already exists! Class Dolphin is a singleton!");
+        }
 
         this.database = db;
         this.client = client;
@@ -33,21 +33,12 @@ class Dolphin {
             try {
                 const client = await MongoClient.connect(config.DB_URL);
                 const db = client.db(
-                    config.DB_NAME +
-                        (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV")
+                    config.DB_NAME + (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV"),
                 );
 
                 if (!db) return;
 
                 new Dolphin(db, client, resolve);
-
-                // add the dayly analytics every day at 00:00
-                setInterval(() => {
-                    const now = new Date();
-                    if (now.getHours() === 13 && now.getMinutes() === 40) {
-                        GlobalAnalyticsManager.addDaylyAnalytics();
-                    }
-                }, 1000 * 60); // ! change
             } catch (err) {
                 reject(err);
                 return;

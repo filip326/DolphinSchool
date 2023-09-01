@@ -10,10 +10,10 @@ export default eventHandler(async (event) => {
 
     const [user, findUserError] = await User.getUserByUsername(username);
 
-    if (findUserError) {
+    if (findUserError || !user) {
         throw createError({
             statusCode: 401,
-            message: "Invalid username or password"
+            message: "Invalid username or password",
         });
     }
 
@@ -26,25 +26,24 @@ export default eventHandler(async (event) => {
     if (!passwordCorrect) {
         throw createError({
             statusCode: 401,
-            message: "Invalid username or password"
+            message: "Invalid username or password",
         });
     }
 
     const [session, sessionCreateError] = await Session.createSession(user);
 
-    if (sessionCreateError) {
+    if (sessionCreateError || !session) {
         throw createError({ statusCode: 500, message: "Internal server error" });
     }
 
-    
     const token = session.token;
-    
+
     setCookie(event, "token", token, {
         maxAge: 30 * 24 * 60 * 60, // 30 days
         secure: useRuntimeConfig().prod,
         httpOnly: true,
         sameSite: "strict",
-        path: "/"
+        path: "/",
     });
 
     if (user.mfaEnabled) {
@@ -52,7 +51,7 @@ export default eventHandler(async (event) => {
         return "continue with 2fa";
     }
     await session.activate();
-    
+
     if (user.askForMFASetup) {
         return "continue with 2fa setup";
     }

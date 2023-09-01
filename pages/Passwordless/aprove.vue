@@ -3,12 +3,11 @@ import { client as pwless } from "@passwordless-id/webauthn";
 
 definePageMeta({
     title: "passwordless",
-    layout: "non"
+    layout: "non",
 });
 </script>
 
 <script>
-
 export default {
     data() {
         return {
@@ -22,40 +21,45 @@ export default {
                 token: "",
                 challenge: "",
                 keys: [],
-            }
+            },
         };
     },
     methods: {
         async approve() {
-
             this.continue_button.loading = true;
 
-            if (!this.passwordlessData.token
-                || !this.passwordlessData.username
-                || !this.passwordlessData.challenge
-                || !this.passwordlessData.keys
-                || !pwless.isAvailable()
-                || !pwless.isLocalAuthenticator()) {
+            if (
+                !this.passwordlessData.token ||
+                !this.passwordlessData.username ||
+                !this.passwordlessData.challenge ||
+                !this.passwordlessData.keys ||
+                !pwless.isAvailable() ||
+                !pwless.isLocalAuthenticator()
+            ) {
                 this.continue_button.loading = false;
                 console.error("passwordless checks failed");
                 navigateTo("/passwordless/not-avaible");
                 return;
             }
 
-
             try {
-                const authentication = await pwless.authenticate(this.passwordlessData.keys, this.passwordlessData.challenge, {
-                    timeout: 60_000,
-                    userVerification: "required",
-                    authenticatorType: "local",
-                });
+                const authentication = await pwless.authenticate(
+                    this.passwordlessData.keys,
+                    this.passwordlessData.challenge,
+                    {
+                        timeout: 60_000,
+                        userVerification: "required",
+                        authenticatorType: "local",
+                    },
+                );
 
                 const response2 = await useFetch("/api/auth/passwordless/approve", {
-                    method: "POST", body: JSON.stringify({
+                    method: "POST",
+                    body: JSON.stringify({
                         username: this.passwordlessData.username,
                         tokenHash: this.passwordlessData.token,
-                        signed: authentication
-                    })
+                        signed: authentication,
+                    }),
                 });
 
                 if (response2.status.value !== "success") {
@@ -71,9 +75,6 @@ export default {
                     navigateTo("/passwordless/not-avaible");
                     return;
                 }
-
-
-
             } catch (err) {
                 this.continue_button.loading = false;
                 console.log("passwordless failed");
@@ -81,8 +82,14 @@ export default {
                 navigateTo("/passwordless/not-avaible");
                 return;
             }
-
-        }
+        },
+    },
+    async beforeCreate() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChange: true,
+        });
     },
     async beforeMount() {
         this.continue_button.loading = true;
@@ -133,7 +140,7 @@ export default {
         this.passwordlessData.token = token;
 
         this.continue_button.loading = false;
-    }
+    },
 };
 </script>
 
@@ -144,8 +151,10 @@ export default {
         <VCardText>
             <VAlert v-if="error" type="error" :text="error_message" />
             <ul>
-                <li>Prüfe die URL in der Adresszeile des Browsers. Logge dich <u>nicht</u> ein, wenn du dir nicht sicher
-                    bist, dass du auf der offiziellen Website von DolphinSchool bist.</li>
+                <li>
+                    Prüfe die URL in der Adresszeile des Browsers. Logge dich <u>nicht</u> ein, wenn du dir nicht sicher
+                    bist, dass du auf der offiziellen Website von DolphinSchool bist.
+                </li>
                 <li>Drücke nun auf den Button weiter.</li>
                 <li>Du wirst automatisch angemeldet.</li>
             </ul>
@@ -155,6 +164,5 @@ export default {
             <VSpacer />
             <VBtn color="secondary" @click="approve" :loading="continue_button.loading">Anmeldung bestätigen</VBtn>
         </VCardActions>
-
     </VCard>
 </template>

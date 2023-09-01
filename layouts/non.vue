@@ -4,48 +4,28 @@ export default {
     data() {
         return {
             show_nav_drawer_button: false,
-            navigation_items: [
-                { title: "Home", icon: "mdi-home", link: "/" },
-                {
-                    title: "About",
-                    icon: "mdi-information",
-                    link: "/"
-                },
-                { title: "Impress", icon: "mdi-at", link: "/" },
-                { title: "Policy", icon: "mdi-security", link: "/" }
-            ] as { title: string; icon: `mdi-${string}`; link: string }[]
+            show_appbar_title: false,
         };
     },
-    beforeMount() {
+    mounted() {
         this.show_nav_drawer_button = window.innerWidth > 1200;
-    }
+        this.show_appbar_title = window.innerWidth > 1200;
+    },
 };
 </script>
 
 <template>
     <v-app dark>
         <VAppBar>
-            <VAppBarNavIcon @click="show_nav_drawer_button = !show_nav_drawer_button">
-            </VAppBarNavIcon>
+            <VAppBarNavIcon @click="show_nav_drawer_button = !show_nav_drawer_button"> </VAppBarNavIcon>
 
             <VImg src="/img/School/DolphinSchool_light.png" />
 
-            <VAppBarTitle> DolphinSchool </VAppBarTitle>
+            <VAppBarTitle class="title__app_bar"> DolphinSchool </VAppBarTitle>
         </VAppBar>
 
         <VNavigationDrawer v-model="show_nav_drawer_button" class="navigation__drawer">
-            <VList>
-                <VListItem
-                    v-for="item in navigation_items"
-                    :key="item.title"
-                    density="compact"
-                    :to="item.link"
-                    :append-icon="item.icon"
-                    :title="item.title"
-                    rounded
-                    class="navigation__list__item"
-                />
-            </VList>
+            <NavDrawerContent :auth="false" />
         </VNavigationDrawer>
 
         <VMain>
@@ -61,15 +41,6 @@ export default {
     max-width: 64px !important;
 }
 
-.navigation__list {
-    text-decoration: none;
-}
-
-.navigation__list__item {
-    text-decoration: none;
-    margin: 5px 10px;
-}
-
 .content__wrapper {
     display: flex;
     align-items: center;
@@ -78,5 +49,11 @@ export default {
     width: 100%;
     padding: 10px;
     transition: filter 50ms;
+}
+
+@media screen and (max-width: 900px) {
+    .title__app_bar {
+        display: none;
+    }
 }
 </style>

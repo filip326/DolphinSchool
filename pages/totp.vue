@@ -1,27 +1,34 @@
 <template>
     <div class="loginform small">
-        <VForm @submit.prevent>
+        <VForm @submit.prevent="login">
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
 
             <h1>2-Faktor Authentizierung</h1>
             <p>
-                Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App (z.B. Authy) von Ihrem Smartphone ein.
+                Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App (z.B. Authy) von Ihrem Smartphone
+                ein.
             </p>
             <!--
             TODO: #12 make text field a otp field when released in vuetify
         -->
-            <VTextField type="text" label="2FA-Code" v-model="totp" placeholder="12345678"
-                hint="Geben Sie hier den Code ein." :rules="[rules.required, rules.totpLength, rules.totpNumbers]">
+            <VTextField
+                type="text"
+                label="2FA-Code"
+                v-model="totp"
+                placeholder="123456"
+                hint="Geben Sie hier den Code ein."
+                :rules="[rules.required, rules.totpLength, rules.totpNumbers]"
+            >
             </VTextField>
 
-            <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
+            <VBtn :loading="button.loading" type="submit" size="large" variant="outlined">Einloggen</VBtn>
         </VForm>
     </div>
 </template>
 
 <script setup>
 definePageMeta({
-    layout: "login"
+    layout: "login",
 });
 </script>
 
@@ -35,13 +42,16 @@ export default {
                 // 6 digits
                 totpLength: (v) => v.length === 6 || "Der Code muss 6-stellig sein",
                 // only numbers
-                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen"
+                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen",
             },
             error: {
                 shown: false,
-                message: ""
+                message: "",
             },
-            totp: ""
+            button: {
+                loading: false,
+            },
+            totp: "",
         };
     },
 
@@ -50,12 +60,16 @@ export default {
             this.error.shown = false;
             this.error.message = "";
 
-            const res = await useFetch("/api/2fa-totp", {
-                method: "GET",
+            this.button.loading = true;
+
+            const res = await useFetch("/api/auth/2fa-totp", {
+                method: "POST",
                 body: JSON.stringify({
-                    totp: this.totp
-                })
+                    totp: this.totp,
+                }),
             });
+
+            this.button.loading = false;
 
             if (res.status.value === "success") {
                 navigateTo("/home");
@@ -63,11 +77,21 @@ export default {
                 this.error.shown = true;
                 this.error.message = "Der Code ist ungültig";
             }
+        },
+    },
+    async beforeCreate() {
+        const auth = await checkAuth({
+            redirectOnMfaRequired: false,
+            throwErrorOnNotAuthenticated: false,
+            redirectOnPwdChange: true,
+        });
+        if (!auth.authenticated && !auth.mfa_required) {
+            navigateTo("/");
+        }
+        if (auth.authenticated && !auth.mfa_required) {
+            navigateTo("/home");
         }
     },
-    beforeMount() {
-        checkAuth();
-    }
 };
 </script>
 
