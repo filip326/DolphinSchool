@@ -187,16 +187,19 @@ class BruteForceProtection {
     /**
      * ! WARN ! use this function only after a successful login attempt. It will issue a BruteForceProtection bypass for the given device
      */
-    async issueBypassToken(username: string): Promise<MethodResult<string>> {
+    static async issueBypassToken(username: string): Promise<MethodResult<string>> {
         // issue a new token
         const token = randomBytes(32).toString("hex");
 
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+        const bruteForceProtectionBypass = dolphin.database.collection<BruteForceProtectionBypassEntry>("bruteForceProtectionBypass");
+
         // write it to the database, valid for 30 days
         try {
-            await this.bruteForceProtectionBypass.insertOne({
+            await bruteForceProtectionBypass.insertOne({
                 username: username,
                 token: token,
-                expires: Date.now() + 30 * 24 * 60 * 60 * 1000,
+                expires: Date.now() + 90 * 24 * 60 * 60 * 1000, // 90 days
             });
             return [token, null];
         } catch {
@@ -207,10 +210,12 @@ class BruteForceProtection {
     /**
      * ! WARN ! use this function only after a successful login attempt. It will exceed the expiration of the given bypass token to 30 days
      */
-    async exceedBypassToken(username: string, bypassToken: string): Promise<MethodResult<boolean>> {
+    static async exceedBypassToken(username: string, bypassToken: string): Promise<MethodResult<boolean>> {
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+        const bruteForceProtectionBypass = dolphin.database.collection<BruteForceProtectionBypassEntry>("bruteForceProtectionBypass");
         // check if token exists
         try {
-            const dbResult = await this.bruteForceProtectionBypass.findOne({
+            const dbResult = await bruteForceProtectionBypass.findOne({
                 username: username,
                 token: bypassToken,
                 expires: { $gt: Date.now() },
@@ -218,14 +223,14 @@ class BruteForceProtection {
             if (!dbResult) return [false, null];
 
             // if token exists, exceed expiration to 30 days
-            const dbResult2 = await this.bruteForceProtectionBypass.updateOne(
+            const dbResult2 = await bruteForceProtectionBypass.updateOne(
                 {
                     username: username,
                     token: bypassToken,
                 },
                 {
                     $set: {
-                        expires: Date.now() + 30 * 24 * 60 * 60 * 1000,
+                        expires: Date.now() + 90 * 24 * 60 * 60 * 1000, // 90 days
                     },
                 },
             );
@@ -238,14 +243,17 @@ class BruteForceProtection {
     /**
      * Please call this function periodically to clean up expired entries
      */
-    async cleanUp() {
+    static async cleanUp() {
+        const dolphin = Dolphin.instance ?? await Dolphin.init(useRuntimeConfig());
+        const bruteForceProtection = dolphin.database.collection<BruteForceProtectionEntry>("bruteForceProtection");
+        const bruteForceProtectionBypass = dolphin.database.collection<BruteForceProtectionBypassEntry>("bruteForceProtectionBypass");
         try {
             // clean up expired BruteForceProtectionEntries
-            await this.bruteForceProtection.deleteMany({
+            await bruteForceProtection.deleteMany({
                 expires: { $lt: Date.now() },
             });
             // clean up expired BruteForceProtectionBypass Tokens
-            await this.bruteForceProtectionBypass.deleteMany({
+            await bruteForceProtectionBypass.deleteMany({
                 expires: { $lt: Date.now() },
             });
         } catch {
