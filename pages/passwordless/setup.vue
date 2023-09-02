@@ -108,14 +108,16 @@ export default {
         <div>
             <h1>passwordless Login</h1>
             <p>
-                Mit passwordless Login können Sie sich auf diesem Gerät ohne Passwort anmelden. Zusätzlich können Sie
-                sich auf anderen Geräten durch scannen des QR-Codes sehr einfach und sicher anmelden. Aktivieren Sie
-                diese Funktion nur, wenn Sie eine sichere Bildschirmsperre eingerichtet haben.
+                Mit passwordless Login können Sie sich auf diesem Gerät ohne Passwort anmelden.
+                Zusätzlich können Sie sich auf anderen Geräten durch scannen des QR-Codes sehr
+                einfach und sicher anmelden. Aktivieren Sie diese Funktion nur, wenn Sie eine
+                sichere Bildschirmsperre eingerichtet haben.
             </p>
             <p>
-                <b>Wichtig:</b> Falls Sie sich entscheiden das Passwort zu deaktivieren, können Sie sich nur noch
-                anmelden, indem Sie mit diesem Gerät den QR-Code scannen. Auf diesem Gerät bleiben Sie angemeldet.
-                Benutzen Sie diese Option <u>nur</u>, wenn es sich um Ihr Smartphone handelt.
+                <b>Wichtig:</b> Falls Sie sich entscheiden das Passwort zu deaktivieren, können Sie
+                sich nur noch anmelden, indem Sie mit diesem Gerät den QR-Code scannen. Auf diesem
+                Gerät bleiben Sie angemeldet. Benutzen Sie diese Option <u>nur</u>, wenn es sich um
+                Ihr Smartphone handelt.
             </p>
         </div>
         <VForm @submit.prevent="setupPasswordless()">

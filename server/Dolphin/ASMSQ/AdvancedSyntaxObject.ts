@@ -1,5 +1,6 @@
 // Schueler in Klasse 5a
-const pattern1 = /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (K|k)lasse (?<class>[0-9]+[a-z]?)$/;
+const pattern1 =
+    /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (K|k)lasse (?<class>[0-9]+[a-z]?)$/;
 
 // Schueler in Kurs [jahrgang] [fach] [optional LK + Nummer oder GK + Nummer] [lehrkraft]
 const pattern2 =
@@ -18,7 +19,8 @@ const pattern4 =
 const pattern5 = /^Alle (?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern)?$/;
 
 // Schueler im Jahrgang 5
-const pattern6 = /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (J|j)ahrgang (?<grade>([0-9]+)|(Q|E)[1-4])$/;
+const pattern6 =
+    /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (J|j)ahrgang (?<grade>([0-9]+)|(Q|E)[1-4])$/;
 
 interface ASMSQResult {
     type?: "teacher" | "student" | "parent" | "all";

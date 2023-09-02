@@ -10,7 +10,12 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 400, message: "Invalid body" });
     }
 
-    if (!BruteForceProtection.isLoginAllowed(username, useCookie("bf-bypass-token")?.value || undefined)) {
+    if (
+        !BruteForceProtection.isLoginAllowed(
+            username,
+            useCookie("bf-bypass-token")?.value || undefined,
+        )
+    ) {
         // if login is not allowed, throw an error
         throw createError({ statusCode: 429, message: "Too many requests" });
     }
@@ -32,7 +37,10 @@ export default eventHandler(async (event) => {
 
     if (!passwordCorrect) {
         // if password is incorrect, report failed login attempt and throw an error
-        BruteForceProtection.reportFailedLoginAttempt(username, useCookie("bf-bypass-token").value || undefined);
+        BruteForceProtection.reportFailedLoginAttempt(
+            username,
+            useCookie("bf-bypass-token").value || undefined,
+        );
         throw createError({
             statusCode: 401,
             message: "Invalid username or password",
@@ -57,7 +65,8 @@ export default eventHandler(async (event) => {
 
     // if there is no bf-bypass-token cookie, issue a new one
     if (!useCookie("bf-bypass-token").value) {
-        const [bypassToken, bypassTokenError] = await BruteForceProtection.issueBypassToken(username);
+        const [bypassToken, bypassTokenError] =
+            await BruteForceProtection.issueBypassToken(username);
         if (bypassTokenError || !bypassToken) {
             throw createError({ statusCode: 500, message: "Internal server error" });
         }
@@ -70,7 +79,10 @@ export default eventHandler(async (event) => {
         });
     } else {
         // exceed the max age of the cookie if there already is one
-        BruteForceProtection.exceedBypassToken(username, useCookie("bf-bypass-token").value as string);
+        BruteForceProtection.exceedBypassToken(
+            username,
+            useCookie("bf-bypass-token").value as string,
+        );
         setCookie(event, "bf-bypass-token", useCookie("bf-bypass-token").value as string, {
             maxAge: 90 * 24 * 60 * 60, // 90 days
             secure: useRuntimeConfig().prod,

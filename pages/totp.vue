@@ -5,8 +5,8 @@
 
             <h1>2-Faktor Authentizierung</h1>
             <p>
-                Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App (z.B. Authy) von Ihrem Smartphone
-                ein.
+                Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App (z.B. Authy) von
+                Ihrem Smartphone ein.
             </p>
             <!--
             TODO: #12 make text field a otp field when released in vuetify
@@ -21,7 +21,9 @@
             >
             </VTextField>
 
-            <VBtn :loading="button.loading" type="submit" size="large" variant="outlined">Einloggen</VBtn>
+            <VBtn :loading="button.loading" type="submit" size="large" variant="outlined"
+                >Einloggen</VBtn
+            >
         </VForm>
     </div>
 </template>

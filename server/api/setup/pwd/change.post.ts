@@ -12,16 +12,21 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 400, message: "Bad Request" });
     }
 
-    const [oldPasswordCheck, oldPasswordCheckErr] = await checkAuthResult.user.comparePassword(oldPassword);
+    const [oldPasswordCheck, oldPasswordCheckErr] =
+        await checkAuthResult.user.comparePassword(oldPassword);
 
     if (oldPasswordCheckErr || !oldPasswordCheck) {
         throw createError({ statusCode: 400, message: "Das alte Passwort ist nicht korrekt" });
     }
 
-    const [newPasswordCheck, newPasswordCheckErr] = await checkAuthResult.user.comparePassword(newPassword);
+    const [newPasswordCheck, newPasswordCheckErr] =
+        await checkAuthResult.user.comparePassword(newPassword);
 
     if (newPasswordCheckErr || newPasswordCheck) {
-        throw createError({ statusCode: 400, message: "Das neue Passwort darf nicht das aktuelle Passwort sein." });
+        throw createError({
+            statusCode: 400,
+            message: "Das neue Passwort darf nicht das aktuelle Passwort sein.",
+        });
     }
 
     const [setPassword, setPasswordErr] = await checkAuthResult.user.setPassword(newPassword);

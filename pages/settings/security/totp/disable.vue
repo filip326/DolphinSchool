@@ -5,15 +5,16 @@
                 <h1>2FA</h1>
                 <ol>
                     <li>
-                        Ihr Konto hat 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres Kontos erheblich erhöht.
+                        Ihr Konto hat 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres
+                        Kontos erheblich erhöht.
                     </li>
                     <li>
-                        Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem Smartphone für den
-                        Zugriff.
+                        Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem
+                        Smartphone für den Zugriff.
                     </li>
                     <li>
-                        Falls Sie die 2-Faktor-Authentizierung deaktivieren möchten, müssen Sie Ihr Passwort und einen
-                        2FA-Code eingeben.
+                        Falls Sie die 2-Faktor-Authentizierung deaktivieren möchten, müssen Sie Ihr
+                        Passwort und einen 2FA-Code eingeben.
                     </li>
                 </ol>
             </div>
@@ -22,7 +23,13 @@
         <VForm @submit.prevent="submit2FA()">
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
 
-            <VTextField v-model="password" label="Passwort" name="password" type="password" :rules="[rules.required]" />
+            <VTextField
+                v-model="password"
+                label="Passwort"
+                name="password"
+                type="password"
+                :rules="[rules.required]"
+            />
             <VTextField
                 v-model="code"
                 label="Code"
@@ -45,7 +52,8 @@ export default {
             rules: {
                 required: (v: any) => !!v || "Dieses Feld ist erforderlich!",
                 totpLength: (v: any) => v.length === 6 || "Der Code muss 6-stellig sein!",
-                totpNumbers: (v: any) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!",
+                totpNumbers: (v: any) =>
+                    /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!",
             },
             error: {
                 shown: false,

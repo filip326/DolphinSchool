@@ -28,7 +28,6 @@ button[type="submit"] {
         gap: 50px;
     }
 }
-=======
 .settings__wrapper {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 500px));

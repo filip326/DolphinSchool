@@ -145,8 +145,9 @@ export default {
             <VAlert v-if="error" type="error" :text="error_message" />
             <ul>
                 <li>
-                    Prüfe die URL in der Adresszeile des Browsers. Logge dich <u>nicht</u> ein, wenn du dir nicht sicher
-                    bist, dass du auf der offiziellen Website von DolphinSchool bist.
+                    Prüfe die URL in der Adresszeile des Browsers. Logge dich <u>nicht</u> ein, wenn
+                    du dir nicht sicher bist, dass du auf der offiziellen Website von DolphinSchool
+                    bist.
                 </li>
                 <li>Drücke nun auf den Button weiter.</li>
                 <li>Du wirst automatisch angemeldet.</li>
@@ -155,7 +156,9 @@ export default {
 
         <VCardActions>
             <VSpacer />
-            <VBtn color="secondary" @click="approve" :loading="continue_button.loading">Anmeldung bestätigen</VBtn>
+            <VBtn color="secondary" @click="approve" :loading="continue_button.loading"
+                >Anmeldung bestätigen</VBtn
+            >
         </VCardActions>
     </VCard>
 </template>

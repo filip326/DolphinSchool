@@ -115,7 +115,9 @@ describe("Session class", () => {
         expect(refreshedError).toBeNull();
         expect(refreshed).toBeTruthy();
 
-        expect(session.expires).toBeGreaterThanOrEqual(Date.now() + 1000 * 60 * 60 * 24 * 7 - 1000 * 10); // 7 days with 10s tolerance
+        expect(session.expires).toBeGreaterThanOrEqual(
+            Date.now() + 1000 * 60 * 60 * 24 * 7 - 1000 * 10,
+        ); // 7 days with 10s tolerance
     });
 
     afterAll(async () => {

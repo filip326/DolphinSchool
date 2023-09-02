@@ -5,24 +5,32 @@
                 <h1>2FA</h1>
                 <ol>
                     <li>
-                        Ihr Konto hat keine 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres Kontos erheblich
-                        erhöht.
+                        Ihr Konto hat keine 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres
+                        Kontos erheblich erhöht.
                     </li>
                     <li>
-                        Installieren Sie eine App wie "Authy" (oder eine andere) auf Ihrem Smartphone, um die
-                        2-Faktor-Authentifizierung zu aktivieren.
+                        Installieren Sie eine App wie "Authy" (oder eine andere) auf Ihrem
+                        Smartphone, um die 2-Faktor-Authentifizierung zu aktivieren.
                     </li>
-                    <li>Scannen Sie den QR-Code und geben Sie den angezeigten 6-stelligen Code ein.</li>
                     <li>
-                        Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem Smartphone für den
-                        Zugriff.
+                        Scannen Sie den QR-Code und geben Sie den angezeigten 6-stelligen Code ein.
+                    </li>
+                    <li>
+                        Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem
+                        Smartphone für den Zugriff.
                     </li>
                 </ol>
                 <ul>
-                    <li>Das Überspringen der Einrichtung macht Ihr Konto anfälliger für Cyberangriffe.</li>
+                    <li>
+                        Das Überspringen der Einrichtung macht Ihr Konto anfälliger für
+                        Cyberangriffe.
+                    </li>
                     <li>Sie können die 2-Faktor-Authentizierung später einrichten.</li>
                     <li>
-                        <b>Nach der Einrichtung ist ein Zugriff auf das Konto nur mit Ihrem Smartphone möglich.</b>
+                        <b
+                            >Nach der Einrichtung ist ein Zugriff auf das Konto nur mit Ihrem
+                            Smartphone möglich.</b
+                        >
                     </li>
                 </ul>
             </div>
@@ -62,7 +70,8 @@ export default {
             rules: {
                 required: (v: any) => !!v || "Dieses Feld ist erforderlich!",
                 totpLength: (v: any) => v.length === 6 || "Der Code muss 6-stellig sein!",
-                totpNumbers: (v: any) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!",
+                totpNumbers: (v: any) =>
+                    /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!",
             },
             error: {
                 shown: false,
@@ -98,7 +107,8 @@ export default {
             const res = await useFetch("/api/setup/2fa/secret", { method: "GET" });
             if (!res.data.value) {
                 this.error.shown = true;
-                this.error.message = "Fehler beim Laden des TOTP-Secrets. Bitte überspringen Sie die Einrichtung.";
+                this.error.message =
+                    "Fehler beim Laden des TOTP-Secrets. Bitte überspringen Sie die Einrichtung.";
                 return;
             }
             return res.data.value.secret;
@@ -120,7 +130,8 @@ export default {
         const resTOTPSec = await this.totpSecret();
         if (!resTOTPSec) {
             this.error.shown = true;
-            this.error.message = "Fehler beim Laden des QR Codes. Bitte versuchen Sie es später erneut.";
+            this.error.message =
+                "Fehler beim Laden des QR Codes. Bitte versuchen Sie es später erneut.";
             return;
         }
 
@@ -137,7 +148,8 @@ export default {
             (err, dataUrl) => {
                 if (err) {
                     this.error.shown = true;
-                    this.error.message = "Fehler beim Laden des QR Codes. Bitte versuchen Sie es später erneut.";
+                    this.error.message =
+                        "Fehler beim Laden des QR Codes. Bitte versuchen Sie es später erneut.";
                     return;
                 }
                 this.qr_code = dataUrl;

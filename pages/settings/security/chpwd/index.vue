@@ -7,7 +7,8 @@ export default {
             rules: {
                 required: (v) => !!v || "Dieses Feld ist erforderlich!",
                 wiederholen: (v) => v === this.new_pwd || "Die Passwörter stimmen nicht überein!",
-                notsame: (v) => v !== this.old_pwd || "Das neue Passwort muss sich vom alten unterscheiden!",
+                notsame: (v) =>
+                    v !== this.old_pwd || "Das neue Passwort muss sich vom alten unterscheiden!",
                 password: (v) => {
                     if (v.length < 10) {
                         return "Das Passwort muss mindestens 10 Zeichen lang sein!";
@@ -47,7 +48,9 @@ export default {
 
                 this.error.shown = true;
                 this.error.message =
-                    response.error.statusCode === 400 ? "Ungültiges Passwort" : "Passwort ändern fehlgeschlagen!";
+                    response.error.statusCode === 400
+                        ? "Ungültiges Passwort"
+                        : "Passwort ändern fehlgeschlagen!";
             }
 
             if (response.data.value.success) {
@@ -76,8 +79,8 @@ export default {
                 <h1>Passwort ändern</h1>
                 <div>
                     <p>
-                        Beachten Sie die folgenden Regeln für Ihres Passwort. Sie können Ihr Passwort jederzeit in den
-                        Einstellungen ändern.
+                        Beachten Sie die folgenden Regeln für Ihres Passwort. Sie können Ihr
+                        Passwort jederzeit in den Einstellungen ändern.
                     </p>
                 </div>
                 <ul>
@@ -88,8 +91,9 @@ export default {
                 </ul>
                 <div>
                     <p>
-                        Es wird empfohlen neben einem sicherem Passwort die Zwei-Faktor-Authentifizierung in den
-                        Einstellungen zu aktivieren. Weitere Informationen finden Sie beispielsweise auf der
+                        Es wird empfohlen neben einem sicherem Passwort die
+                        Zwei-Faktor-Authentifizierung in den Einstellungen zu aktivieren. Weitere
+                        Informationen finden Sie beispielsweise auf der
                         <a
                             href="https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Informationen-und-Empfehlungen/Cyber-Sicherheitsempfehlungen/Accountschutz/Sichere-Passwoerter-erstellen/sichere-passwoerter-erstellen_node.html"
                         >
@@ -104,11 +108,16 @@ export default {
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
 
             <p>
-                Geben Sie Ihr bisheriges Passwort ein. Wählen Sie anschließend ein neues Passwort und wiederholen Sie
-                dieses.
+                Geben Sie Ihr bisheriges Passwort ein. Wählen Sie anschließend ein neues Passwort
+                und wiederholen Sie dieses.
             </p>
 
-            <VTextField v-model="old_pwd" label="bisheriges Passwort" type="password" :rules="[rules.required]" />
+            <VTextField
+                v-model="old_pwd"
+                label="bisheriges Passwort"
+                type="password"
+                :rules="[rules.required]"
+            />
             <VTextField
                 v-model="new_pwd"
                 label="neues Passwort"

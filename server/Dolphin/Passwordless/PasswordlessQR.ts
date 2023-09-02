@@ -12,7 +12,10 @@ import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import User from "../User/User";
 
 import { server } from "@passwordless-id/webauthn";
-import { AuthenticationEncoded, RegistrationEncoded } from "@passwordless-id/webauthn/dist/esm/types";
+import {
+    AuthenticationEncoded,
+    RegistrationEncoded,
+} from "@passwordless-id/webauthn/dist/esm/types";
 
 interface IPasswordlessQR {
     token: string;
@@ -36,12 +39,14 @@ class PasswordlessQR {
 
         const tokenSHA256 = createHash("sha256").update(token).digest("hex");
 
-        const dbResult = await dolphin.database.collection<IPasswordlessQR>("passwordless").insertOne({
-            token,
-            token_hash: tokenSHA256,
-            challenge,
-            expirery,
-        });
+        const dbResult = await dolphin.database
+            .collection<IPasswordlessQR>("passwordless")
+            .insertOne({
+                token,
+                token_hash: tokenSHA256,
+                challenge,
+                expirery,
+            });
 
         if (!dbResult.acknowledged) {
             return [undefined, DolphinErrorTypes.DATABASE_ERROR];
@@ -67,9 +72,11 @@ class PasswordlessQR {
 
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
-        const dbResult = await dolphin.database.collection<IPasswordlessQR>("passwordless").findOne({
-            token_hash: tokenHash,
-        });
+        const dbResult = await dolphin.database
+            .collection<IPasswordlessQR>("passwordless")
+            .findOne({
+                token_hash: tokenHash,
+            });
 
         if (!dbResult) {
             return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
@@ -102,19 +109,21 @@ class PasswordlessQR {
             }
 
             // write user id to database
-            const dbResult = await dolphin.database.collection<IPasswordlessQR>("passwordless").updateOne(
-                {
-                    token_hash: tokenHash,
-                },
-                {
-                    $set: {
-                        user: user._id,
+            const dbResult = await dolphin.database
+                .collection<IPasswordlessQR>("passwordless")
+                .updateOne(
+                    {
+                        token_hash: tokenHash,
                     },
-                    $inc: {
-                        expirery: 1000 * 120, // add 120 seconds to expirery
+                    {
+                        $set: {
+                            user: user._id,
+                        },
+                        $inc: {
+                            expirery: 1000 * 120, // add 120 seconds to expirery
+                        },
                     },
-                },
-            );
+                );
 
             if (!dbResult.acknowledged) {
                 return [undefined, DolphinErrorTypes.DATABASE_ERROR];
@@ -130,9 +139,11 @@ class PasswordlessQR {
         this.tick();
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
-        const challenge = await dolphin.database.collection<IPasswordlessQR>("passwordless").findOne({
-            token,
-        });
+        const challenge = await dolphin.database
+            .collection<IPasswordlessQR>("passwordless")
+            .findOne({
+                token,
+            });
 
         if (!challenge) {
             return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
@@ -171,9 +182,11 @@ class PasswordlessQR {
         // get challenge from database by token
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
-        const challenge = await dolphin.database.collection<IPasswordlessQR>("passwordless").findOne({
-            token,
-        });
+        const challenge = await dolphin.database
+            .collection<IPasswordlessQR>("passwordless")
+            .findOne({
+                token,
+            });
 
         if (!challenge) {
             return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
