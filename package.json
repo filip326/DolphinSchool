@@ -11,6 +11,7 @@
         "lint-fix": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue . --fix",
         "prepare": "husky install",
         "create-dummy-student": "ts-node ./scripts/createStudent.ts",
+        "file-linter": "node ./fileLinter.js",
         "start": "node .output/server/index.mjs"
     },
     "devDependencies": {
