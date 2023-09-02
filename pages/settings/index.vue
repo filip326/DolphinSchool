@@ -27,8 +27,8 @@ export default {
             :title="setting.name"
             :href="setting.link"
         />
-   </div>
-   <VCard v-for="(setting, index) in settings" :key="index">
+    </div>
+    <VCard v-for="(setting, index) in settings" :key="index">
         <VCardTitle>
             {{ setting.name }}
         </VCardTitle>

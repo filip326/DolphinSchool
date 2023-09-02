@@ -1,12 +1,8 @@
 <template>
     <div class="settings__wrapper">
         <VCard>
-            <VCardTitle>
-                Passwort
-            </VCardTitle>
-            <VCardSubtitle>
-                Password ändern
-            </VCardSubtitle>
+            <VCardTitle> Passwort </VCardTitle>
+            <VCardSubtitle> Password ändern </VCardSubtitle>
             <VCardActions>
                 <VSpacer />
                 <VBtn variant="outlined">Ändern</VBtn>
@@ -14,9 +10,7 @@
         </VCard>
 
         <VCard>
-            <VCardTitle>
-                Zwei-Faktor-Authentifizierung
-            </VCardTitle>
+            <VCardTitle> Zwei-Faktor-Authentifizierung </VCardTitle>
             <VCardSubtitle>
                 Erweitern Sie die Sicherheit Ihres Kontos durch eine Zwei-Faktor-Authentifizierung
             </VCardSubtitle>
