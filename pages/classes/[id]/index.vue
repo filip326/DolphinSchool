@@ -40,7 +40,12 @@ export default {
 
         <VCardText>
             <!-- tabs -->
-            <VTabs v-model="tab" background-color="transparent" color="secondary" slider-color="secondary">
+            <VTabs
+                v-model="tab"
+                background-color="transparent"
+                color="secondary"
+                slider-color="secondary"
+            >
                 <VTab v-for="tab in tabs" :key="tab">
                     {{ tab }}
                 </VTab>

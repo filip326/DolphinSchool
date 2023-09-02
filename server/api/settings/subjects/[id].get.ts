@@ -25,7 +25,9 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const [subject, subjectFindError] = await Subject.getSubjectById(ObjectId.createFromHexString(id));
+    const [subject, subjectFindError] = await Subject.getSubjectById(
+        ObjectId.createFromHexString(id),
+    );
 
     if (subjectFindError) {
         return createError({

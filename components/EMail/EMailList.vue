@@ -75,7 +75,12 @@ export default {
 <template>
     <div>
         <VList bg-color="background">
-            <VListItem variant="tonal" density="comfortable" v-for="email in emails" :key="email.id">
+            <VListItem
+                variant="tonal"
+                density="comfortable"
+                v-for="email in emails"
+                :key="email.id"
+            >
                 <EMailPreview
                     @email_clicked="onEmailSelected"
                     :id="email.id"

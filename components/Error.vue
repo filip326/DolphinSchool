@@ -31,7 +31,8 @@ export default {
         } {
             return {
                 statusCode: this.error.statusCode ?? 500,
-                statusMessage: this.error.statusMessage ?? "Unknown Error. Please contact the support.",
+                statusMessage:
+                    this.error.statusMessage ?? "Unknown Error. Please contact the support.",
             };
         },
     },

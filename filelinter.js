@@ -35,7 +35,9 @@ function lintFilesAndDirectories(objects) {
                     process.exit(1);
                 }
                 // Wenn es sich um ein Verzeichnis handelt, überprüfe die Dateien darin
-                lintFilesAndDirectories([{ path: fullPath, directoryRegex, regex, extensions, ignoreRegex }]);
+                lintFilesAndDirectories([
+                    { path: fullPath, directoryRegex, regex, extensions, ignoreRegex },
+                ]);
             } else {
                 // Überprüfe den Dateinamen (ohne Erweiterung)
                 let fileNameWithoutExtension;

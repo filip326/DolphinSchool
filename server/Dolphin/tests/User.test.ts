@@ -148,7 +148,8 @@ describe("User class", () => {
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
 
-        const [passwordChangeResult, passwordChangeError] = await user!.setPassword("jzJu3f7.jzJu3f7.");
+        const [passwordChangeResult, passwordChangeError] =
+            await user!.setPassword("jzJu3f7.jzJu3f7.");
 
         expect(passwordChangeError).toBeNull();
         expect(passwordChangeResult).toBeDefined();
@@ -174,7 +175,8 @@ describe("User class", () => {
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
 
-        const [passwordChangeResult, passwordChangeError] = await user!.setPassword("aaaaaaaaaaaaa");
+        const [passwordChangeResult, passwordChangeError] =
+            await user!.setPassword("aaaaaaaaaaaaa");
 
         expect(passwordChangeError).toBeDefined();
         expect(passwordChangeError).toBe(DolphinErrorTypes.INVALID_ARGUMENT);
@@ -187,7 +189,8 @@ describe("User class", () => {
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
 
-        const [passwordValidationResult, passwordValidationError] = await user!.comparePassword("testPassword");
+        const [passwordValidationResult, passwordValidationError] =
+            await user!.comparePassword("testPassword");
 
         expect(passwordValidationError).toBeNull();
         expect(passwordValidationResult).toBeDefined();
@@ -200,7 +203,8 @@ describe("User class", () => {
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
 
-        const [passwordValidationResult, passwordValidationError] = await user!.comparePassword("incorrectPassword");
+        const [passwordValidationResult, passwordValidationError] =
+            await user!.comparePassword("incorrectPassword");
 
         expect(passwordValidationError).toBeNull();
         expect(passwordValidationResult).toBeDefined();
