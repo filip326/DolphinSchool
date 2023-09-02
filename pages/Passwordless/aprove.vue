@@ -84,13 +84,6 @@ export default {
             }
         },
     },
-    async beforeCreate() {
-        await checkAuth({
-            redirectOnMfaRequired: true,
-            throwErrorOnNotAuthenticated: true,
-            redirectOnPwdChange: true,
-        });
-    },
     async beforeMount() {
         this.continue_button.loading = true;
 
