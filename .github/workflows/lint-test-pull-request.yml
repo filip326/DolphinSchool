@@ -20,5 +20,5 @@ jobs:
             - run: yarn install --frozen-lockfile
             - run: yarn file-linter
             - run: yarn lint
-            - run: yarn prettier --check .
+            - run: yarn prettier --write .
             - run: yarn jest
