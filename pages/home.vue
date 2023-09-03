@@ -22,6 +22,15 @@ export default {
                     ],
                 },
                 {
+                    title: "Kurs-und Klassensystem",
+                    links: [
+                        {
+                            href: "/classes",
+                            text: "Übersicht",
+                        },
+                    ],
+                },
+                {
                     title: "Einstellungen",
                     links: [
                         {
