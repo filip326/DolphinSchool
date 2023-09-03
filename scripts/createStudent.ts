@@ -19,10 +19,10 @@ async function main() {
     const client = await MongoClient.connect(DB_URL);
     const db = client.db(DB_NAME);
 
-    db.collection("users").insertOne(user);
-
-    console.log("Done!");
+    await db.collection("users").insertOne(user);
 }
 
-main();
-process.exit(0);
+main().then(() => {
+    console.log("Done!");
+    process.exit(0);
+});
