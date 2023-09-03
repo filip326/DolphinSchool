@@ -13,7 +13,7 @@ export default {
                     links: [
                         {
                             href: "/mail",
-                            text: "Aufrufen",
+                            text: "Übersicht",
                         },
                         {
                             href: "/mail/write",
@@ -26,7 +26,7 @@ export default {
                     links: [
                         {
                             href: "/settings",
-                            text: "Aufrufen",
+                            text: "Übersicht",
                         },
                         {
                             href: "/settings/security/totp/setup",
