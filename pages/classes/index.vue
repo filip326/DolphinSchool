@@ -7,20 +7,12 @@ export default {
             throwErrorOnNotAuthenticated: true,
         });
 
-        if (checkAuthResult.user.type == "parent") {
+        if (checkAuthResult.user.type !== "teacher") {
             throw createError({ statusCode: 403, statusMessage: "Forbidden" });
         }
-
-        this.user = checkAuthResult.user;
     },
     data() {
         return {
-            user: {} as {
-                username?: string;
-                full_name?: string;
-                type?: "student" | "teacher" | "parent";
-                mfa_enabled?: boolean;
-            },
             tab: "myclass",
         };
     },
