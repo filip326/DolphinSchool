@@ -14,6 +14,23 @@ export default {
     data() {
         return {
             tab: "myclass",
+            selectedCourseId: undefined as number | undefined,
+            selectedCourse: undefined as
+                | {
+                      name: string;
+                      students: Array<{ name: string; email: string }>;
+                  }
+                | undefined,
+            courses: [
+                {
+                    name: "",
+                    students: Array<{ name: string; email: string }>(),
+                },
+            ],
+            myClass: {
+                name: "",
+                students: Array<{ name: string; email: string }>(),
+            },
         };
     },
 };
@@ -32,12 +49,45 @@ export default {
             slider-color="#fff"
             density="compact"
         >
-            <VTab value="myclass" prepend-icon="mdi-account-group">Meine Klasse</VTab>
+            <VTab v-if="myClass" value="myclass" prepend-icon="mdi-account-group"
+                >Meine Klasse</VTab
+            >
             <VTab value="mycourses" prepend-icon="mdi-account-multiple">Meine Kurse</VTab>
         </VTabs>
         <VWindow v-model="tab">
-            <VWindowItem value="myclass"></VWindowItem>
-            <VWindowItem value="mycourses"></VWindowItem>
+            <VWindowItem value="myclass">
+                <h3>{{ myClass?.name }}</h3>
+                <VList>
+                    <VListItem v-for="student in myClass.students" :key="student.name">
+                        <VListItemTitle>{{ student.name }}</VListItemTitle>
+                        <VListItemSubtitle>{{ student.email }}</VListItemSubtitle>
+                    </VListItem>
+                </VList>
+            </VWindowItem>
+            <VWindowItem value="mycourses">
+                <div class="course__wrapper">
+                    <VCard
+                        @click="selectedCourseId = i"
+                        v-for="(course, i) in courses"
+                        :key="course.name"
+                    >
+                        <VCardTitle>{{ course.name }}</VCardTitle>
+                        <VCardSubtitle
+                            >{{ course.students.length }} Schüler u. Schüler</VCardSubtitle
+                        >
+                    </VCard>
+                </div>
+            </VWindowItem>
+            <VWindowItem value="seecourse">
+                <!-- same look like "myclass" -->
+                <h3>{{ selectedCourse?.name }}</h3>
+                <VList>
+                    <VListItem v-for="student in selectedCourse?.students" :key="student.name">
+                        <VListItemTitle>{{ student.name }}</VListItemTitle>
+                        <VListItemSubtitle>{{ student.email }}</VListItemSubtitle>
+                    </VListItem>
+                </VList>
+            </VWindowItem>
         </VWindow>
     </VCard>
 </template>
@@ -45,5 +95,11 @@ export default {
 <style scoped>
 .v-icon {
     margin: 12px;
+}
+
+.course__wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 500px));
+    gap: 10px;
 }
 </style>
