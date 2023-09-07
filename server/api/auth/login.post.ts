@@ -1,6 +1,7 @@
 import User from "../../Dolphin/User/User";
 import Session from "../../Dolphin/Session/Session";
 import BruteForceProtection from "../../Dolphin/BruteForceProtection/BruteForceProtection";
+import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 
 export default eventHandler(async (event) => {
     const { username, password } = await readBody(event);
@@ -44,6 +45,10 @@ export default eventHandler(async (event) => {
             statusCode: 401,
             message: "Invalid username or password",
         });
+    }
+
+    if (!user.hasPermission(Permissions.GLOBAL_LOGIN)) {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     const [session, sessionCreateError] = await Session.createSession(user);

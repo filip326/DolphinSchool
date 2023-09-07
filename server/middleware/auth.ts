@@ -2,6 +2,7 @@ import { H3Event } from "h3";
 import Session, { SessionState } from "../Dolphin/Session/Session";
 import User from "@/server/Dolphin/User/User";
 import { CheckAuthOptions, CheckAuthResult } from "../types/auth";
+import { Permissions } from "../Dolphin/Permissions/PermissionManager";
 
 export default defineEventHandler(async (event) => {
     event.context.auth = {
@@ -90,6 +91,10 @@ export default defineEventHandler(async (event) => {
 
     if (user.changePasswordRequired) {
         event.context.auth.change_password_required = true;
+    }
+
+    if (!user.hasPermission(Permissions.GLOBAL_LOGIN)) {
+        event.context.auth.authenticated = false;
     }
 
     // check if user needs 2fa and has not passed yet

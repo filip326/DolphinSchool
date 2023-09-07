@@ -1,3 +1,4 @@
+import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 import { SessionState } from "../../Dolphin/Session/Session";
 import Session from "../../Dolphin/Session/Session";
 
@@ -27,6 +28,10 @@ export default defineEventHandler(async (event) => {
     // check if user has set up 2fa
     if (!user.mfaEnabled) {
         throw createError({ statusCode: 403, message: "MFA Not set up" });
+    }
+
+    if (!user.hasPermission(Permissions.GLOBAL_LOGIN)) {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     // get totp code from body
