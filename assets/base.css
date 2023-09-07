@@ -16,11 +16,6 @@ body {
     box-sizing: border-box;
 }
 
-footer {
-    min-width: 100%;
-    max-width: 100%;
-}
-
 a {
     color: #50a4ab;
 }
@@ -34,4 +29,8 @@ p.important {
     border: 3px solid red;
     color: red;
     border-radius: 5px;
+}
+
+.v-main {
+    min-height: calc(100svh);
 }

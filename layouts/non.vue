@@ -34,6 +34,8 @@ export default {
                 <slot />
             </div>
         </VMain>
+
+        <DolphinFooter />
     </v-app>
 </template>
 
