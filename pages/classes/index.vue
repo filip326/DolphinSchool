@@ -15,12 +15,6 @@ export default {
         return {
             tab: "myclass",
             selectedCourseId: undefined as number | undefined,
-            selectedCourse: undefined as
-                | {
-                      name: string;
-                      students: Array<{ name: string; email: string }>;
-                  }
-                | undefined,
             courses: [
                 {
                     name: "",
@@ -32,6 +26,16 @@ export default {
                 students: Array<{ name: string; email: string }>(),
             },
         };
+    },
+    computed: {
+        selectedCourse():
+            | { name: string; students: Array<{ name: string; email: string }> }
+            | undefined {
+            if (this.selectedCourseId === undefined) {
+                return undefined;
+            }
+            return this.courses[this.selectedCourseId];
+        },
     },
 };
 </script>
