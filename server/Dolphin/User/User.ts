@@ -54,6 +54,14 @@ interface IUser {
 class User implements WithId<IUser> {
     // static methods to create, find, get or delete users
 
+    static async addBlockedPwd(pwd: RegExp): Promise<boolean> {
+        const dolphin = Dolphin.instance
+            ? Dolphin.instance
+            : await Dolphin.init(useRuntimeConfig());
+        const pwdCollection = dolphin.database.collection<RegExp>("passwordBlockList");
+        return (await pwdCollection.insertOne(pwd)).acknowledged;
+    }
+
     static async searchUsers(options: SearchUserOptions): Promise<MethodResult<User[]>> {
         if (
             options.nameQuery ||
@@ -442,6 +450,9 @@ class User implements WithId<IUser> {
         if (!/[0-9]/.test(password)) {
             return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
+        if (await this.isNewPasswordOnBlockedList(password)) {
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+        }
 
         let passwordHash: string;
         try {
@@ -465,6 +476,14 @@ class User implements WithId<IUser> {
         } catch {
             return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
+    }
+
+    private async isNewPasswordOnBlockedList(password: string): Promise<boolean> {
+        const dolphin = Dolphin.instance
+            ? Dolphin.instance
+            : await Dolphin.init(useRuntimeConfig());
+        const pwdCollection = dolphin.database.collection<RegExp>("passwordBlockList");
+        return (await pwdCollection.find({ $regex: password }).toArray()).length > 0;
     }
 
     /**
