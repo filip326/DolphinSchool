@@ -54,6 +54,14 @@ interface IUser {
 class User implements WithId<IUser> {
     // static methods to create, find, get or delete users
 
+    static async getBlockedPwds(): Promise<RegExp[]> {
+        const dolphin = Dolphin.instance
+            ? Dolphin.instance
+            : await Dolphin.init(useRuntimeConfig());
+        const pwdCollection = dolphin.database.collection<RegExp>("passwordBlockList");
+        return await pwdCollection.find({}).toArray();
+    }
+
     static async addBlockedPwd(pwd: RegExp): Promise<boolean> {
         const dolphin = Dolphin.instance
             ? Dolphin.instance

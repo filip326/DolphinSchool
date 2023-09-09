@@ -1,6 +1,7 @@
 enum Permissions {
     GLOBAL_LOGIN = 1 << 0,
     CREATE_COURSE = 1 << 1,
+    MANAGE_BLOCKED_PWDS = 1 << 2,
 }
 
 class PermissionManager {
