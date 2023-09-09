@@ -12,7 +12,7 @@ async function main() {
         fullName: "Test Tester",
         type: "student",
         password: await hash("password", 10),
-        permissions: 0,
+        permissions: 1,
         changePasswordRequired: true,
     };
 
