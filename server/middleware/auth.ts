@@ -1,4 +1,3 @@
-import { H3Event } from "h3";
 import Session, { SessionState } from "../Dolphin/Session/Session";
 import User from "@/server/Dolphin/User/User";
 import { CheckAuthOptions, CheckAuthResult } from "../types/auth";
@@ -10,7 +9,7 @@ export default defineEventHandler(async (event) => {
         user: undefined,
         change_password_required: false,
         mfa_required: false,
-        checkAuth: async (event: H3Event, options: CheckAuthOptions): Promise<CheckAuthResult> => {
+        checkAuth: async (options: CheckAuthOptions = {}): Promise<CheckAuthResult> => {
             if (!event.context.auth.authenticated) {
                 if (event.context.auth.mfa_required) {
                     return {

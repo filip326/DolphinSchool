@@ -3,7 +3,7 @@ import Subject from "../../../Dolphin/Course/Subject";
 
 export default defineEventHandler(async (event) => {
     // check authentication
-    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    const checkAuthResult = await event.context.auth.checkAuth({});
     if (!checkAuthResult.success || !checkAuthResult.user) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }

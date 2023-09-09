@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
     // check authentication
-    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    const checkAuthResult = await event.context.auth.checkAuth();
 
     // check if authentication failed and mfa is not required
     if (!checkAuthResult.success && !event.context.auth.mfa_required) {
