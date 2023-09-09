@@ -1,3 +1,4 @@
+// import Course from "~/server/Dolphin/Course/Course";
 import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 
 export default eventHandler(async (event) => {
