@@ -58,6 +58,8 @@ export default {
             rounded
             class="navigation__list__item"
         />
+        <!-- horizontal line -->
+        <VDivider />
         <VListItem
             density="compact"
             rounded
