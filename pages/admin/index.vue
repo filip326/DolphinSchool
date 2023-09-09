@@ -19,7 +19,7 @@ export default {
 </script>
 
 <template>
-    <h2><VIcon>mdi-cogs</VIcon>Einstellungen</h2>
+    <h2><VIcon>mdi-security</VIcon>Administrator Tools</h2>
     <div class="settings__wrapper">
         <MenuOneLinkCard
             v-for="(setting, index) in settings"
