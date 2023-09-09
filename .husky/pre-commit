@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-yarn file-linter && yarn lint-fix && yarn prettier --write .
+yarn file-linter
+yarn lint-fix
+yarn prettier --write .
