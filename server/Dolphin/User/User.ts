@@ -479,19 +479,9 @@ class User implements WithId<IUser> {
             Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()))
         ).database.collection<{ pwd: string }>("blockedPwds");
 
-        // now count all documents, that are contained in the password OR contain the password
-        const countOfPoliciesNotMet = await blockedPwdsCollection.countDocuments({
-            $or: [
-                { pwd: { $regex: password, $options: "i" } },
-                {
-                    $expr: {
-                        $regexMatch: { input: password, regex: { $regex: "$pwd", $options: "i" } },
-                    },
-                },
-            ],
-        });
-
-        return countOfPoliciesNotMet > 0;
+        return (
+            (await blockedPwdsCollection.find({ pwd: { $regex: password } }).toArray()).length > 0
+        );
     }
 
     /**

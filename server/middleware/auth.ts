@@ -32,11 +32,12 @@ export default defineEventHandler(async (event) => {
                 };
             }
 
-            if (options.minimumPermissionLevel) {
-                if (event.context.auth.user.hasPermission(options.minimumPermissionLevel)) {
+            if (options.PermissionLevel) {
+                if (!event.context.auth.user.hasPermission(options.PermissionLevel)) {
                     return {
                         success: false,
                         statusCode: 403,
+                        user: event.context.auth.user,
                     };
                 }
             }

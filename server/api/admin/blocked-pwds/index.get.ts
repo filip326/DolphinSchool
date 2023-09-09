@@ -3,10 +3,10 @@ import Dolphin from "~/server/Dolphin/Dolphin";
 
 export default eventHandler(async (event) => {
     const checkAuthResult = await event.context.auth.checkAuth({
-        minimumPermissionLevel: Permissions.MANAGE_BLOCKED_PWDS,
+        PermissionLevel: Permissions.MANAGE_BLOCKED_PWDS,
     });
     if (!checkAuthResult.success || !checkAuthResult.user) {
-        throw createError({ statusCode: 401, message: "Unauthorized" });
+        throw createError({ statusCode: checkAuthResult.statusCode, message: "Failed" });
     }
 
     return await Dolphin.getBlockedPwds();

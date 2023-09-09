@@ -2,7 +2,7 @@ import User from "../Dolphin/User/User";
 import { Permissions } from "../Dolphin/Permissions/PermissionManager";
 
 interface CheckAuthOptions {
-    minimumPermissionLevel?: Permissions;
+    PermissionLevel?: Permissions;
 }
 
 type CheckAuthStatusCode = 200 | 401 | 403 | 500;
