@@ -1,8 +1,8 @@
+import Dolphin from "~/server/Dolphin/Dolphin";
 import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
-import User from "~/server/Dolphin/User/User";
 
 export default eventHandler(async (event) => {
-    const checkAuthResult = await event.context.auth.checkAuth(event, {
+    const checkAuthResult = await event.context.auth.checkAuth({
         minimumPermissionLevel: Permissions.MANAGE_BLOCKED_PWDS,
     });
     if (!checkAuthResult.success || !checkAuthResult.user) {
@@ -14,5 +14,5 @@ export default eventHandler(async (event) => {
     if (!pwd || pwd instanceof RegExp == false)
         throw createError({ statusCode: 400, message: "Bad Request" });
 
-    return await User.addBlockedPwd(pwd);
+    return await Dolphin.addBlockedPwd(pwd);
 });

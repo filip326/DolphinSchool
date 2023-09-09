@@ -15,7 +15,10 @@ export default {
                 message: "",
             },
             showCreateDialog: false,
-            blockedPwd: undefined as string | undefined,
+            blockedPwd: "" as string,
+            rules: {
+                required: (v: string) => !!v || "Dieses Feld ist erforderlich",
+            },
         };
     },
     async beforeMount() {
@@ -23,16 +26,46 @@ export default {
     },
     methods: {
         async updatePwdList() {
-            // todo
+            const res = await useFetch("/api/admin/blocked-pwds");
+            if (res.status.value === "success") {
+                this.blockedPwds = res.data.value as string[];
+            } else {
+                this.error = {
+                    shown: true,
+                    message: "Fehler beim Laden der blockierten Passwörter.",
+                };
+            }
         },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         async unblockPwd(pwd: string) {
-            // todo
+            const res = await useFetch("/api/admin/blocked-pwds", {
+                method: "DELETE",
+                body: JSON.stringify({ pwd }),
+            });
+            if (res.status.value != "success") {
+                this.error = {
+                    shown: true,
+                    message: "Fehler beim Blocken des Passworts.",
+                };
+            }
+            await this.updatePwdList();
         },
         async createPwd() {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const pwd = this.blockedPwd;
-            // todo
+            if (!pwd) return;
+            const res = await useFetch("/api/admin/blocked-pwds", {
+                method: "POST",
+                body: JSON.stringify({ pwd }),
+            });
+            if (res.status.value === "success") {
+                this.showCreateDialog = false;
+            } else {
+                this.error = {
+                    shown: true,
+                    message: "Fehler beim Blocken des Passworts.",
+                };
+            }
             await this.updatePwdList();
         },
     },
@@ -50,12 +83,7 @@ export default {
                     placeholder="/password/i"
                     label="Neues Passwort blocken"
                     hint="Bitte in Form eines RegExp eingeben."
-                    :rules="[
-                        (v) => {
-                            // is required
-                            if (!v) return 'Bitte einen ReqExp eingeben.';
-                        },
-                    ]"
+                    :rules="[rules.required]"
                 />
                 <VBtn type="submit" prepend-icon="mdi-">Hinzufügen</VBtn>
             </VForm>
