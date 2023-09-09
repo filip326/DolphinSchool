@@ -1,41 +1,72 @@
+/* eslint-disable no-case-declarations */
+import { ObjectId } from "mongodb";
+import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import ASMSQInterpreter, { ASMSQResult } from "./AdvancedSyntaxObject";
-// import Dolphin from "../Dolphin";
+import User from "../User/User";
+
+interface ParsedASMSQResult {
+    name: string;
+    id: ObjectId | ObjectId[];
+    collectionName: string;
+    type: "user" | "class" | "cource" | "grade";
+}
 
 export default class ASMSQ {
-    asmsq: string;
-    // courseManager: GlobalCourseManager;
-    // subjectManager: GlobalSubjectManager;
+    public static async suggest(query: string): Promise<MethodResult<ParsedASMSQResult[]>> {
+        const result: ASMSQResult[] = new ASMSQInterpreter(query).result;
 
-    result: unknown | null = null;
-    parsedResult: ASMSQResult[];
+        if (!result || result.length === 0) {
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
+        }
 
-    constructor(asmsq: string /* dolphin: Dolphin */) {
-        this.asmsq = asmsq;
-        // this.courseManager = GlobalCourseManager.getInstance(dolphin);
-        // this.subjectManager = GlobalSubjectManager.getInstance(dolphin);
-        this.parsedResult = new ASMSQInterpreter(asmsq).result;
-        // this.process();
+        const parsedResultRes = await this.processASMSQResult(result);
+        if (parsedResultRes[1]) {
+            return [undefined, parsedResultRes[1]];
+        }
+
+        return [parsedResultRes[0], null];
     }
 
-    // private async process(): Promise<void> {
-    //     // todo process the asmsq with the Managers and create an array of users and courses that match the asmsq
-    //     // todo then set the result to the array
+    private static async processASMSQResult(
+        result: ASMSQResult[],
+    ): Promise<MethodResult<ParsedASMSQResult[]>> {
+        if (!result || result.length === 0) {
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
+        }
 
-    //     // eslint-disable-next-line prefer-const
-    //     let output: [User[], Course[]] = [[], []];
+        const parsedResult: ParsedASMSQResult[] = [];
 
-    //     for (let i = 0; i < this.parsedResult.length; i++) {
-    //         const query = this.parsedResult[i];
+        result.forEach(async (item) => {
+            switch (item.subtype) {
+                case "user":
+                    if (!item.name) {
+                        return;
+                    }
+                    const userResult = await User.searchUsersByName(item.name);
+                    if (!userResult[0] || userResult[1]) {
+                        return;
+                    }
+                    userResult[0].forEach((user) => {
+                        parsedResult.push({
+                            name: user.fullName,
+                            id: user._id,
+                            collectionName: "users",
+                            type: "user",
+                        });
+                    });
+                    return;
+                case "class":
+                    // todo
+                    return;
+                case "course":
+                    // todo
+                    return;
+                case "grade":
+                    // todo
+                    return;
+            }
+        });
 
-    //         const users = await User.searchUsers(query as SearchUserOptions);
-    //         if (!users[0] || users[1] != null) continue;
-    //         output[0].concat(users[0]);
-
-    //         const courses = await this.courseManager.searchCourses(query as SearchCourseOptions);
-    //         if (!courses[0] || courses[1] != null) continue;
-    //         output[1].concat(courses[0]);
-    //     }
-
-    //     this.result = null;
-    // }
+        return [parsedResult, null];
+    }
 }
