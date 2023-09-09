@@ -34,7 +34,7 @@ class Dolphin {
                 const client = await MongoClient.connect(config.DB_URL);
                 const db = client.db(
                     config.DB_NAME +
-                        (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV"),
+                    (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV"),
                 );
 
                 if (!db) return;
@@ -45,6 +45,30 @@ class Dolphin {
                 return;
             }
         });
+    }
+
+    static async getBlockedPwds(): Promise<string[]> {
+        const dolphin = Dolphin.instance
+            ? Dolphin.instance
+            : await Dolphin.init(useRuntimeConfig());
+        const pwdCollection = dolphin.database.collection<{ pwd: string }>("passwordBlockList");
+        return (await pwdCollection.find({}).toArray()).map((pwd) => pwd.pwd);
+    }
+
+    static async addBlockedPwd(pwd: string): Promise<boolean> {
+        const dolphin = Dolphin.instance
+            ? Dolphin.instance
+            : await Dolphin.init(useRuntimeConfig());
+        const pwdCollection = dolphin.database.collection<{ pwd: string }>("passwordBlockList");
+        return (await pwdCollection.insertOne({ pwd })).acknowledged;
+    }
+
+    static async removeBlockedPwd(pwd: string): Promise<boolean> {
+        const dolphin = Dolphin.instance
+            ? Dolphin.instance
+            : await Dolphin.init(useRuntimeConfig());
+        const pwdCollection = dolphin.database.collection<{ pwd: string }>("passwordBlockList");
+        return (await pwdCollection.deleteMany({ pwd })).acknowledged;
     }
 
     static destroy() {

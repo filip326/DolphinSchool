@@ -54,30 +54,6 @@ interface IUser {
 class User implements WithId<IUser> {
     // static methods to create, find, get or delete users
 
-    static async getBlockedPwds(): Promise<RegExp[]> {
-        const dolphin = Dolphin.instance
-            ? Dolphin.instance
-            : await Dolphin.init(useRuntimeConfig());
-        const pwdCollection = dolphin.database.collection<RegExp>("passwordBlockList");
-        return await pwdCollection.find({}).toArray();
-    }
-
-    static async addBlockedPwd(pwd: RegExp): Promise<boolean> {
-        const dolphin = Dolphin.instance
-            ? Dolphin.instance
-            : await Dolphin.init(useRuntimeConfig());
-        const pwdCollection = dolphin.database.collection<RegExp>("passwordBlockList");
-        return (await pwdCollection.insertOne(pwd)).acknowledged;
-    }
-
-    static async removeBlockedPwd(pwd: RegExp): Promise<boolean> {
-        const dolphin = Dolphin.instance
-            ? Dolphin.instance
-            : await Dolphin.init(useRuntimeConfig());
-        const pwdCollection = dolphin.database.collection<RegExp>("passwordBlockList");
-        return (await pwdCollection.deleteMany(pwd)).acknowledged;
-    }
-
     static async searchUsers(options: SearchUserOptions): Promise<MethodResult<User[]>> {
         if (
             options.nameQuery ||
@@ -505,7 +481,7 @@ class User implements WithId<IUser> {
         const countOfPoliciesNotMet = await blockedPwdsCollection.countDocuments({
             $or: [
                 { pwd: { $regex: password, $options: "i" } },
-                { $expr: { $regexMatch: { input: password, regex: { $regex: ".*" + "$pwd" + ".*", $options: "i" } } } }
+                { $expr: { $regexMatch: { input: password, regex: { $regex: "$pwd", $options: "i" } } } }
             ]
         });
 
