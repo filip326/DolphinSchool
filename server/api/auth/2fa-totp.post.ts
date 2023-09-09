@@ -4,7 +4,7 @@ import Session from "../../Dolphin/Session/Session";
 
 export default defineEventHandler(async (event) => {
     // check authentication
-    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    const checkAuthResult = await event.context.auth.checkAuth({});
     if (!checkAuthResult.user) {
         throw createError({ statusCode: 401, message: "Unauthorized 1" });
     }
