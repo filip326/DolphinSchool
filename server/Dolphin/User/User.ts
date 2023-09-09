@@ -62,6 +62,14 @@ class User implements WithId<IUser> {
         return (await pwdCollection.insertOne(pwd)).acknowledged;
     }
 
+    static async removeBlockedPwd(pwd: RegExp): Promise<boolean> {
+        const dolphin = Dolphin.instance
+            ? Dolphin.instance
+            : await Dolphin.init(useRuntimeConfig());
+        const pwdCollection = dolphin.database.collection<RegExp>("passwordBlockList");
+        return (await pwdCollection.deleteMany(pwd)).acknowledged;
+    }
+
     static async searchUsers(options: SearchUserOptions): Promise<MethodResult<User[]>> {
         if (
             options.nameQuery ||
