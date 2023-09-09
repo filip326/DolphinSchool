@@ -37,17 +37,17 @@ interface IUser {
 
     webAuthNCredentials?: {
         [key: string]:
-        | {
-            credential: {
-                id: string;
-                publicKey: string;
-                algorithm: "RS256" | "ES256";
-            };
-            authenticator: {
-                name: string;
-            };
-        }
-        | undefined;
+            | {
+                  credential: {
+                      id: string;
+                      publicKey: string;
+                      algorithm: "RS256" | "ES256";
+                  };
+                  authenticator: {
+                      name: string;
+                  };
+              }
+            | undefined;
     };
 }
 
@@ -208,17 +208,17 @@ class User implements WithId<IUser> {
 
     webAuthNCredentials?: {
         [key: string]:
-        | {
-            credential: {
-                id: string;
-                publicKey: string;
-                algorithm: "RS256" | "ES256";
-            };
-            authenticator: {
-                name: string;
-            };
-        }
-        | undefined;
+            | {
+                  credential: {
+                      id: string;
+                      publicKey: string;
+                      algorithm: "RS256" | "ES256";
+                  };
+                  authenticator: {
+                      name: string;
+                  };
+              }
+            | undefined;
     };
 
     private _totp?: OTPAuth.TOTP;
@@ -475,14 +475,20 @@ class User implements WithId<IUser> {
         // return true if the password is not allowed to be used
         // return false if the password is allowed to be used
 
-        const blockedPwdsCollection = (Dolphin.instance ?? await Dolphin.init(useRuntimeConfig())).database.collection<{ pwd: string }>("blockedPwds");
+        const blockedPwdsCollection = (
+            Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()))
+        ).database.collection<{ pwd: string }>("blockedPwds");
 
         // now count all documents, that are contained in the password OR contain the password
         const countOfPoliciesNotMet = await blockedPwdsCollection.countDocuments({
             $or: [
                 { pwd: { $regex: password, $options: "i" } },
-                { $expr: { $regexMatch: { input: password, regex: { $regex: "$pwd", $options: "i" } } } }
-            ]
+                {
+                    $expr: {
+                        $regexMatch: { input: password, regex: { $regex: "$pwd", $options: "i" } },
+                    },
+                },
+            ],
         });
 
         return countOfPoliciesNotMet > 0;
