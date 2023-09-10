@@ -92,8 +92,7 @@ export default {
                 <VTextField
                     v-model="blockedPwd"
                     placeholder="/password/i"
-                    label="Neues Passwort blocken"
-                    hint="Bitte in Form eines RegExp eingeben."
+                    label="Passwort blocken"
                     :rules="[rules.required]"
                 />
                 <VBtn type="submit" prepend-icon="mdi-">Hinzufügen</VBtn>

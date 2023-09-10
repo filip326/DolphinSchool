@@ -48,27 +48,26 @@ class Dolphin {
     }
 
     static async getBlockedPwds(): Promise<string[]> {
-        const dolphin = Dolphin.instance
-            ? Dolphin.instance
-            : await Dolphin.init(useRuntimeConfig());
-        const pwdCollection = dolphin.database.collection<{ pwd: string }>("passwordBlockList");
-        return (await pwdCollection.find({}).toArray()).map((pwd) => pwd.pwd);
+        const blockedPwdsCollection = (
+            Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()))
+        ).database.collection<{ blockedPwd: string }>("blockedPwds");
+        return (await blockedPwdsCollection.find({}).toArray()).map(
+            (password) => password.blockedPwd,
+        );
     }
 
     static async addBlockedPwd(pwd: string): Promise<boolean> {
-        const dolphin = Dolphin.instance
-            ? Dolphin.instance
-            : await Dolphin.init(useRuntimeConfig());
-        const pwdCollection = dolphin.database.collection<{ pwd: string }>("passwordBlockList");
-        return (await pwdCollection.insertOne({ pwd })).acknowledged;
+        const blockedPwdsCollection = (
+            Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()))
+        ).database.collection<{ blockedPwd: string }>("blockedPwds");
+        return (await blockedPwdsCollection.insertOne({ blockedPwd: pwd })).acknowledged;
     }
 
     static async removeBlockedPwd(pwd: string): Promise<boolean> {
-        const dolphin = Dolphin.instance
-            ? Dolphin.instance
-            : await Dolphin.init(useRuntimeConfig());
-        const pwdCollection = dolphin.database.collection<{ pwd: string }>("passwordBlockList");
-        return (await pwdCollection.deleteMany({ pwd })).acknowledged;
+        const blockedPwdsCollection = (
+            Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()))
+        ).database.collection<{ blockedPwd: string }>("blockedPwds");
+        return (await blockedPwdsCollection.deleteMany({ blockedPwd: pwd })).acknowledged;
     }
 
     static destroy() {

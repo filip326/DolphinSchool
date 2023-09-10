@@ -9,7 +9,7 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
-    const pwd = await readBody(event);
+    const { pwd } = await readBody(event);
 
     if (!pwd) throw createError({ statusCode: 400, message: "Bad Request" });
 

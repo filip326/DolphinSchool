@@ -469,6 +469,7 @@ class User implements WithId<IUser> {
             return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
     }
+
     private async isNewPasswordOnBlockedList(password: string): Promise<boolean> {
         // find all blocked words in the db
         // check if password is in the list, or contains a blocked word (case insensitive)
@@ -477,11 +478,15 @@ class User implements WithId<IUser> {
 
         const blockedPwdsCollection = (
             Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()))
-        ).database.collection<{ pwd: string }>("blockedPwds");
+        ).database.collection<{ blockedPwd: string }>("blockedPwds");
 
-        return (
-            (await blockedPwdsCollection.find({ pwd: { $regex: password } }).toArray()).length > 0
+        // create a regex for each blocked password to check if the password contains a blocked word (case insensitive)
+        const blockedPwds = (await blockedPwdsCollection.find().toArray()).map(
+            (blockedPwd) => new RegExp(blockedPwd.blockedPwd, "i"),
         );
+
+        // check if the password is in the list, or contains a blocked word (case insensitive)
+        return blockedPwds.some((blockedPwd) => blockedPwd.test(password));
     }
 
     /**
