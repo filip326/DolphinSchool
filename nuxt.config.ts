@@ -22,11 +22,28 @@ export default defineNuxtConfig({
             noscript: [{ innerHTML: "This website requires JavaScript." }],
             titleTemplate: "DolphinSchool",
             meta: [
-                // todo @Copilot - add meta tags here (Twitter, Facebook, Google, etc.)
+                {
+                    hid: "description",
+                    name: "description",
+                    content: "Das Kommunikations-Tool für Schulen",
+                },
+                // Open Graph
+                { hid: "og:title", property: "og:title", content: "DolphinSchool" },
+                { hid: "og:site_name", property: "og:site_name", content: "DolphinSchool" },
+                { hid: "og:type", property: "og:type", content: "website" },
+                {
+                    hid: "og:url",
+                    property: "og:url",
+                    content: process.env.DOMAIN ?? "http://127.0.0.1:3000/",
+                },
+                { hid: "og:description", property: "og:description", content: "" },
+                {
+                    hid: "og:image",
+                    property: "og:image",
+                    content: `${process.env.DOMAIN ?? "http://127.0.0.1:3000/"}favicon.ico`,
+                },
             ],
-            link: [
-                // todo @Copilot - add link tags here (favicon, etc.)
-            ],
+            link: [{ rel: "shortcut icon", type: "image/x-icon", href: "/favicon.ico" }],
         },
     },
     css: ["~/assets/base.css"],
