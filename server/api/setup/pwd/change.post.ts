@@ -34,7 +34,16 @@ export default eventHandler(async (event) => {
 
     if (setPasswordErr || !setPassword || successErr || !success) {
         if (setPasswordErr == DolphinErrorTypes.INVALID_ARGUMENT) {
-            throw createError({ statusCode: 400, message: "Passwort ungültig." });
+            throw createError({
+                statusCode: 400,
+                message: "Das neue Passwort entspricht nicht den Richtlinien für Passwörter",
+            });
+        }
+        if (setPasswordErr == DolphinErrorTypes.NOT_SUPPORTED) {
+            throw createError({
+                statusCode: 400,
+                message: "Das neue Passwort enthält Wörter, die es leichter zu erraten machen",
+            });
         }
         throw createError({ statusCode: 500, message: "Passwort ändern fehlgeschlagen." });
     } else {

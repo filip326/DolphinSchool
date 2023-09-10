@@ -54,9 +54,10 @@ export default {
 
                 this.error.shown = true;
                 this.error.message =
-                    response.error.statusCode === 400
-                        ? "Ungültiges Passwort"
+                    response.error.value.statusCode === 400
+                        ? response.error.value.message
                         : "Passwort ändern fehlgeschlagen!";
+                return;
             }
 
             if (response.data.value.success) {

@@ -443,7 +443,7 @@ class User implements WithId<IUser> {
             return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
         if (await this.isNewPasswordOnBlockedList(password)) {
-            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+            return [undefined, DolphinErrorTypes.NOT_SUPPORTED];
         }
 
         let passwordHash: string;
