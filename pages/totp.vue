@@ -24,6 +24,7 @@
             <VBtn :loading="button.loading" type="submit" size="large" variant="outlined"
                 >Einloggen</VBtn
             >
+            <NuxtLink to="/support">Ich kann mich nicht einloggen</NuxtLink>
         </VForm>
     </div>
 </template>
