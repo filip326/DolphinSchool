@@ -22,7 +22,6 @@ interface IUser {
     mfa_setup_secret?: string;
     doNotAskForMFASetupUntil?: number;
     permissions: number;
-    nickname?: string;
 
     changePasswordRequired: boolean;
 
@@ -34,6 +33,7 @@ interface IUser {
 
     //teacher properties
     subjects?: ISubject[];
+    kuerzel?: string;
 
     webAuthNCredentials?: {
         [key: string]:
@@ -198,9 +198,8 @@ class User implements WithId<IUser> {
     parents?: ObjectId[];
     students?: ObjectId[];
 
-    nickname?: string;
-
     subjects?: ISubject[];
+    kuerzel?: string;
 
     _permissionManager: PermissionManager;
 
@@ -237,9 +236,8 @@ class User implements WithId<IUser> {
         this.parents = user.parents;
         this.students = user.students;
 
-        this.nickname = user.nickname;
-
         this.subjects = user.subjects;
+        this.kuerzel = user.kuerzel;
 
         this._permissionManager = new PermissionManager(this.permissions);
 
@@ -409,6 +407,10 @@ class User implements WithId<IUser> {
 
     isParent(): boolean {
         return this.type === "parent";
+    }
+
+    isTeacher(): boolean {
+        return this.type === "teacher";
     }
 
     async setPasswordChangeRequired(required: boolean): Promise<MethodResult<boolean>> {
