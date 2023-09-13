@@ -1,4 +1,4 @@
-import { ObjectId, WithId } from "mongodb";
+import { Collection, ObjectId, WithId } from "mongodb";
 import User from "../User/User";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import Dolphin from "../Dolphin";
@@ -65,7 +65,7 @@ class TutCourse implements WithId<ITutCourse> {
         };
         const dbResult = await tutCourses.insertOne(tutCourseToCreate);
         if (dbResult.acknowledged) {
-            return [new TutCourse({ ...tutCourseToCreate, _id: dbResult.insertedId }), null];
+            return [new TutCourse({ ...tutCourseToCreate, _id: dbResult.insertedId }, tutCourses), null];
         }
         return [undefined, DolphinErrorTypes.FAILED];
     }
@@ -75,7 +75,7 @@ class TutCourse implements WithId<ITutCourse> {
         const tutCourses = dolphin.database.collection<ITutCourse>("tutCourses");
         const result = await tutCourses.findOne({ _id: id });
         if (result) {
-            return [new TutCourse(result), null];
+            return [new TutCourse(result, tutCourses), null];
         }
         return [undefined, DolphinErrorTypes.NOT_FOUND];
     }
@@ -85,7 +85,7 @@ class TutCourse implements WithId<ITutCourse> {
         const tutCourses = dolphin.database.collection<ITutCourse>("tutCourses");
         const result = await tutCourses.findOne({ name });
         if (result) {
-            return [new TutCourse(result), null];
+            return [new TutCourse(result, tutCourses), null];
         }
         return [undefined, DolphinErrorTypes.NOT_FOUND];
     }
@@ -109,7 +109,7 @@ class TutCourse implements WithId<ITutCourse> {
         const tutCourses = dolphin.database.collection<ITutCourse>("tutCourses");
         const result = await tutCourses.findOne({ $or: [{ students: user }, { teacher: user }, { viceTeacher: user }] });
         if (result) {
-            return [new TutCourse(result), null];
+            return [new TutCourse(result, tutCourses), null];
         }
         return [undefined, DolphinErrorTypes.NOT_FOUND];
     }
@@ -120,14 +120,67 @@ class TutCourse implements WithId<ITutCourse> {
     teacher: ObjectId;
     viceTeacher?: ObjectId;
     students: ObjectId[];
+    private readonly collection: Collection<ITutCourse>;
 
-    private constructor(tutCourse: WithId<ITutCourse>) {
+    private constructor(tutCourse: WithId<ITutCourse>, collection: Collection<ITutCourse>) {
         this._id = tutCourse._id;
         this.grade = tutCourse.grade;
         this.name = tutCourse.name;
         this.teacher = tutCourse.teacher;
         this.viceTeacher = tutCourse.viceTeacher;
         this.students = tutCourse.students;
+        this.collection = collection;
+    }
+
+    async addStudent(student: ObjectId): Promise<MethodResult<boolean>> {
+        const result = await this.collection.updateOne({ _id: this._id }, { $push: { students: student } });
+        if (result.acknowledged) {
+            return [true, null];
+        }
+        return [undefined, DolphinErrorTypes.FAILED];
+    }
+
+    async removeStudent(student: ObjectId): Promise<MethodResult<boolean>> {
+        const result = await this.collection.updateOne({ _id: this._id }, { $pull: { students: student } });
+        if (result.acknowledged) {
+            return [true, null];
+        }
+        return [undefined, DolphinErrorTypes.FAILED];
+    }
+
+    async setTeacher(teacher: ObjectId): Promise<MethodResult<boolean>> {
+        const result = await this.collection.updateOne({ _id: this._id }, { $set: { teacher } });
+        if (result.acknowledged) {
+            // check if class name needs to be updated
+            if (this.grade > 10) {
+                const [teacherUser, teacherUserError] = await User.getUserById(teacher);
+                if (teacherUserError) return [undefined, teacherUserError];
+                const name = `${this.grade}_${teacherUser.kuerzel}`;
+                const result = await this.collection.updateOne({ _id: this._id }, { $set: { name } });
+                if (result.acknowledged) {
+                    return [true, null];
+                }
+                return [undefined, DolphinErrorTypes.FAILED];
+            }
+            return [true, null];
+        }
+        return [undefined, DolphinErrorTypes.FAILED];
+    }
+
+    async setViceTeacher(viceTeacher: ObjectId): Promise<MethodResult<boolean>> {
+        const result = await this.collection.updateOne({ _id: this._id }, { $set: { viceTeacher } });
+        if (result.acknowledged) {
+            return [true, null];
+        }
+        return [undefined, DolphinErrorTypes.FAILED];
+    }
+
+    async delete(): Promise<MethodResult<boolean>> {
+        const result = await this.collection.deleteOne({ _id: this._id });
+        if (result.acknowledged) {
+            return [true, null];
+        }
+        return [undefined, DolphinErrorTypes.FAILED];
     }
 
 }
