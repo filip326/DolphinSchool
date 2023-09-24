@@ -31,7 +31,20 @@ interface ICourse {
 
 }
 
+type CreateCourseOptions = {
+    teacher: ObjectId;
+    subject: ObjectId;
+    type: ICourse["type"];
+    grade: ICourse["grade"];
+    number?: ICourse["number"];
+    students?: ICourse["students"];
+};
+
 class Course implements WithId<ICourse> {
+
+    static async create(course: CreateCourseOptions) {
+        
+    }
 
     _id: ObjectId;
     teacher: ObjectId;
