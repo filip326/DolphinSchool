@@ -98,5 +98,4 @@ export default {
 </script>
 
 <style scoped>
-@import url("../../../../assets/settings.css");
 </style>
