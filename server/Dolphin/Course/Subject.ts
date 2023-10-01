@@ -7,7 +7,8 @@ interface ISubject {
     longName: string;
     short: string;
     color: { r: number; g: number; b: number };
-    teachers: ObjectId[];}
+    teachers: ObjectId[];
+}
 
 interface SubjectSearchOptions {
     id?: ObjectId;

@@ -160,7 +160,6 @@ export default {
 </script>
 
 <style scoped>
-
 .qr-code {
     width: 128px;
     height: 128px;

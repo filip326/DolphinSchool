@@ -5,16 +5,15 @@ import TutCourse from "../Tut/TutCourse";
 import Subject from "./Subject";
 import User from "../User/User";
 
-
 interface ICourse {
     teacher: ObjectId[];
     subject: ObjectId; // tut-kurse?
 
     type:
-    "LK" // Leistungskurs in Sek II
-    | "GK" // Grundkurs in Sek II
-    | "single-class" // Unterricht im Klassenverband in Sek 1
-    | "out-of-class"; // Unterricht außerhalb des Klassenverbandes in Sek 1
+        | "LK" // Leistungskurs in Sek II
+        | "GK" // Grundkurs in Sek II
+        | "single-class" // Unterricht im Klassenverband in Sek 1
+        | "out-of-class"; // Unterricht außerhalb des Klassenverbandes in Sek 1
 
     grade: number; // 5-13; 11 = E, 12 = Q1/2, 13 = Q3/4
     name: string;
@@ -33,7 +32,6 @@ interface ICourse {
 
     schoolYear: number; // just the first year of the school year; 2020-2021 = 2021, 2021-2022 = 2022, etc.
     semester: 0 | 1 | 2; // 0 = full year, 1 = first semester, 2 = second semester
-
 }
 
 type CreateCourseOptions = {
@@ -46,7 +44,10 @@ type CreateCourseOptions = {
     number?: ICourse["number"];
 };
 
-type CreateSingleClassCourseOptions = CreateCourseOptions & { type: "single-class"; linkedTuts: [ObjectId] };
+type CreateSingleClassCourseOptions = CreateCourseOptions & {
+    type: "single-class";
+    linkedTuts: [ObjectId];
+};
 
 function isCreateClassCourseOptions(options: any): options is CreateSingleClassCourseOptions {
     if (options.type !== "single-class") return false;
@@ -58,7 +59,6 @@ function isCreateClassCourseOptions(options: any): options is CreateSingleClassC
 }
 
 class Course implements WithId<ICourse> {
-
     static async create(course: CreateCourseOptions): Promise<MethodResult<Course>> {
         switch (course.type) {
             case "single-class":
@@ -73,16 +73,21 @@ class Course implements WithId<ICourse> {
         }
     }
 
-    private static async createSingleClassCourse(course: CreateCourseOptions): Promise<MethodResult<Course>> {
+    private static async createSingleClassCourse(
+        course: CreateCourseOptions,
+    ): Promise<MethodResult<Course>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const courses = dolphin.database.collection<ICourse>("courses");
 
-        if (!isCreateClassCourseOptions(course)) return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+        if (!isCreateClassCourseOptions(course))
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
 
         // create a name for the course
         // since it is a single-class course, the name is just the class name + subject
         // get the class name
-        const [linkedTutCourse, linkedTutFindError] = await TutCourse.getTutCourseById(course.linkedTuts[0]);
+        const [linkedTutCourse, linkedTutFindError] = await TutCourse.getTutCourseById(
+            course.linkedTuts[0],
+        );
         if (linkedTutFindError) return [undefined, linkedTutFindError];
         const { name: className } = linkedTutCourse;
 
@@ -108,20 +113,19 @@ class Course implements WithId<ICourse> {
             students: [],
             linkedTuts: course.linkedTuts,
             schoolYear: course.schoolYear,
-            semester: course.semester
+            semester: course.semester,
         };
         // insert into database
         const insertResult = await courses.insertOne(courseToCreate);
         if (!insertResult.acknowledged) return [undefined, DolphinErrorTypes.DATABASE_ERROR];
 
         // return the course
-        return [
-            new Course({ _id: insertResult.insertedId, ...courseToCreate }, courses),
-            null
-        ];
+        return [new Course({ _id: insertResult.insertedId, ...courseToCreate }, courses), null];
     }
 
-    public static async createOutOfClassCourse(options: CreateCourseOptions): Promise<MethodResult<Course>> {
+    public static async createOutOfClassCourse(
+        options: CreateCourseOptions,
+    ): Promise<MethodResult<Course>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const courses = dolphin.database.collection<ICourse>("courses");
 
@@ -140,7 +144,7 @@ class Course implements WithId<ICourse> {
         const countResult = await courses.countDocuments({
             name: {
                 $regex: `^${gradeLevel} ${subjectName}`,
-            }
+            },
         });
 
         // create the name
@@ -160,7 +164,7 @@ class Course implements WithId<ICourse> {
             students: [],
             linkedTuts: [],
             schoolYear: options.schoolYear,
-            semester: options.semester
+            semester: options.semester,
         };
 
         // insert into database
@@ -168,16 +172,20 @@ class Course implements WithId<ICourse> {
         if (!insertResult.acknowledged) return [undefined, DolphinErrorTypes.DATABASE_ERROR];
 
         return [
-            new Course({
-                _id: insertResult.insertedId,
-                ...courseToCreate
-            }, courses),
-            null
+            new Course(
+                {
+                    _id: insertResult.insertedId,
+                    ...courseToCreate,
+                },
+                courses,
+            ),
+            null,
         ];
-
     }
 
-    private static async createLkOrGkCourse(options: CreateCourseOptions): Promise<MethodResult<Course>> {
+    private static async createLkOrGkCourse(
+        options: CreateCourseOptions,
+    ): Promise<MethodResult<Course>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const courses = dolphin.database.collection<ICourse>("courses");
 
@@ -189,7 +197,8 @@ class Course implements WithId<ICourse> {
         const { short: subjectName } = subject;
 
         // get the grade-level
-        if (options.grade < 11 || options.grade > 13) return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+        if (options.grade < 11 || options.grade > 13)
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         const gradeLevel = options.grade === 11 ? "E" : options.grade === 12 ? "Q1/2" : "Q3/4";
 
         // get the number
@@ -214,15 +223,78 @@ class Course implements WithId<ICourse> {
             students: [],
             linkedTuts: [],
             schoolYear: options.schoolYear,
-            semester: options.semester
+            semester: options.semester,
         };
         // insert into database
         const insertResult = await courses.insertOne(courseToCreate);
         if (!insertResult.acknowledged) return [undefined, DolphinErrorTypes.DATABASE_ERROR];
-        return [
-            new Course({ _id: insertResult.insertedId, ...courseToCreate }, courses),
-            null
-        ];
+        return [new Course({ _id: insertResult.insertedId, ...courseToCreate }, courses), null];
+    }
+
+    static query(query: string, returnType: "map"): Promise<MethodResult<Map<string, ObjectId>>>;
+    static query(query: string, returnType: "string"): Promise<MethodResult<string[]>>;
+
+    static async query(
+        query: string,
+        returnType?: "map" | "string",
+    ): Promise<MethodResult<string[] | Map<string, ObjectId>>> {
+        // look for course names that start with the query (case-insensitive) and return an string[] of the names
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        // check for invalid characters. Valid characters: letters, numbers, spaces
+        const invalidCharacters = query.match(/[^a-zA-Z0-9 ]/g);
+        if (invalidCharacters) return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+
+        const dbResult = await courses
+            .find({
+                name: {
+                    $regex: `^${query}`,
+                    $options: "i",
+                },
+            })
+            .toArray();
+
+        if (returnType === "string" || returnType === undefined)
+            return [dbResult.map((c) => c.name), null];
+        else if (returnType === "map") {
+            const map = new Map<string, ObjectId>();
+            dbResult.forEach((c) => map.set(c.name, c._id));
+            return [map, null];
+        }
+
+        return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+    }
+
+    static async getByName(name: string): Promise<MethodResult<Course>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        const dbResult = await courses.findOne({ name });
+        if (!dbResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
+        return [new Course(dbResult, courses), null];
+    }
+
+    static async getById(id: ObjectId): Promise<MethodResult<Course>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        const dbResult = await courses.findOne({ _id: id });
+        if (!dbResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
+        return [new Course(dbResult, courses), null];
+    }
+
+    static async listByMember(user: ObjectId): Promise<MethodResult<Course[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        const dbResult = await courses
+            .find({
+                $or: [{ students: user }, { teacher: user }],
+            })
+            .toArray();
+
+        return [dbResult.map((c) => new Course(c, courses)), null];
     }
 
     _id: ObjectId;
@@ -230,7 +302,7 @@ class Course implements WithId<ICourse> {
     subject: ObjectId;
 
     type:
-        "LK" // Leistungskurs in Sek II
+        | "LK" // Leistungskurs in Sek II
         | "GK" // Grundkurs in Sek II
         | "single-class" // Unterricht im Klassenverband in Sek 1
         | "out-of-class"; // Unterricht außerhalb des Klassenverbandes in Sek 1
@@ -289,7 +361,7 @@ class Course implements WithId<ICourse> {
         // add the student
         const dbResult = await courses.updateOne(
             { _id: this._id },
-            { $push: { students: student._id } }
+            { $push: { students: student._id } },
         );
         if (dbResult.acknowledged) {
             // modify the course object
@@ -325,7 +397,7 @@ class Course implements WithId<ICourse> {
         // add the students
         const dbResult = await courses.updateOne(
             { _id: this._id },
-            { $push: { students: { $each: studentsToAdd } } }
+            { $push: { students: { $each: studentsToAdd } } },
         );
 
         if (dbResult.acknowledged) {
@@ -347,7 +419,7 @@ class Course implements WithId<ICourse> {
         // remove the student
         const dbResult = await courses.updateOne(
             { _id: this._id },
-            { $pull: { students: student._id } }
+            { $pull: { students: student._id } },
         );
 
         if (!dbResult.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
@@ -366,10 +438,7 @@ class Course implements WithId<ICourse> {
             return [false, null];
         }
 
-        const dbResult = await courses.updateOne(
-            { _id: this._id },
-            { $push: { teacher } }
-        );
+        const dbResult = await courses.updateOne({ _id: this._id }, { $push: { teacher } });
 
         if (!dbResult.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
 
@@ -385,10 +454,7 @@ class Course implements WithId<ICourse> {
             return [false, null];
         }
 
-        const dbResult = await courses.updateOne(
-            { _id: this._id },
-            { $pull: { teacher } }
-        );
+        const dbResult = await courses.updateOne({ _id: this._id }, { $pull: { teacher } });
 
         if (!dbResult.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
 
