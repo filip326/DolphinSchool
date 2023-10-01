@@ -160,8 +160,6 @@ export default {
 </script>
 
 <style scoped>
-@import url("../../../../assets/settings.css");
-
 .qr-code {
     width: 128px;
     height: 128px;

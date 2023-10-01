@@ -1,7 +1,7 @@
-import { H3Event } from "h3";
 import Session, { SessionState } from "../Dolphin/Session/Session";
 import User from "@/server/Dolphin/User/User";
 import { CheckAuthOptions, CheckAuthResult } from "../types/auth";
+import { Permissions } from "../Dolphin/Permissions/PermissionManager";
 
 export default defineEventHandler(async (event) => {
     event.context.auth = {
@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
         user: undefined,
         change_password_required: false,
         mfa_required: false,
-        checkAuth: async (event: H3Event, options: CheckAuthOptions): Promise<CheckAuthResult> => {
+        checkAuth: async (options: CheckAuthOptions = {}): Promise<CheckAuthResult> => {
             if (!event.context.auth.authenticated) {
                 if (event.context.auth.mfa_required) {
                     return {
@@ -32,11 +32,12 @@ export default defineEventHandler(async (event) => {
                 };
             }
 
-            if (options.minimumPermissionLevel) {
-                if (event.context.auth.user.hasPermission(options.minimumPermissionLevel)) {
+            if (options.PermissionLevel) {
+                if (!event.context.auth.user.hasPermission(options.PermissionLevel)) {
                     return {
                         success: false,
                         statusCode: 403,
+                        user: event.context.auth.user,
                     };
                 }
             }
@@ -90,6 +91,10 @@ export default defineEventHandler(async (event) => {
 
     if (user.changePasswordRequired) {
         event.context.auth.change_password_required = true;
+    }
+
+    if (!user.hasPermission(Permissions.GLOBAL_LOGIN)) {
+        event.context.auth.authenticated = false;
     }
 
     // check if user needs 2fa and has not passed yet

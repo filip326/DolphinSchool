@@ -28,15 +28,6 @@ export default {
             :href="setting.link"
         />
     </div>
-    <VCard v-for="(setting, index) in settings" :key="index">
-        <VCardTitle>
-            {{ setting.name }}
-        </VCardTitle>
-        <VCardActions>
-            <VSpacer />
-            <VBtn prepend-icon="mdi-open-in-new" variant="outlined"> Öffnen </VBtn>
-        </VCardActions>
-    </VCard>
 </template>
 
 <style scoped>

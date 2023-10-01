@@ -1,7 +1,7 @@
 import { DolphinErrorTypes } from "~/server/Dolphin/MethodResult";
 
 export default eventHandler(async (event) => {
-    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    const checkAuthResult = await event.context.auth.checkAuth({});
     if (!checkAuthResult.success || !checkAuthResult.user) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
@@ -34,7 +34,16 @@ export default eventHandler(async (event) => {
 
     if (setPasswordErr || !setPassword || successErr || !success) {
         if (setPasswordErr == DolphinErrorTypes.INVALID_ARGUMENT) {
-            throw createError({ statusCode: 400, message: "Passwort ungültig." });
+            throw createError({
+                statusCode: 400,
+                message: "Das neue Passwort entspricht nicht den Richtlinien für Passwörter",
+            });
+        }
+        if (setPasswordErr == DolphinErrorTypes.NOT_SUPPORTED) {
+            throw createError({
+                statusCode: 400,
+                message: "Das neue Passwort enthält Wörter, die es leichter zu erraten machen",
+            });
         }
         throw createError({ statusCode: 500, message: "Passwort ändern fehlgeschlagen." });
     } else {

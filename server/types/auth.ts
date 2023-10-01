@@ -1,25 +1,26 @@
-import { H3Event } from "h3";
 import User from "../Dolphin/User/User";
 import { Permissions } from "../Dolphin/Permissions/PermissionManager";
 
 interface CheckAuthOptions {
-    minimumPermissionLevel?: Permissions;
+    PermissionLevel?: Permissions;
 }
 
 type CheckAuthStatusCode = 200 | 401 | 403 | 500;
 
-type CheckAuthResult = {
-    success: boolean;
-    statusCode: CheckAuthStatusCode;
-    user?: User;
-};
+type CheckAuthResult =
+    | {
+          success: false;
+          statusCode: CheckAuthStatusCode;
+          user?: User;
+      }
+    | { user: User; success: true; statusCode: CheckAuthStatusCode };
 
 interface Auth {
     authenticated: boolean | false;
     mfa_required?: boolean;
     change_password_required?: boolean;
     user?: User;
-    checkAuth: (event: H3Event, options: CheckAuthOptions) => Promise<CheckAuthResult>;
+    checkAuth: (options?: CheckAuthOptions) => Promise<CheckAuthResult>;
 }
 
 export default Auth;

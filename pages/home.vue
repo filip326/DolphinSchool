@@ -13,7 +13,7 @@ export default {
                     links: [
                         {
                             href: "/mail",
-                            text: "Aufrufen",
+                            text: "Übersicht",
                         },
                         {
                             href: "/mail/write",
@@ -22,11 +22,20 @@ export default {
                     ],
                 },
                 {
+                    title: "Kurs-und Klassensystem",
+                    links: [
+                        {
+                            href: "/classes",
+                            text: "Übersicht",
+                        },
+                    ],
+                },
+                {
                     title: "Einstellungen",
                     links: [
                         {
                             href: "/settings",
-                            text: "Aufrufen",
+                            text: "Übersicht",
                         },
                         {
                             href: "/settings/security/totp/setup",

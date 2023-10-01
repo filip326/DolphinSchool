@@ -8,7 +8,6 @@ interface ISubject {
     short: string;
     color: { r: number; g: number; b: number };
     teachers: ObjectId[];
-    main: boolean; // Hauptfach ja/nein
 }
 
 interface SubjectSearchOptions {
@@ -91,7 +90,6 @@ class Subject implements ISubject {
     short: string;
     color: { r: number; g: number; b: number };
     teachers: ObjectId[];
-    main: boolean;
 
     private readonly subjectCollection: Collection<ISubject>;
 
@@ -102,7 +100,6 @@ class Subject implements ISubject {
         this.short = subject.short;
         this.color = subject.color;
         this.teachers = subject.teachers;
-        this.main = subject.main;
     }
 
     /**

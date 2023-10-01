@@ -47,6 +47,29 @@ class Dolphin {
         });
     }
 
+    static async getBlockedPwds(): Promise<string[]> {
+        const blockedPwdsCollection = (
+            Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()))
+        ).database.collection<{ blockedPwd: string }>("blockedPwds");
+        return (await blockedPwdsCollection.find({}).toArray()).map(
+            (password) => password.blockedPwd,
+        );
+    }
+
+    static async addBlockedPwd(pwd: string): Promise<boolean> {
+        const blockedPwdsCollection = (
+            Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()))
+        ).database.collection<{ blockedPwd: string }>("blockedPwds");
+        return (await blockedPwdsCollection.insertOne({ blockedPwd: pwd })).acknowledged;
+    }
+
+    static async removeBlockedPwd(pwd: string): Promise<boolean> {
+        const blockedPwdsCollection = (
+            Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()))
+        ).database.collection<{ blockedPwd: string }>("blockedPwds");
+        return (await blockedPwdsCollection.deleteMany({ blockedPwd: pwd })).acknowledged;
+    }
+
     static destroy() {
         Dolphin.instance?.client?.close();
         Dolphin._instance = undefined;

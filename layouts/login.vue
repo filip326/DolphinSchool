@@ -5,11 +5,13 @@ export default {
 </script>
 
 <template>
-    <v-app>
+    <VApp>
         <div class="login-wrapper">
             <slot></slot>
         </div>
-    </v-app>
+
+        <DolphinFooter />
+    </VApp>
 </template>
 
 <style>

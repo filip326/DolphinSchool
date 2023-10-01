@@ -1,7 +1,7 @@
 import User from "../../Dolphin/User/User";
 import Session from "../../Dolphin/Session/Session";
 import BruteForceProtection from "../../Dolphin/BruteForceProtection/BruteForceProtection";
-import { useCookie } from "nuxt/app";
+import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 
 export default eventHandler(async (event) => {
     const { username, password } = await readBody(event);
@@ -13,7 +13,7 @@ export default eventHandler(async (event) => {
     if (
         !BruteForceProtection.isLoginAllowed(
             username,
-            useCookie("bf-bypass-token")?.value || undefined,
+            parseCookies(event)["bf-bypass-token"] || undefined,
         )
     ) {
         // if login is not allowed, throw an error
@@ -39,12 +39,16 @@ export default eventHandler(async (event) => {
         // if password is incorrect, report failed login attempt and throw an error
         BruteForceProtection.reportFailedLoginAttempt(
             username,
-            useCookie("bf-bypass-token").value || undefined,
+            parseCookies(event)["bf-bypass-token"] || undefined,
         );
         throw createError({
             statusCode: 401,
             message: "Invalid username or password",
         });
+    }
+
+    if (!user.hasPermission(Permissions.GLOBAL_LOGIN)) {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     const [session, sessionCreateError] = await Session.createSession(user);
@@ -64,7 +68,7 @@ export default eventHandler(async (event) => {
     });
 
     // if there is no bf-bypass-token cookie, issue a new one
-    if (!useCookie("bf-bypass-token").value) {
+    if (!parseCookies(event)["bf-bypass-token"]) {
         const [bypassToken, bypassTokenError] =
             await BruteForceProtection.issueBypassToken(username);
         if (bypassTokenError || !bypassToken) {
@@ -81,9 +85,9 @@ export default eventHandler(async (event) => {
         // exceed the max age of the cookie if there already is one
         BruteForceProtection.exceedBypassToken(
             username,
-            useCookie("bf-bypass-token").value as string,
+            parseCookies(event)["bf-bypass-token"] as string,
         );
-        setCookie(event, "bf-bypass-token", useCookie("bf-bypass-token").value as string, {
+        setCookie(event, "bf-bypass-token", parseCookies(event)["bf-bypass-token"] as string, {
             maxAge: 90 * 24 * 60 * 60, // 90 days
             secure: useRuntimeConfig().prod,
             httpOnly: true,

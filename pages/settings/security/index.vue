@@ -1,24 +1,37 @@
+<script lang="ts">
+export default {
+    async beforeCreate() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChange: true,
+        });
+    },
+    data() {
+        return {
+            settings: [
+                {
+                    name: "Passwort ändern",
+                    link: "/settings/security/chpwd",
+                },
+                {
+                    name: "2FA",
+                    link: "/settings/security/totp/setup",
+                },
+            ] as Array<{ name: string; link: string }>,
+        };
+    },
+};
+</script>
+
 <template>
     <div class="settings__wrapper">
-        <VCard>
-            <VCardTitle> Passwort </VCardTitle>
-            <VCardSubtitle> Password ändern </VCardSubtitle>
-            <VCardActions>
-                <VSpacer />
-                <VBtn variant="outlined">Ändern</VBtn>
-            </VCardActions>
-        </VCard>
-
-        <VCard>
-            <VCardTitle> Zwei-Faktor-Authentifizierung </VCardTitle>
-            <VCardSubtitle>
-                Erweitern Sie die Sicherheit Ihres Kontos durch eine Zwei-Faktor-Authentifizierung
-            </VCardSubtitle>
-            <VCardActions>
-                <VSpacer />
-                <VBtn variant="outlined">Aktivieren</VBtn>
-            </VCardActions>
-        </VCard>
+        <MenuOneLinkCard
+            v-for="(setting, index) in settings"
+            v-bind:key="index"
+            :title="setting.name"
+            :href="setting.link"
+        />
     </div>
 </template>
 

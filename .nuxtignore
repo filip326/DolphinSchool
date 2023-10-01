@@ -2,3 +2,4 @@ scripts
 .vscode
 .husky
 .github
+modules

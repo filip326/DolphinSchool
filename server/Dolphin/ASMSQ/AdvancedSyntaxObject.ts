@@ -7,7 +7,7 @@ const pattern2 =
     /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (K|k)urs (?<grade>[0-9]+|(E|Q)[1-4]) (?<subject>[a-zA-Z]+) ((?<courseType>(LK|GK)) (?<courseNumber>[0-9]+) )?(?<teacher>[a-zA-Z]+)$/;
 
 // Schueler von [Lehrkraft]
-// Eltern von [Lehrkraft]
+// Eltern von [Schueler]
 // Lehrer von [Schueler]
 const pattern3 = /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (von|vom) (?<userOf>[a-zA-Z ]+)$/;
 
@@ -22,9 +22,12 @@ const pattern5 = /^Alle (?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern)?$/;
 const pattern6 =
     /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (im|in) (J|j)ahrgang (?<grade>([0-9]+)|(Q|E)[1-4])$/;
 
+// [Name]
+const pattern7 = /^(?<name>[a-zA-Z]+)$/;
+
 interface ASMSQResult {
     type?: "teacher" | "student" | "parent" | "all";
-    subtype?: "class" | "course" | "tut-course" | "userOf" | "grade";
+    subtype?: "class" | "course" | "tut-course" | "userOf" | "grade" | "user";
 
     class?: string;
     grade?: string;
@@ -37,6 +40,7 @@ interface ASMSQResult {
         teacher?: string;
     };
 
+    name?: string;
     userOf?: string;
 }
 
@@ -59,6 +63,7 @@ class ASMSQInterpreter {
             const match4 = pattern4.exec(trimmed);
             const match5 = pattern5.exec(trimmed);
             const match6 = pattern6.exec(trimmed);
+            const match7 = pattern7.exec(trimmed);
 
             if (match1) {
                 switch (match1.groups?.type) {
@@ -195,6 +200,14 @@ class ASMSQInterpreter {
                 }
                 subresult.subtype = "grade";
                 subresult.grade = match6.groups?.grade;
+                this.result.push(subresult);
+                subresult = new Object();
+            }
+
+            if (match7) {
+                subresult.name = match7.groups?.name;
+                subresult.type = "all";
+                subresult.subtype = "user";
                 this.result.push(subresult);
                 subresult = new Object();
             }

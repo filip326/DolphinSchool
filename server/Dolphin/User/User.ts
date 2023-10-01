@@ -22,7 +22,6 @@ interface IUser {
     mfa_setup_secret?: string;
     doNotAskForMFASetupUntil?: number;
     permissions: number;
-    nickname?: string;
 
     changePasswordRequired: boolean;
 
@@ -34,6 +33,7 @@ interface IUser {
 
     //teacher properties
     subjects?: ISubject[];
+    kuerzel?: string;
 
     webAuthNCredentials?: {
         [key: string]:
@@ -198,9 +198,8 @@ class User implements WithId<IUser> {
     parents?: ObjectId[];
     students?: ObjectId[];
 
-    nickname?: string;
-
     subjects?: ISubject[];
+    kuerzel?: string;
 
     _permissionManager: PermissionManager;
 
@@ -237,9 +236,8 @@ class User implements WithId<IUser> {
         this.parents = user.parents;
         this.students = user.students;
 
-        this.nickname = user.nickname;
-
         this.subjects = user.subjects;
+        this.kuerzel = user.kuerzel;
 
         this._permissionManager = new PermissionManager(this.permissions);
 
@@ -411,6 +409,10 @@ class User implements WithId<IUser> {
         return this.type === "parent";
     }
 
+    isTeacher(): boolean {
+        return this.type === "teacher";
+    }
+
     async setPasswordChangeRequired(required: boolean): Promise<MethodResult<boolean>> {
         this.changePasswordRequired = required;
         try {
@@ -442,6 +444,9 @@ class User implements WithId<IUser> {
         if (!/[0-9]/.test(password)) {
             return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
+        if (await this.isNewPasswordOnBlockedList(password)) {
+            return [undefined, DolphinErrorTypes.NOT_SUPPORTED];
+        }
 
         let passwordHash: string;
         try {
@@ -465,6 +470,25 @@ class User implements WithId<IUser> {
         } catch {
             return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
+    }
+
+    private async isNewPasswordOnBlockedList(password: string): Promise<boolean> {
+        // find all blocked words in the db
+        // check if password is in the list, or contains a blocked word (case insensitive)
+        // return true if the password is not allowed to be used
+        // return false if the password is allowed to be used
+
+        const blockedPwdsCollection = (
+            Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()))
+        ).database.collection<{ blockedPwd: string }>("blockedPwds");
+
+        // create a regex for each blocked password to check if the password contains a blocked word (case insensitive)
+        const blockedPwds = (await blockedPwdsCollection.find().toArray()).map(
+            (blockedPwd) => new RegExp(blockedPwd.blockedPwd, "i"),
+        );
+
+        // check if the password is in the list, or contains a blocked word (case insensitive)
+        return blockedPwds.some((blockedPwd) => blockedPwd.test(password));
     }
 
     /**

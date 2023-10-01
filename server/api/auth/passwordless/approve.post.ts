@@ -1,3 +1,4 @@
+import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
 import User from "../../../Dolphin/User/User";
 
@@ -26,6 +27,10 @@ export default defineEventHandler(async (event) => {
             statusCode: 404,
             statusMessage: "Not Found",
         });
+    }
+
+    if (!user.hasPermission(Permissions.GLOBAL_LOGIN)) {
+        throw createError({ statusCode: 401, message: "Unauthorized" });
     }
 
     // verify signed string
