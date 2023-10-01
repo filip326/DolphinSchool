@@ -3,10 +3,11 @@ import Dolphin from "../Dolphin";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import TutCourse from "../Tut/TutCourse";
 import Subject from "./Subject";
+import User from "../User/User";
 
 
 interface ICourse {
-    teacher: ObjectId;
+    teacher: ObjectId[];
     subject: ObjectId; // tut-kurse?
 
     type:
@@ -37,7 +38,7 @@ interface ICourse {
 
 type CreateCourseOptions = {
     type: "LK" | "GK" | "single-class" | "out-of-class";
-    teacher: ObjectId;
+    teacher: ObjectId[];
     subject: ObjectId;
     schoolYear: ICourse["schoolYear"];
     semester: ICourse["semester"];
@@ -225,7 +226,7 @@ class Course implements WithId<ICourse> {
     }
 
     _id: ObjectId;
-    teacher: ObjectId;
+    teacher: ObjectId[];
     subject: ObjectId;
 
     type:
@@ -261,6 +262,138 @@ class Course implements WithId<ICourse> {
         this.schoolYear = course.schoolYear;
         this.semester = course.semester;
         this.collection = collection;
+    }
+
+    async addStudent(student: User): Promise<MethodResult<boolean>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        if (!student.isStudent()) {
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+        }
+
+        // check if the student is already in the course
+        if (this.students.includes(student._id)) {
+            return [false, null];
+        }
+
+        // find the tut of the student
+        const [tut, tutFindError] = await TutCourse.getTutCourseByUser(student._id);
+        if (tutFindError) return [undefined, tutFindError];
+
+        // check if the tut is linked to the course
+        if (!this.linkedTuts.includes(tut._id)) {
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+        }
+
+        // add the student
+        const dbResult = await courses.updateOne(
+            { _id: this._id },
+            { $push: { students: student._id } }
+        );
+        if (dbResult.acknowledged) {
+            // modify the course object
+            this.students.push(student._id);
+            return [true, null];
+        }
+        return [undefined, DolphinErrorTypes.FAILED];
+    }
+
+    async addStudents(students: User[]): Promise<MethodResult<boolean>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        const studentsToAdd: ObjectId[] = [];
+
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const that = this;
+        async function checkIfStudentCanBeAdded(student: User) {
+            if (!student.isStudent()) return;
+            // check if the student is already in the course
+            if (that.students.includes(student._id)) return;
+            // find the tut of the student
+            const [tut, tutFindError] = await TutCourse.getTutCourseByUser(student._id);
+            if (tutFindError) return;
+            // check if the tut is linked to the course
+            if (!that.linkedTuts.includes(tut._id)) return;
+
+            studentsToAdd.push(student._id);
+        }
+
+        await Promise.all(students.map(checkIfStudentCanBeAdded));
+
+        // add the students
+        const dbResult = await courses.updateOne(
+            { _id: this._id },
+            { $push: { students: { $each: studentsToAdd } } }
+        );
+
+        if (dbResult.acknowledged) {
+            // modify the course object
+            this.students.push(...studentsToAdd);
+            return [true, null];
+        }
+        return [undefined, DolphinErrorTypes.FAILED];
+    }
+
+    async kickStudent(student: User): Promise<MethodResult<boolean>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        if (!this.students.includes(student._id)) {
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
+        }
+
+        // remove the student
+        const dbResult = await courses.updateOne(
+            { _id: this._id },
+            { $pull: { students: student._id } }
+        );
+
+        if (!dbResult.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
+
+        // modify the course object
+        this.students = this.students.filter((s) => !s.equals(student._id));
+
+        return [true, null];
+    }
+
+    async addTeacher(teacher: ObjectId) {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        if (this.teacher.includes(teacher)) {
+            return [false, null];
+        }
+
+        const dbResult = await courses.updateOne(
+            { _id: this._id },
+            { $push: { teacher } }
+        );
+
+        if (!dbResult.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
+
+        this.teacher.push(teacher);
+        return [true, null];
+    }
+
+    async removeTeacher(teacher: ObjectId) {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        if (!this.teacher.includes(teacher)) {
+            return [false, null];
+        }
+
+        const dbResult = await courses.updateOne(
+            { _id: this._id },
+            { $pull: { teacher } }
+        );
+
+        if (!dbResult.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
+
+        this.teacher = this.teacher.filter((t) => !t.equals(teacher));
+        return [true, null];
     }
 }
 
