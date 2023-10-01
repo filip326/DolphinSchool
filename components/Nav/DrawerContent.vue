@@ -47,37 +47,46 @@ export default {
 </script>
 
 <template>
-    <VList>
-        <VListItem
-            v-for="item in filteredNavItems"
-            :key="item.title"
-            density="compact"
-            :to="item.link"
-            :append-icon="item.icon"
-            :title="item.title"
-            rounded
-            class="navigation__list__item"
-        />
-        <!-- horizontal line -->
-        <VDivider />
-        <VListItem
-            density="compact"
-            rounded
-            class="navigation__list__item"
-            append-icon="mdi-logout"
-            title="Logout"
-            @click="logout"
-        />
-    </VList>
+    <div class="nav-ui-list">
+        <!--
+            add nav-ui-elements here with nav-ui-element class
+            if there is no icon, add an empty div as first child
+        -->
+        <NuxtLink class="nav-ui-element" to="/home">
+            <VIcon>mdi-home</VIcon>
+            Home
+        </NuxtLink>
+        <NuxtLink class="nav-ui-element" to="/home">
+            <div></div>
+            Home
+        </NuxtLink>
+
+    </div>
 </template>
 
 <style scoped>
-.navigation__list {
-    text-decoration: none;
+.nav-ui-list {
+    padding: 10px 4px 4px 10px;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.navigation__list__item {
+
+.nav-ui-element {
+    padding: 3px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    color: var(--v-theme-on-surface);
     text-decoration: none;
-    margin: 5px 10px;
+    overflow: hidden;
+}
+
+.nav-ui-element div:first-child {
+    width: 24px;
+    height: 24px;
 }
 </style>
