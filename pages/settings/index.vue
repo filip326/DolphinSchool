@@ -31,5 +31,4 @@ export default {
 </template>
 
 <style scoped>
-@import url("../../assets/settings.css");
 </style>
