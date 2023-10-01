@@ -395,6 +395,15 @@ class Course implements WithId<ICourse> {
         this.teacher = this.teacher.filter((t) => !t.equals(teacher));
         return [true, null];
     }
+
+    async delete(): Promise<MethodResult<boolean>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        const dbResult = await courses.deleteOne({ _id: this._id });
+        if (!dbResult.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
+        return [true, null];
+    }
 }
 
 export default Course;
