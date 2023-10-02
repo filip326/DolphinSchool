@@ -63,18 +63,10 @@ export default {
             Nachrichten
             <div class="notification">1</div>
         </NuxtLink>
-        <NuxtLink class="nav-ui-subelement">
-            Ungelesen
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            Posteingang
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            Wichtig
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            Postausgang
-        </NuxtLink>
+        <NuxtLink class="nav-ui-subelement"> Ungelesen </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> Posteingang </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> Wichtig </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> Postausgang </NuxtLink>
         <NuxtLink class="nav-ui-element">
             <VIcon>mdi-account-group</VIcon>
             Meine Klasse
@@ -84,15 +76,9 @@ export default {
             <VIcon>mdi-book-open-variant</VIcon>
             Meine Kurse
         </NuxtLink>
-        <NuxtLink class="nav-ui-subelement">
-            10a M
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            10a E
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            10a D
-        </NuxtLink>
+        <NuxtLink class="nav-ui-subelement"> 10a M </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> 10a E </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> 10a D </NuxtLink>
         <NuxtLink class="nav-ui-subelement long">
             10 Eth 1
             <div class="notification">1</div>
@@ -102,52 +88,31 @@ export default {
             <VIcon>mdi-cog</VIcon>
             Einstellungen
         </NuxtLink>
-        <NuxtLink class="nav-ui-subelement">
-            Allgemein
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            Meine Daten
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            Sicherheit
-        </NuxtLink>
+        <NuxtLink class="nav-ui-subelement"> Allgemein </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> Meine Daten </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> Sicherheit </NuxtLink>
 
         <NuxtLink class="nav-ui-element">
             <VIcon>mdi-help-circle</VIcon>
             Hilfe
         </NuxtLink>
-        <NuxtLink class="nav-ui-subelement">
-            Beispiel-Ticket 1
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            Beispiel-Ticket 2
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            Docs und FAQ
-        </NuxtLink>
+        <NuxtLink class="nav-ui-subelement"> Beispiel-Ticket 1 </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> Beispiel-Ticket 2 </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> Docs und FAQ </NuxtLink>
 
         <NuxtLink class="nav-ui-element">
             <VIcon>mdi-security</VIcon>
             Administration
         </NuxtLink>
-        <NuxtLink class="nav-ui-subelement">
-            Benutzer verwalten
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            Klassen verwalten
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            Kurse verwalten
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            Support
-        </NuxtLink>
+        <NuxtLink class="nav-ui-subelement"> Benutzer verwalten </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> Klassen verwalten </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> Kurse verwalten </NuxtLink>
+        <NuxtLink class="nav-ui-subelement long"> Support </NuxtLink>
 
         <NuxtLink class="nav-ui-element">
             <VIcon>mdi-logout</VIcon>
             Logout
         </NuxtLink>
-
     </VList>
 </template>
 
@@ -163,14 +128,12 @@ export default {
     gap: 5px;
 
     overflow-x: hidden;
-    overflow-y: scroll;
-
+    overflow-y: auto; /* Auto removes the scrollbar, until it is needed */
 }
 
 .nav-ui-list::-webkit-scrollbar {
     display: none;
 }
-
 
 .nav-ui-element {
     padding: 3px;
@@ -198,7 +161,7 @@ export default {
 }
 
 .nav-ui-subelement::before {
-    content: '';
+    content: "";
     display: block;
     position: absolute;
     border-left: 1.5px solid;

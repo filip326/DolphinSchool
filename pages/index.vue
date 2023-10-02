@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import QRCode from "qrcode";
 import { client as pwless } from "@passwordless-id/webauthn";
 
@@ -7,12 +7,12 @@ definePageMeta({
 });
 </script>
 
-<script>
+<script lang="ts">
 export default {
     data() {
         return {
-            username: "",
-            pwd: "",
+            username: "" as string,
+            pwd: "" as string,
             error: {
                 shown: false,
                 message: "",
@@ -23,7 +23,7 @@ export default {
                 challenge: "",
                 qr_url: "",
                 qr_code: "",
-                interval: ref<NodeJS.Timeout | undefined>(undefined),
+                interval: undefined as NodeJS.Timeout | undefined,
             },
         };
     },
@@ -173,17 +173,30 @@ export default {
         <VForm @submit.prevent="login">
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
             <h1>Login</h1>
-            <VTextField label="Benutzername" v-model="username" placeholder="max.mustermann"
-                hint="Ihr Benutzername besteht aus Ihrem Vor- und Nachnamen, durch einen Punkt getrennt."></VTextField>
-            <VTextField label="Passwort" v-model="pwd" type="password" placeholder="P@55w0rt"
-                hint="Geben Sie hier Ihr Passwort ein."></VTextField>
+            <VTextField
+                label="Benutzername"
+                v-model="username"
+                placeholder="max.mustermann"
+                hint="Ihr Benutzername besteht aus Ihrem Vor- und Nachnamen, durch einen Punkt getrennt."
+            ></VTextField>
+            <VTextField
+                label="Passwort"
+                v-model="pwd"
+                type="password"
+                placeholder="P@55w0rt"
+                hint="Geben Sie hier Ihr Passwort ein."
+            ></VTextField>
             <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
             <NuxtLink to="/support">Ich kann mich nicht einloggen</NuxtLink>
         </VForm>
         <div>
             <h1>passwordless</h1>
-            <VAlert v-if="passwordless.avaible" type="info" variant="text"
-                text="passwordless funktioniert nur, wenn Sie es zuvor eingerichtet haben!" />
+            <VAlert
+                v-if="passwordless.avaible"
+                type="info"
+                variant="text"
+                text="passwordless funktioniert nur, wenn Sie es zuvor eingerichtet haben!"
+            />
             <VAler v-else type="error" variant="text" text="passwordless ist nicht verfügbar!" />
             <p v-if="passwordless.avaible">
                 Scanne den QR Code mit der Kamera deines Smartphones und folge den Anweisungen auf
