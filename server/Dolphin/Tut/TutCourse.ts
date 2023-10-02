@@ -127,6 +127,20 @@ class TutCourse implements WithId<ITutCourse> {
         return [undefined, DolphinErrorTypes.NOT_FOUND];
     }
 
+    static async listTutCourseByUser(user: ObjectId): Promise<MethodResult<TutCourse[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const tutCourses = dolphin.database.collection<ITutCourse>("tutCourses");
+        const result = await tutCourses
+            .find({
+                $or: [{ students: user }, { teacher: user }, { viceTeacher: user }],
+            })
+            .toArray();
+        return [
+            result.map((tutCourse) => new TutCourse(tutCourse, tutCourses)),
+            null,
+        ];
+    }
+
     _id: ObjectId;
     grade: number;
     name: string;
