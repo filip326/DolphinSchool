@@ -96,7 +96,8 @@ export default {
                         Zwei-Faktor-Authentifizierung in den Einstellungen zu aktivieren. Weitere
                         Informationen finden Sie beispielsweise auf der
                         <a
-                            href="https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Informationen-und-Empfehlungen/Cyber-Sicherheitsempfehlungen/Accountschutz/Sichere-Passwoerter-erstellen/sichere-passwoerter-erstellen_node.html">
+                            href="https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Informationen-und-Empfehlungen/Cyber-Sicherheitsempfehlungen/Accountschutz/Sichere-Passwoerter-erstellen/sichere-passwoerter-erstellen_node.html"
+                        >
                             Website des BSI
                         </a>
                     </p>
@@ -112,11 +113,23 @@ export default {
                 und wiederholen Sie dieses.
             </p>
 
-            <VTextField v-model="old_pwd" label="bisheriges Passwort" type="password" :rules="[rules.required]" />
-            <VTextField v-model="new_pwd" label="neues Passwort" type="password"
-                :rules="[rules.required, rules.notsame, rules.password]" />
-            <VTextField label="Passwort wiederholen" type="password"
-                :rules="[rules.required, rules.wiederholen, rules.password]" />
+            <VTextField
+                v-model="old_pwd"
+                label="bisheriges Passwort"
+                type="password"
+                :rules="[rules.required]"
+            />
+            <VTextField
+                v-model="new_pwd"
+                label="neues Passwort"
+                type="password"
+                :rules="[rules.required, rules.notsame, rules.password]"
+            />
+            <VTextField
+                label="Passwort wiederholen"
+                type="password"
+                :rules="[rules.required, rules.wiederholen, rules.password]"
+            />
 
             <VBtn type="submit" color="primary" class="mr-4">Passwort ändern</VBtn>
         </VForm>

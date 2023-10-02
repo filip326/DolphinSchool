@@ -34,17 +34,17 @@ interface IUser {
 
     webAuthNCredentials?: {
         [key: string]:
-        | {
-            credential: {
-                id: string;
-                publicKey: string;
-                algorithm: "RS256" | "ES256";
-            };
-            authenticator: {
-                name: string;
-            };
-        }
-        | undefined;
+            | {
+                  credential: {
+                      id: string;
+                      publicKey: string;
+                      algorithm: "RS256" | "ES256";
+                  };
+                  authenticator: {
+                      name: string;
+                  };
+              }
+            | undefined;
     };
 }
 
@@ -203,17 +203,17 @@ class User implements WithId<IUser> {
 
     webAuthNCredentials?: {
         [key: string]:
-        | {
-            credential: {
-                id: string;
-                publicKey: string;
-                algorithm: "RS256" | "ES256";
-            };
-            authenticator: {
-                name: string;
-            };
-        }
-        | undefined;
+            | {
+                  credential: {
+                      id: string;
+                      publicKey: string;
+                      algorithm: "RS256" | "ES256";
+                  };
+                  authenticator: {
+                      name: string;
+                  };
+              }
+            | undefined;
     };
 
     private _totp?: OTPAuth.TOTP;
@@ -320,15 +320,15 @@ class User implements WithId<IUser> {
         if (!this.isParent()) return [undefined, DolphinErrorTypes.NOT_SUPPORTED];
 
         // query students
-        const dbResult = await this.userCollection.find({
-            parents: this._id
-        }).toArray();
+        const dbResult = await this.userCollection
+            .find({
+                parents: this._id,
+            })
+            .toArray();
 
-        const students = dbResult.map(s =>
-            new User(this.userCollection, s)
-        ).filter(s =>
-            s.isStudent()
-        );
+        const students = dbResult
+            .map((s) => new User(this.userCollection, s))
+            .filter((s) => s.isStudent());
 
         return [students, null];
     }

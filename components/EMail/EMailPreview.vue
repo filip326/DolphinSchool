@@ -58,7 +58,12 @@ export default {
             <!-- if message is already read -->
             <v-btn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </v-btn>
             <!-- if message is not read yet -->
-            <v-btn density="comfortable" icon="mdi-email-alert-outline" v-if="unread" class="unread">
+            <v-btn
+                density="comfortable"
+                icon="mdi-email-alert-outline"
+                v-if="unread"
+                class="unread"
+            >
             </v-btn>
         </div>
         <div class="sendby" @click="onEmailSelected(id)">
@@ -71,15 +76,35 @@ export default {
             {{ timestamp }}
         </div>
         <div class="starMail mail-button">
-            <v-btn density="comfortable" variant="plain" elevation="0" class="delete" icon="mdi-star-outline"
-                v-if="!stared">
+            <v-btn
+                density="comfortable"
+                variant="plain"
+                elevation="0"
+                class="delete"
+                icon="mdi-star-outline"
+                v-if="!stared"
+            >
             </v-btn>
-            <v-btn density="comfortable" variant="plain" elevation="0" class="delete" icon="mdi-star" v-if="stared">
+            <v-btn
+                density="comfortable"
+                variant="plain"
+                elevation="0"
+                class="delete"
+                icon="mdi-star"
+                v-if="stared"
+            >
             </v-btn>
         </div>
         <div class="deleteMail mail-button">
-            <v-btn @mouseover="hover = true" @mouseleave="hover = false" density="comfortable" variant="plain" elevation="0"
-                class="delete" :icon="!hover ? 'mdi-delete' : 'mdi-delete-empty'">
+            <v-btn
+                @mouseover="hover = true"
+                @mouseleave="hover = false"
+                density="comfortable"
+                variant="plain"
+                elevation="0"
+                class="delete"
+                :icon="!hover ? 'mdi-delete' : 'mdi-delete-empty'"
+            >
             </v-btn>
         </div>
     </v-container>
@@ -89,7 +114,12 @@ export default {
                 <!-- if message is already read -->
                 <v-btn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </v-btn>
                 <!-- if message is not read yet -->
-                <v-btn density="comfortable" icon="mdi-email-alert-outline" v-if="unread" class="unread">
+                <v-btn
+                    density="comfortable"
+                    icon="mdi-email-alert-outline"
+                    v-if="unread"
+                    class="unread"
+                >
                 </v-btn>
             </div>
             <div class="sendby">
@@ -104,15 +134,35 @@ export default {
                 {{ timestamp }}
             </div>
             <div class="starMail mail-button">
-                <v-btn density="comfortable" variant="plain" elevation="0" class="delete" icon="mdi-star-outline"
-                    v-if="!stared">
+                <v-btn
+                    density="comfortable"
+                    variant="plain"
+                    elevation="0"
+                    class="delete"
+                    icon="mdi-star-outline"
+                    v-if="!stared"
+                >
                 </v-btn>
-                <v-btn density="comfortable" variant="plain" elevation="0" class="delete" icon="mdi-star" v-if="stared">
+                <v-btn
+                    density="comfortable"
+                    variant="plain"
+                    elevation="0"
+                    class="delete"
+                    icon="mdi-star"
+                    v-if="stared"
+                >
                 </v-btn>
             </div>
             <div class="deleteMail mail-button">
-                <v-btn @mouseover="hover = true" @mouseleave="hover = false" density="comfortable" variant="plain"
-                    elevation="0" class="delete" :icon="!hover ? 'mdi-delete' : 'mdi-delete-empty'">
+                <v-btn
+                    @mouseover="hover = true"
+                    @mouseleave="hover = false"
+                    density="comfortable"
+                    variant="plain"
+                    elevation="0"
+                    class="delete"
+                    :icon="!hover ? 'mdi-delete' : 'mdi-delete-empty'"
+                >
                 </v-btn>
             </div>
         </div>

@@ -1,12 +1,17 @@
 import UserMessage from "~/server/Dolphin/Messenger/UserMessage";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
 
-type NavBarSubelement = { label: string, location: string, notification?: number };
-type NavBarElement = { icon: string, label: string, location: string, notification?: number, children?: NavBarSubelement[] };
+type NavBarSubelement = { label: string; location: string; notification?: number };
+type NavBarElement = {
+    icon: string;
+    label: string;
+    location: string;
+    notification?: number;
+    children?: NavBarSubelement[];
+};
 type NavBar = NavBarElement[];
 
 export default defineEventHandler(async (event): Promise<NavBar> => {
-
     const { success, user } = await event.context.auth.checkAuth();
 
     if (!success) {
@@ -14,7 +19,7 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
         // return basic navbar with login and logout
         return [
             { icon: "mdi-login", label: "Login", location: "/login" },
-            { icon: "mdi-account-plus", label: "Register", location: "/register" }
+            { icon: "mdi-account-plus", label: "Register", location: "/register" },
         ];
     }
 
@@ -32,14 +37,18 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
     // - Postausgang
     // - Neue Nachricht
 
-
     // check if there are unread messages
-    const [unreadMessage, unreadMessageFindError] = await UserMessage.listUsersMessages(user._id, {}, { read: false });
-    if (unreadMessageFindError) throw createError({
-        statusCode: 500,
-        name: "unreadMessageFindError",
-        message: "Could not find unread messages"
-    });
+    const [unreadMessage, unreadMessageFindError] = await UserMessage.listUsersMessages(
+        user._id,
+        {},
+        { read: false },
+    );
+    if (unreadMessageFindError)
+        throw createError({
+            statusCode: 500,
+            name: "unreadMessageFindError",
+            message: "Could not find unread messages",
+        });
 
     if (unreadMessage.length > 0) {
         navbar.push({
@@ -48,11 +57,15 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
             location: "/mail",
             children: [
                 { label: "Posteingang", location: "/mail/inbox" },
-                { label: "Ungelesen", location: "/mail/unread", notification: unreadMessage.length },
+                {
+                    label: "Ungelesen",
+                    location: "/mail/unread",
+                    notification: unreadMessage.length,
+                },
                 { label: "Markiert", location: "/mail/marked" },
                 { label: "Postausgang", location: "/mail/outbox" },
-                { label: "Neue Nachricht", location: "/mail/write" }
-            ]
+                { label: "Neue Nachricht", location: "/mail/write" },
+            ],
         });
     } else {
         navbar.push({
@@ -63,8 +76,8 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
                 { label: "Posteingang", location: "/mail/inbox" },
                 { label: "Markiert", location: "/mail/marked" },
                 { label: "Postausgang", location: "/mail/outbox" },
-                { label: "Neue Nachricht", location: "/mail/write" }
-            ]
+                { label: "Neue Nachricht", location: "/mail/write" },
+            ],
         });
     }
 
@@ -74,18 +87,19 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
         // eacht tut of the teacher is a sublink
         // get the tuts of the teacher
         const [tuts, tutsFindError] = await TutCourse.listTutCourseByUser(user._id);
-        if (tutsFindError) throw createError({
-            statusCode: 500,
-            name: "tutsFindError",
-            message: "Could not find tuts"
-        });
+        if (tutsFindError)
+            throw createError({
+                statusCode: 500,
+                name: "tutsFindError",
+                message: "Could not find tuts",
+            });
 
         if (tuts.length !== 0) {
             navbar.push({
                 icon: "mdi-account-group",
                 label: "Meine Klassenleitungen",
                 location: "/tut",
-                children: tuts.map(tut => ({ label: tut.name, location: `/tut/${tut._id}` }))
+                children: tuts.map((tut) => ({ label: tut.name, location: `/tut/${tut._id}` })),
             });
         }
     } else {
@@ -102,13 +116,13 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
                     navbar.push({
                         icon: "mdi-account-group",
                         label: "Meine Klasse",
-                        location: `/tut/${tut._id}`
+                        location: `/tut/${tut._id}`,
                     });
                 } else {
                     navbar.push({
                         icon: "mdi-account-group",
                         label: "Mein TUT-Kurs",
-                        location: `/tut/${tut._id}`
+                        location: `/tut/${tut._id}`,
                     });
                 }
             }
@@ -118,23 +132,27 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
 
             const [students, studentsFindError] = await user.getStudents();
             if (!studentsFindError) {
-                const tutCourses = ((await Promise.all(students.map((s) =>
-                    TutCourse.getTutCourseByUser(s._id)
-                ))).map((tut) => tut[0]).filter(tut => tut != undefined) as TutCourse[]).filter((course, index, self) =>
-                    index === self.findIndex(c => c._id.equals(course._id))
+                const tutCourses = (
+                    (await Promise.all(students.map((s) => TutCourse.getTutCourseByUser(s._id))))
+                        .map((tut) => tut[0])
+                        .filter((tut) => tut != undefined) as TutCourse[]
+                ).filter(
+                    (course, index, self) =>
+                        index === self.findIndex((c) => c._id.equals(course._id)),
                 );
                 // add to navbar
                 navbar.push({
                     icon: "mdi-account-group",
                     label: "Klassen und TUT-Kurse",
                     location: "/tut",
-                    children: tutCourses.map(tut => ({ label: tut.name, location: `/tut/${tut._id}` }))
+                    children: tutCourses.map((tut) => ({
+                        label: tut.name,
+                        location: `/tut/${tut._id}`,
+                    })),
                 });
-
             }
         }
     }
 
     return navbar;
-
 });

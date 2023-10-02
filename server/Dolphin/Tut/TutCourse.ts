@@ -135,10 +135,7 @@ class TutCourse implements WithId<ITutCourse> {
                 $or: [{ students: user }, { teacher: user }, { viceTeacher: user }],
             })
             .toArray();
-        return [
-            result.map((tutCourse) => new TutCourse(tutCourse, tutCourses)),
-            null,
-        ];
+        return [result.map((tutCourse) => new TutCourse(tutCourse, tutCourses)), null];
     }
 
     _id: ObjectId;

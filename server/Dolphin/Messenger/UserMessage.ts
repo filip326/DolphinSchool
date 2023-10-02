@@ -33,7 +33,11 @@ class UserMessage implements IUserMessage {
     static async listUsersMessages(
         user: User,
         { limit, skip }: { limit?: number; skip?: number } = {},
-        { read, stared, newsletter }: { read?: boolean; stared?: boolean; newsletter?: boolean } = {}
+        {
+            read,
+            stared,
+            newsletter,
+        }: { read?: boolean; stared?: boolean; newsletter?: boolean } = {},
     ): Promise<MethodResult<UserMessage[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").find(
@@ -41,7 +45,7 @@ class UserMessage implements IUserMessage {
                 owner: user._id,
                 read,
                 stared,
-                newsletter
+                newsletter,
             },
             { limit, skip },
         );
