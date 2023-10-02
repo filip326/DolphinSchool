@@ -53,18 +53,13 @@ export default {
 </script>
 
 <template>
-    <v-container class="email-preview" v-if="width >= 900">
+    <VContainer class="email-preview" v-if="width >= 900">
         <div class="read-unread">
             <!-- if message is already read -->
-            <v-btn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </v-btn>
+            <VBtn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </VBtn>
             <!-- if message is not read yet -->
-            <v-btn
-                density="comfortable"
-                icon="mdi-email-alert-outline"
-                v-if="unread"
-                class="unread"
-            >
-            </v-btn>
+            <VBtn density="comfortable" icon="mdi-email-alert-outline" v-if="unread" class="unread">
+            </VBtn>
         </div>
         <div class="sendby" @click="onEmailSelected(id)">
             {{ sendby }}
@@ -76,51 +71,25 @@ export default {
             {{ timestamp }}
         </div>
         <div class="starMail mail-button">
-            <v-btn
-                density="comfortable"
-                variant="plain"
-                elevation="0"
-                class="delete"
-                icon="mdi-star-outline"
-                v-if="!stared"
-            >
-            </v-btn>
-            <v-btn
-                density="comfortable"
-                variant="plain"
-                elevation="0"
-                class="delete"
-                icon="mdi-star"
-                v-if="stared"
-            >
-            </v-btn>
+            <VBtn density="comfortable" variant="plain" elevation="0" class="delete" icon="mdi-star-outline" v-if="!stared">
+            </VBtn>
+            <VBtn density="comfortable" variant="plain" elevation="0" class="delete" icon="mdi-star" v-if="stared">
+            </VBtn>
         </div>
         <div class="deleteMail mail-button">
-            <v-btn
-                @mouseover="hover = true"
-                @mouseleave="hover = false"
-                density="comfortable"
-                variant="plain"
-                elevation="0"
-                class="delete"
-                :icon="!hover ? 'mdi-delete' : 'mdi-delete-empty'"
-            >
-            </v-btn>
+            <VBtn @mouseover="hover = true" @mouseleave="hover = false" density="comfortable" variant="plain" elevation="0"
+                class="delete" :icon="!hover ? 'mdi-delete' : 'mdi-delete-empty'">
+            </VBtn>
         </div>
-    </v-container>
-    <v-container class="email-preview" v-if="width < 900">
+    </VContainer>
+    <VContainer class="email-preview" v-if="width < 900">
         <div class="upper-line" @click="onEmailSelected(id)">
             <div class="read-unread">
                 <!-- if message is already read -->
-                <v-btn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </v-btn>
+                <VBtn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </VBtn>
                 <!-- if message is not read yet -->
-                <v-btn
-                    density="comfortable"
-                    icon="mdi-email-alert-outline"
-                    v-if="unread"
-                    class="unread"
-                >
-                </v-btn>
+                <VBtn density="comfortable" icon="mdi-email-alert-outline" v-if="unread" class="unread">
+                </VBtn>
             </div>
             <div class="sendby">
                 {{ sendby }}
@@ -134,39 +103,19 @@ export default {
                 {{ timestamp }}
             </div>
             <div class="starMail mail-button">
-                <v-btn
-                    density="comfortable"
-                    variant="plain"
-                    elevation="0"
-                    class="delete"
-                    icon="mdi-star-outline"
-                    v-if="!stared"
-                >
-                </v-btn>
-                <v-btn
-                    density="comfortable"
-                    variant="plain"
-                    elevation="0"
-                    class="delete"
-                    icon="mdi-star"
-                    v-if="stared"
-                >
-                </v-btn>
+                <VBtn density="comfortable" variant="plain" elevation="0" class="delete" icon="mdi-star-outline"
+                    v-if="!stared">
+                </VBtn>
+                <VBtn density="comfortable" variant="plain" elevation="0" class="delete" icon="mdi-star" v-if="stared">
+                </VBtn>
             </div>
             <div class="deleteMail mail-button">
-                <v-btn
-                    @mouseover="hover = true"
-                    @mouseleave="hover = false"
-                    density="comfortable"
-                    variant="plain"
-                    elevation="0"
-                    class="delete"
-                    :icon="!hover ? 'mdi-delete' : 'mdi-delete-empty'"
-                >
-                </v-btn>
+                <VBtn @mouseover="hover = true" @mouseleave="hover = false" density="comfortable" variant="plain"
+                    elevation="0" class="delete" :icon="!hover ? 'mdi-delete' : 'mdi-delete-empty'">
+                </VBtn>
             </div>
         </div>
-    </v-container>
+    </VContainer>
 </template>
 
 <style scoped>
