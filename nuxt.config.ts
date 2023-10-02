@@ -27,6 +27,11 @@ export default defineNuxtConfig({
                     name: "description",
                     content: "Das Kommunikations-Tool für Schulen",
                 },
+                {
+                    hid: "viewport",
+                    name: "viewport",
+                    content: "width=device-width, initial-scale=1, user-scalable=no",
+                },
                 // Open Graph
                 { hid: "og:title", property: "og:title", content: "DolphinSchool" },
                 { hid: "og:site_name", property: "og:site_name", content: "DolphinSchool" },
