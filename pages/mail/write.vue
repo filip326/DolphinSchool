@@ -1,19 +1,17 @@
-<script setup lang="ts"></script>
-
 <script lang="ts">
 export default {
+    data(): { absender: string, empfaenger: string } {
+        return {
+            absender: "Du",
+            empfaenger: "",
+        };
+    },
     async beforeCreate() {
         await checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
             redirectOnPwdChange: true,
         });
-    },
-    data() {
-        return {
-            absender: "Du",
-            empfaenger: "",
-        };
     },
 };
 </script>
