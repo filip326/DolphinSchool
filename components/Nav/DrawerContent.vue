@@ -160,7 +160,6 @@ export default {
 
     grid-template-columns: 1fr;
     grid-auto-rows: 26px;
-    flex-direction: column;
     gap: 5px;
 
     overflow-x: hidden;
