@@ -24,7 +24,7 @@ export default {
 </script>
 
 <template>
-    <v-app dark>
+    <VApp dark>
         <VAppBar>
             <VAppBarNavIcon @click="show_nav_drawer_button = !show_nav_drawer_button">
             </VAppBarNavIcon>
@@ -49,7 +49,7 @@ export default {
         </VMain>
 
         <DolphinFooter />
-    </v-app>
+    </VApp>
 </template>
 
 <style scoped>
