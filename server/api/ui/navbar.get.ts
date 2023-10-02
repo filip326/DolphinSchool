@@ -39,7 +39,7 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
 
     // check if there are unread messages
     const [unreadMessage, unreadMessageFindError] = await UserMessage.listUsersMessages(
-        user._id,
+        user,
         {},
         { read: false },
     );
@@ -54,15 +54,14 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
         navbar.push({
             icon: "mdi-email",
             label: "Kommunikation",
-            location: "/mail",
+            location: "/mail/inbox",
             children: [
-                { label: "Posteingang", location: "/mail/inbox" },
                 {
                     label: "Ungelesen",
                     location: "/mail/unread",
                     notification: unreadMessage.length,
                 },
-                { label: "Markiert", location: "/mail/marked" },
+                { label: "Markiert", location: "/mail/stared" },
                 { label: "Postausgang", location: "/mail/outbox" },
                 { label: "Neue Nachricht", location: "/mail/write" },
             ],
@@ -71,10 +70,9 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
         navbar.push({
             icon: "mdi-email",
             label: "Kommunikation",
-            location: "/mail",
+            location: "/mail/inbox",
             children: [
-                { label: "Posteingang", location: "/mail/inbox" },
-                { label: "Markiert", location: "/mail/marked" },
+                { label: "Markiert", location: "/mail/stared" },
                 { label: "Postausgang", location: "/mail/outbox" },
                 { label: "Neue Nachricht", location: "/mail/write" },
             ],

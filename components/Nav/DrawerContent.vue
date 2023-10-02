@@ -19,29 +19,40 @@ export default {
     },
     data() {
         return {
-            navigation_items: [
-                {
-                    title: "Startseite",
-                    icon: "mdi-home",
-                    link: "/home",
-                    auth: true,
-                },
-                { title: "Login", icon: "mdi-login", link: "/" },
-                { title: "Mail", auth: true, icon: "mdi-email", link: "/mail" },
-                {
-                    title: "Einstellungen",
-                    auth: true,
-                    icon: "mdi-cog",
-                    link: "/settings",
-                },
-            ] as Array<{ title: string; auth?: boolean; icon: `mdi-${string}`; link: string }>,
+            navigation_items: [] as { classes: string, icon?: string, text: string, href: string }[]
         };
     },
-    computed: {
-        filteredNavItems() {
-            if (this.auth) return this.navigation_items.filter((item) => item.auth);
-            return this.navigation_items.filter((item) => !item.auth);
-        },
+    async beforeMount() {
+        console.log("[ NavBar ] Loading navigation items");
+        const res = await useFetch("/api/ui/navbar");
+        if (res.status.value !== "success") {
+            return;
+        }
+
+        const navItems = [];
+
+        for (const item of res.data.value ?? []) {
+            navItems.push({
+                classes: "nav-ui-element",
+                icon: item.icon,
+                text: item.label,
+                href: item.location
+            });
+
+            if (!item.children) continue;
+
+            let isFirst = true;
+            for (const subitem of item.children) {
+                navItems.push({
+                    classes: isFirst ? "nav-ui-subelement" : "nav-ui-subelement long",
+                    text: subitem.label,
+                    href: subitem.location
+                });
+                isFirst = false;
+            }
+        }
+        this.navigation_items = navItems;
+        console.log("[ NavBar ] Loaded navigation items");
     },
 };
 </script>
@@ -54,64 +65,10 @@ export default {
             add subelements using nav-ui-subelement class
             a subelement may not have an icon and may not have an icon
         -->
-        <NuxtLink class="nav-ui-element" to="/home">
-            <VIcon>mdi-home</VIcon>
-            Home
-        </NuxtLink>
-        <NuxtLink class="nav-ui-element" to="/home">
-            <VIcon>mdi-email</VIcon>
-            Nachrichten
-            <div class="notification">1</div>
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement"> Ungelesen </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> Posteingang </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> Wichtig </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> Postausgang </NuxtLink>
-        <NuxtLink class="nav-ui-element">
-            <VIcon>mdi-account-group</VIcon>
-            Meine Klasse
-        </NuxtLink>
-
-        <NuxtLink class="nav-ui-element">
-            <VIcon>mdi-book-open-variant</VIcon>
-            Meine Kurse
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement"> 10a M </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> 10a E </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> 10a D </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long">
-            10 Eth 1
-            <div class="notification">1</div>
-        </NuxtLink>
-
-        <NuxtLink class="nav-ui-element">
-            <VIcon>mdi-cog</VIcon>
-            Einstellungen
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement"> Allgemein </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> Meine Daten </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> Sicherheit </NuxtLink>
-
-        <NuxtLink class="nav-ui-element">
-            <VIcon>mdi-help-circle</VIcon>
-            Hilfe
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement"> Beispiel-Ticket 1 </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> Beispiel-Ticket 2 </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> Docs und FAQ </NuxtLink>
-
-        <NuxtLink class="nav-ui-element">
-            <VIcon>mdi-security</VIcon>
-            Administration
-        </NuxtLink>
-        <NuxtLink class="nav-ui-subelement"> Benutzer verwalten </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> Klassen verwalten </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> Kurse verwalten </NuxtLink>
-        <NuxtLink class="nav-ui-subelement long"> Support </NuxtLink>
-
-        <NuxtLink class="nav-ui-element">
-            <VIcon>mdi-logout</VIcon>
-            Logout
+        <NuxtLink v-for="item in navigation_items" :key="item.text" :class="item.classes" :to="item.href">
+            <VIcon v-if="item.icon">{{ item.icon }}</VIcon>
+            <div v-else-if="item.classes === 'nav-ui-element'"></div>
+            {{ item.text }}
         </NuxtLink>
     </VList>
 </template>
@@ -128,7 +85,8 @@ export default {
     gap: 5px;
 
     overflow-x: hidden;
-    overflow-y: auto; /* Auto removes the scrollbar, until it is needed */
+    overflow-y: auto;
+    /* Auto removes the scrollbar, until it is needed */
 }
 
 .nav-ui-list::-webkit-scrollbar {
