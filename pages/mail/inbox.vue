@@ -1,7 +1,6 @@
 <script lang="ts">
 export default {
-    data() {
-    },
+    data() {},
     async beforeCreate() {
         await checkAuth({
             redirectOnMfaRequired: true,

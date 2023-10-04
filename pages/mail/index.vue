@@ -3,6 +3,6 @@
 export default {
     beforeCreate() {
         this.$router.push("/mail/inbox");
-    }
+    },
 };
 </script>

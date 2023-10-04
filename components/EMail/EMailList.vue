@@ -82,9 +82,21 @@ export default {
             <VListItem variant="tonal" density="comfortable" class="list-title-wrapper">
                 <div class="list-title">{{ title }}</div>
             </VListItem>
-            <VListItem variant="tonal" density="comfortable" v-for="email in emails" :key="email.id">
-                <EMailPreview @email_clicked="onEmailSelected" :id="email.id" :sendby="email.sendby" :unread="email.read"
-                    :subject="email.subject" :timestamp="email.timestamp" :stared="email.stared" />
+            <VListItem
+                variant="tonal"
+                density="comfortable"
+                v-for="email in emails"
+                :key="email.id"
+            >
+                <EMailPreview
+                    @email_clicked="onEmailSelected"
+                    :id="email.id"
+                    :sendby="email.sendby"
+                    :unread="email.read"
+                    :subject="email.subject"
+                    :timestamp="email.timestamp"
+                    :stared="email.stared"
+                />
             </VListItem>
         </VList>
     </div>

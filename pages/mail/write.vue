@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-    data(): { absender: string, empfaenger: string } {
+    data(): { absender: string; empfaenger: string } {
         return {
             absender: "Du",
             empfaenger: "",

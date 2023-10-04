@@ -19,7 +19,12 @@ export default {
     },
     data() {
         return {
-            navigation_items: [] as { classes: string, icon?: string, text: string, href: string }[]
+            navigation_items: [] as {
+                classes: string;
+                icon?: string;
+                text: string;
+                href: string;
+            }[],
         };
     },
     async beforeMount() {
@@ -36,7 +41,7 @@ export default {
                 classes: "nav-ui-element",
                 icon: item.icon,
                 text: item.label,
-                href: item.location
+                href: item.location,
             });
 
             if (!item.children) continue;
@@ -46,7 +51,7 @@ export default {
                 navItems.push({
                     classes: isFirst ? "nav-ui-subelement" : "nav-ui-subelement long",
                     text: subitem.label,
-                    href: subitem.location
+                    href: subitem.location,
                 });
                 isFirst = false;
             }
@@ -65,7 +70,12 @@ export default {
             add subelements using nav-ui-subelement class
             a subelement may not have an icon and may not have an icon
         -->
-        <NuxtLink v-for="item in navigation_items" :key="item.text" :class="item.classes" :to="item.href">
+        <NuxtLink
+            v-for="item in navigation_items"
+            :key="item.text"
+            :class="item.classes"
+            :to="item.href"
+        >
             <VIcon v-if="item.icon">{{ item.icon }}</VIcon>
             <div v-else-if="item.classes === 'nav-ui-element'"></div>
             {{ item.text }}

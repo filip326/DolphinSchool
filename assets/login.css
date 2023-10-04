@@ -30,13 +30,13 @@
     grid-template-columns: 1fr;
 }
 
-.loginform>* {
+.loginform > * {
     display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
 }
 
-.loginform>*>* {
+.loginform > * > * {
     width: 100%;
 }
 
