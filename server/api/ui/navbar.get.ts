@@ -28,7 +28,7 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
     const navbar: NavBar = [];
 
     // first add the home link
-    navbar.push({ icon: "mdi-home", label: "Home", location: "/" });
+    navbar.push({ icon: "mdi-home", label: "Home", location: "/home" });
 
     // add the "Kommunikation" link with sublinks
     // - Posteingang
