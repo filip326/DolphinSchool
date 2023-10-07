@@ -34,17 +34,17 @@ interface IUser {
 
     webAuthNCredentials?: {
         [key: string]:
-            | {
-                  credential: {
-                      id: string;
-                      publicKey: string;
-                      algorithm: "RS256" | "ES256";
-                  };
-                  authenticator: {
-                      name: string;
-                  };
-              }
-            | undefined;
+        | {
+            credential: {
+                id: string;
+                publicKey: string;
+                algorithm: "RS256" | "ES256";
+            };
+            authenticator: {
+                name: string;
+            };
+        }
+        | undefined;
     };
 }
 
@@ -203,17 +203,17 @@ class User implements WithId<IUser> {
 
     webAuthNCredentials?: {
         [key: string]:
-            | {
-                  credential: {
-                      id: string;
-                      publicKey: string;
-                      algorithm: "RS256" | "ES256";
-                  };
-                  authenticator: {
-                      name: string;
-                  };
-              }
-            | undefined;
+        | {
+            credential: {
+                id: string;
+                publicKey: string;
+                algorithm: "RS256" | "ES256";
+            };
+            authenticator: {
+                name: string;
+            };
+        }
+        | undefined;
     };
 
     private _totp?: OTPAuth.TOTP;
@@ -337,7 +337,7 @@ class User implements WithId<IUser> {
      * check if the user has a permission
      * @param perm Permission
      */
-    hasPermission(perm: Permissions): boolean {
+    hasPermission(perm: Permissions | number): boolean {
         return this._permissionManager.has(perm);
     }
 
@@ -345,7 +345,7 @@ class User implements WithId<IUser> {
      * give the user a permission
      * @param perm Permission
      */
-    async allowPermission(perm: Permissions): Promise<MethodResult<boolean>> {
+    async allowPermission(perm: Permissions | number): Promise<MethodResult<boolean>> {
         this._permissionManager.allow(perm);
         this.permissions = this._permissionManager.permissions;
         try {
@@ -363,7 +363,7 @@ class User implements WithId<IUser> {
      * deny the user a permission
      * @param perm Permission
      */
-    async denyPermission(perm: Permissions): Promise<MethodResult<boolean>> {
+    async denyPermission(perm: Permissions | number): Promise<MethodResult<boolean>> {
         this._permissionManager.deny(perm);
         this.permissions = this._permissionManager.permissions;
         try {

@@ -1,6 +1,6 @@
 enum Permissions {
     GLOBAL_LOGIN = 1 << 0,
-    CREATE_COURSE = 1 << 1,
+    MANAGE_COURSES = 1 << 1,
     MANAGE_BLOCKED_PWDS = 1 << 2,
 }
 
@@ -19,14 +19,14 @@ class PermissionManager {
      * Allows a user a permission and adds it to the permission manager
      * @param permission
      */
-    allow(permission: Permissions) {
+    allow(permission: Permissions | number) {
         this._permission |= permission;
     }
     /**
      * Denys a user a permission and removes it from the permission manager
      * @param permission
      */
-    deny(permission: Permissions) {
+    deny(permission: Permissions | number) {
         this._permission &= ~permission;
     }
     /**
@@ -34,7 +34,7 @@ class PermissionManager {
      * @param permission
      * @returns Whether the user has or has not the specified permission
      */
-    has(permission: Permissions): boolean {
+    has(permission: Permissions | number): boolean {
         return (this._permission & permission) === permission;
     }
 
