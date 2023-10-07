@@ -1,3 +1,5 @@
+import { Permissions } from "~/composables/hasPerm";
+import Course from "~/server/Dolphin/Course/Course";
 import UserMessage from "~/server/Dolphin/Messenger/UserMessage";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
 
@@ -100,6 +102,27 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
                 children: tuts.map((tut) => ({ label: tut.name, location: `/tut/${tut._id}` })),
             });
         }
+
+        // also get courses of the teacher
+        const [courses, coursesFindError] = await Course.listByMember(user._id);
+        if (coursesFindError)
+            throw createError({
+                statusCode: 500,
+                name: "coursesFindError",
+                message: "Could not find courses",
+            });
+
+        if (courses.length !== 0) {
+            navbar.push({
+                icon: "mdi-book-open-page-variant-outline",
+                label: "Meine Kurse",
+                location: "/course",
+                children: courses.map((course) => ({
+                    label: course.name,
+                    location: `/course/${course._id}`,
+                })),
+            });
+        }
     } else {
         // add the "Meine Klasse" link without any sublinks
         // the "Meine Klasse" link should point directly to the tut of the user
@@ -123,6 +146,25 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
                         location: `/tut/${tut._id}`,
                     });
                 }
+            }
+            // also get courses of the student
+            const [courses, coursesFindError] = await Course.listByMember(user._id);
+            if (coursesFindError)
+                throw createError({
+                    statusCode: 500,
+                    name: "coursesFindError",
+                    message: "Could not find courses",
+                });
+            if (courses.length !== 0) {
+                navbar.push({
+                    icon: "mdi-book-open-page-variant-outline",
+                    label: "Meine Kurse",
+                    location: "/course",
+                    children: courses.map((course) => ({
+                        label: course.name,
+                        location: `/course/${course._id}`,
+                    })),
+                });
             }
         } else if (user.isParent()) {
             // get all students linked to this parent
@@ -148,8 +190,73 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
                         location: `/tut/${tut._id}`,
                     })),
                 });
+                // also get courses of each student of the parent
+                // and add them to the navbar
+                // split it into multiple parts, called "{genitive(name)} Kurse"
+
+                let studentsCoursesNavbar: NavBarElement[] = [];
+
+                await Promise.all(
+                    students.map(async s => {
+                        const [courses, coursesFindError] = await Course.listByMember(s._id);
+                        if (coursesFindError)
+                            throw createError({
+                                statusCode: 500,
+                                name: "coursesFindError",
+                                message: "Could not find courses",
+                            });
+                        studentsCoursesNavbar.push({
+                            icon: "mdi-book-open-page-variant-outline",
+                            label: `${genitive(s.fullName.split(" ")[0])} Kurse`,
+                            location: `/course/${s._id}`,
+                            children: courses.map((course) => ({
+                                label: course.name,
+                                location: `/course/${course._id}`,
+                            })),
+                        });
+
+                    })
+                );
+
+                studentsCoursesNavbar = studentsCoursesNavbar.sort(
+                    // sort by name
+                    (a, b) => a.label.localeCompare(b.label)
+                );
+
+                navbar.push(...studentsCoursesNavbar);
             }
+
         }
+    }
+    function genitive(name: string): string {
+        // genitive s in german is without apostrophe except for names ending with s, x, z
+        // example:
+        // Max -> Max' Kurse
+        // Julian -> Julians Kurse
+        // Nicolai -> Nicolais Kurse
+        // Felix -> Felix' Kurse
+        if (name.endsWith("s") || name.endsWith("x") || name.endsWith("z")) {
+            return `${name}'`;
+        } else {
+            return `${name}s`;
+        }
+    }
+
+    const adminNavbar: NavBarSubelement[] = [];
+
+    // check for different permissions
+    if (user.hasPermission(Permissions.MANAGE_BLOCKED_PWDS)) {
+        adminNavbar.push({ label: "Gesperrte Passwörter", location: "/admin/blockedpwds" });
+    }
+
+
+    if (adminNavbar.length > 0) {
+        navbar.push({
+            icon: "mdi-shield-account",
+            label: "Administration",
+            location: "/admin",
+            children: adminNavbar,
+        });
     }
 
     return navbar;
