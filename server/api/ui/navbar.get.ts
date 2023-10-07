@@ -197,7 +197,7 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
                 let studentsCoursesNavbar: NavBarElement[] = [];
 
                 await Promise.all(
-                    students.map(async s => {
+                    students.map(async (s) => {
                         const [courses, coursesFindError] = await Course.listByMember(s._id);
                         if (coursesFindError)
                             throw createError({
@@ -214,18 +214,16 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
                                 location: `/course/${course._id}`,
                             })),
                         });
-
-                    })
+                    }),
                 );
 
                 studentsCoursesNavbar = studentsCoursesNavbar.sort(
                     // sort by name
-                    (a, b) => a.label.localeCompare(b.label)
+                    (a, b) => a.label.localeCompare(b.label),
                 );
 
                 navbar.push(...studentsCoursesNavbar);
             }
-
         }
     }
     function genitive(name: string): string {
@@ -248,7 +246,6 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
     if (user.hasPermission(Permissions.MANAGE_BLOCKED_PWDS)) {
         adminNavbar.push({ label: "Gesperrte Passwörter", location: "/admin/blockedpwds" });
     }
-
 
     if (adminNavbar.length > 0) {
         navbar.push({
