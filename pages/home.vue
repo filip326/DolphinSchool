@@ -1,8 +1,5 @@
-<script setup>
-import { client as pwless } from "@passwordless-id/webauthn";
-</script>
-
 <script>
+import { client as pwless } from "@passwordless-id/webauthn";
 export default {
     data() {
         return {
