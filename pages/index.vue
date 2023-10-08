@@ -122,13 +122,9 @@ export default {
             if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {
                 return;
             }
-            const signed = await pwless.authenticate(
-                [data.credId],
-                this.passwordless.challenge,
-                {
-                    userVerification: "required",
-                },
-            );
+            const signed = await pwless.authenticate([data.credId], this.passwordless.challenge, {
+                userVerification: "required",
+            });
 
             await useFetch("/api/auth/passwordless/approve", {
                 method: "POST",
@@ -179,21 +175,35 @@ export default {
         <VForm @submit.prevent="login">
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
             <h1>Login</h1>
-            <VBtn v-if="passwordless.localAvaible" variant="outlined" prepend-icon="mdi-key">Als {{ passwordless.localUser
-            }} anmelden.</VBtn>
+            <VBtn v-if="passwordless.localAvaible" variant="outlined" prepend-icon="mdi-key"
+                >Als {{ passwordless.localUser }} anmelden.</VBtn
+            >
             <div class="hr-sect">ODER</div>
             <VSpacer v-if="passwordless.localAvaible" />
-            <VTextField label="Benutzername" v-model="username" placeholder="max.mustermann"
-                hint="Ihr Benutzername besteht aus Ihrem Vor- und Nachnamen, durch einen Punkt getrennt."></VTextField>
-            <VTextField label="Passwort" v-model="pwd" type="password" placeholder="P@55w0rt"
-                hint="Geben Sie hier Ihr Passwort ein."></VTextField>
+            <VTextField
+                label="Benutzername"
+                v-model="username"
+                placeholder="max.mustermann"
+                hint="Ihr Benutzername besteht aus Ihrem Vor- und Nachnamen, durch einen Punkt getrennt."
+            ></VTextField>
+            <VTextField
+                label="Passwort"
+                v-model="pwd"
+                type="password"
+                placeholder="P@55w0rt"
+                hint="Geben Sie hier Ihr Passwort ein."
+            ></VTextField>
             <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
             <NuxtLink to="/support">Ich kann mich nicht einloggen</NuxtLink>
         </VForm>
         <div class="only-on-pc">
             <h1>passwordless</h1>
-            <VAlert v-if="passwordless.avaible" type="info" variant="text"
-                text="passwordless funktioniert nur, wenn Sie es zuvor eingerichtet haben!" />
+            <VAlert
+                v-if="passwordless.avaible"
+                type="info"
+                variant="text"
+                text="passwordless funktioniert nur, wenn Sie es zuvor eingerichtet haben!"
+            />
             <VAler v-else type="error" variant="text" text="passwordless ist nicht verfügbar!" />
             <p v-if="passwordless.avaible">
                 Scanne den QR Code mit der Kamera deines Smartphones und folge den Anweisungen auf
@@ -223,7 +233,7 @@ export default {
     display: flex;
     flex-basis: 100%;
     align-items: center;
-    color: rgb(var(--v-theme-on-surface));;
+    color: rgb(var(--v-theme-on-surface));
     margin: 8px 0px;
 }
 
