@@ -95,7 +95,7 @@ export default {
                     <VIcon v-else-if="user.type == 'parent'"> mdi-account-child </VIcon>
                     <p v-if="user.type == 'parent'">Parent</p>
                 </td>
-                <td>{{ user.name }} <VIcon style="margin-right: 6px">mdi-open-in-new</VIcon></td>
+                <td>{{ user.name }}</td>
                 <td>{{ user.tutName }}</td>
             </tr>
         </tbody>
