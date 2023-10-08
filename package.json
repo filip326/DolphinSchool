@@ -9,7 +9,6 @@
         "postinstall": "nuxt prepare",
         "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue .",
         "lint-fix": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue . --fix",
-        "prepare": "husky install",
         "create-dummy-student": "ts-node ./scripts/createStudent.ts",
         "file-linter": "node ./filelinter.js",
         "start": "node .output/server/index.mjs"
