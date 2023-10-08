@@ -77,7 +77,7 @@ export default {
             </VBtn>
         </template>
     </VTextField>
-    <VTable>
+    <VTable style="margin-top: 6px">
         <thead>
             <tr>
                 <th>Typ</th>
