@@ -11,6 +11,7 @@ export default {
             disabled: boolean;
             color: string;
         };
+        createdUserPwd?: string;
     } {
         return {
             fullName: "",
@@ -25,6 +26,7 @@ export default {
                 disabled: false,
                 color: "primary",
             },
+            createdUserPwd: undefined,
         };
     },
     async beforeCreate() {
@@ -35,7 +37,25 @@ export default {
         });
     },
     methods: {
-        async createUser() {},
+        async createUser() {
+            const res = await useFetch("/api/admin/users/create", {
+                method: "POST",
+                body: JSON.stringify({
+                    fullName: this.fullName,
+                    username: this.username,
+                    type: this.type,
+                }),
+            });
+            if (res.status.value === "success" && res.data.value) {
+                this.createdUserPwd = res.data.value.pwd as string;
+                this.btn.color = "success";
+                this.btn.text = "Erfolgreich";
+            } else {
+                this.createdUserPwd = undefined;
+                this.btn.color = "error";
+                this.btn.text = "Fehler";
+            }
+        },
     },
 };
 </script>
@@ -64,5 +84,12 @@ export default {
         <VBtn :loading="btn.loading" :disabled="btn.disabled" :color="btn.color" type="submit">{{
             btn.text
         }}</VBtn>
+        <VSpacer></VSpacer>
+        <VTextField
+            v-if="createdUserPwd"
+            :value="createdUserPwd"
+            readonly
+            label="Passwort des erstellten Benutzers"
+        />
     </VForm>
 </template>

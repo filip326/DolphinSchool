@@ -11,12 +11,15 @@ export default eventHandler(async (event) => {
 
     const query = getQuery(event);
 
-    if (!query.s) throw createError({ statusCode: 400, message: "Missing query" });
+    let searchResult;
 
-    const searchResult = await User.searchUsers({
-        nameQuery: query.s.toString(),
-        class: query.s.toString(),
-    });
+    if (!query.s) {
+        searchResult = await User.listUsers({});
+    } else {
+        searchResult = await User.searchUsers({
+            nameQuery: query.s.toString(),
+        });
+    }
 
     if (!searchResult[0] || searchResult[1]) {
         throw createError({ statusCode: 404, message: "Not found" });
