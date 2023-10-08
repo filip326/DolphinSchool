@@ -1,7 +1,6 @@
 <script lang="ts">
 import QRCode from "qrcode";
 import { client as pwless } from "@passwordless-id/webauthn";
-import { stringify } from "querystring";
 
 definePageMeta({
     layout: "login",
