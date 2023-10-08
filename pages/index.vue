@@ -84,8 +84,7 @@ export default {
                 this.passwordless.avaible = false;
                 return;
             }
-
-            console.log(response.data.value.url);
+            
             QRCode.toDataURL(response.data.value.url, (err, dataUrl) => {
                 if (err) {
                     this.passwordless.avaible = false;
