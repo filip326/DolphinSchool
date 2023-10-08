@@ -1,4 +1,5 @@
 import { MongoClient, Db } from "mongodb";
+import Session from "./Session/Session";
 
 class Dolphin {
     ready: boolean = false;
@@ -21,6 +22,8 @@ class Dolphin {
 
         this.ready = true;
 
+        setInterval(Session.tick, 1000 * 60); // 1 minute
+
         Dolphin._instance = this;
 
         cb(this);
@@ -34,7 +37,7 @@ class Dolphin {
                 const client = await MongoClient.connect(config.DB_URL);
                 const db = client.db(
                     config.DB_NAME +
-                        (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV"),
+                    (config.prod || config.DB_NAME.endsWith("--test") ? "" : "--DEV"),
                 );
 
                 if (!db) return;
