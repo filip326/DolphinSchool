@@ -2,6 +2,13 @@ enum Permissions {
     GLOBAL_LOGIN = 1 << 0,
     MANAGE_COURSES = 1 << 1,
     MANAGE_BLOCKED_PWDS = 1 << 2,
+    VIEW_ALL_USERS = 1 << 3,
+    MANAGE_USERS_PERMISSIONS = 1 << 4,
+    CREATE_STUDENT_OR_PARENT = 1 << 5,
+    CREATE_TEACHER = 1 << 6,
+    GRANT_ADMIN_LEVEL_PERMISSIONS = 1 << 7,
+    ASSIGN_COURSES_TO_TEACHERS = 1 << 8,
+    ASSIGN_STUDENTS_TO_COURSES = 1 << 9,
 }
 
 class PermissionManager {

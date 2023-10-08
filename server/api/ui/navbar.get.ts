@@ -1,4 +1,4 @@
-import { Permissions } from "~/composables/hasPerm";
+import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 import Course from "~/server/Dolphin/Course/Course";
 import UserMessage from "~/server/Dolphin/Messenger/UserMessage";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
@@ -242,9 +242,17 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
 
     const adminNavbar: NavBarSubelement[] = [];
 
-    // check for different permissions
+    // check for different permissions and add the corresponding links
     if (user.hasPermission(Permissions.MANAGE_BLOCKED_PWDS)) {
-        adminNavbar.push({ label: "Gesperrte Passwörter", location: "/admin/blockedpwds" });
+        adminNavbar.push({ label: "Gesperrte Passwörter", location: "/admin/blocked-pwds" });
+    }
+
+    if (user.hasPermission(Permissions.MANAGE_COURSES)) {
+        adminNavbar.push({ label: "Kurse verwalten", location: "/admin/courses" });
+    }
+
+    if (user.hasPermission(Permissions.VIEW_ALL_USERS)) {
+        adminNavbar.push({ label: "Benutzer verwalten", location: "/admin/users" });
     }
 
     if (adminNavbar.length > 0) {
