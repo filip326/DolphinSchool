@@ -9,7 +9,6 @@
         "postinstall": "nuxt prepare",
         "lint": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue .",
         "lint-fix": "eslint --ignore-path .eslintignore --ext .js,.ts,.vue . --fix",
-        "prepare": "husky install",
         "create-dummy-student": "ts-node ./scripts/createStudent.ts",
         "file-linter": "node ./filelinter.js",
         "start": "node .output/server/index.mjs"
@@ -45,7 +44,6 @@
         "dompurify": "^3.0.5",
         "dotenv": "^16.3.1",
         "h3": "^1.7.1",
-        "husky": "^8.0.3",
         "jsonwebtoken": "^9.0.1",
         "katex": "^0.16.8",
         "marked": "^5.1.1",

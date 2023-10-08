@@ -28,9 +28,6 @@ interface IUser {
     // student properties
     parents?: ObjectId[];
 
-    // parent properties
-    students?: ObjectId[];
-
     //teacher properties
     subjects?: ISubject[];
     kuerzel?: string;
@@ -196,7 +193,6 @@ class User implements WithId<IUser> {
     doNotAskForMFASetupUntil?: number;
 
     parents?: ObjectId[];
-    students?: ObjectId[];
 
     subjects?: ISubject[];
     kuerzel?: string;
@@ -234,7 +230,6 @@ class User implements WithId<IUser> {
         this.changePasswordRequired = user.changePasswordRequired;
 
         this.parents = user.parents;
-        this.students = user.students;
 
         this.subjects = user.subjects;
         this.kuerzel = user.kuerzel;
@@ -276,7 +271,10 @@ class User implements WithId<IUser> {
      * @param index
      * @returns
      */
+    async getParents(index: number): Promise<MethodResult<User>>;
+    async getParents(): Promise<MethodResult<User[]>>;
     async getParents(index?: number): Promise<MethodResult<User | User[]>> {
+        if (!this.isStudent()) return [undefined, DolphinErrorTypes.NOT_SUPPORTED];
         let parentsIds = this.parents;
 
         if (!parentsIds && this.type !== "student") {
@@ -316,44 +314,22 @@ class User implements WithId<IUser> {
 
     /**
      * only for type == "parent"
-     * @param index
      * @returns
      */
-    async getStudents(index?: number): Promise<MethodResult<User | User[]>> {
-        let studentsIds = this.students;
+    async getStudents(): Promise<MethodResult<User[]>> {
+        if (!this.isParent()) return [undefined, DolphinErrorTypes.NOT_SUPPORTED];
 
-        if (!studentsIds && this.type !== "parent") {
-            return [undefined, DolphinErrorTypes.INVALID_TYPE];
-        } else {
-            studentsIds = this.students ?? [];
-        }
-
-        if (index && index % 1 === 0 && index < studentsIds.length && index >= 0) {
-            const dbResult = await this.userCollection.findOne({
-                _id: studentsIds[index],
-            });
-            if (!dbResult) {
-                return [undefined, DolphinErrorTypes.NOT_FOUND];
-            }
-            const student = new User(this.userCollection, dbResult);
-            if (student.isStudent()) {
-                return [student, null];
-            }
-            return [undefined, DolphinErrorTypes.INVALID_TYPE];
-        }
-
+        // query students
         const dbResult = await this.userCollection
-            .find({ $or: studentsIds.map((id) => ({ _id: id })) })
+            .find({
+                parents: this._id,
+            })
             .toArray();
-        if (!dbResult || dbResult.length === 0) {
-            return [undefined, DolphinErrorTypes.NOT_FOUND];
-        }
-        const students = dbResult.map((id) => new User(this.userCollection, id)) as User[];
-        for (const student of students) {
-            if (!student.isStudent()) {
-                return [undefined, DolphinErrorTypes.INVALID_TYPE];
-            }
-        }
+
+        const students = dbResult
+            .map((s) => new User(this.userCollection, s))
+            .filter((s) => s.isStudent());
+
         return [students, null];
     }
 
@@ -361,7 +337,7 @@ class User implements WithId<IUser> {
      * check if the user has a permission
      * @param perm Permission
      */
-    hasPermission(perm: Permissions): boolean {
+    hasPermission(perm: Permissions | number): boolean {
         return this._permissionManager.has(perm);
     }
 
@@ -369,7 +345,7 @@ class User implements WithId<IUser> {
      * give the user a permission
      * @param perm Permission
      */
-    async allowPermission(perm: Permissions): Promise<MethodResult<boolean>> {
+    async allowPermission(perm: Permissions | number): Promise<MethodResult<boolean>> {
         this._permissionManager.allow(perm);
         this.permissions = this._permissionManager.permissions;
         try {
@@ -387,7 +363,7 @@ class User implements WithId<IUser> {
      * deny the user a permission
      * @param perm Permission
      */
-    async denyPermission(perm: Permissions): Promise<MethodResult<boolean>> {
+    async denyPermission(perm: Permissions | number): Promise<MethodResult<boolean>> {
         this._permissionManager.deny(perm);
         this.permissions = this._permissionManager.permissions;
         try {
