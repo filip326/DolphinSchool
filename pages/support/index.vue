@@ -1,10 +1,7 @@
-<script lang="ts" setup>
+<script lang="ts">
 definePageMeta({
     layout: "login",
 });
-</script>
-
-<script lang="ts">
 export default {
     data() {
         return {

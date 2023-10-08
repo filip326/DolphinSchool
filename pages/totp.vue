@@ -1,41 +1,7 @@
-<template>
-    <div class="loginform small">
-        <VForm @submit.prevent="login">
-            <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
-
-            <h1>2-Faktor Authentizierung</h1>
-            <p>
-                Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App (z.B. Authy) von
-                Ihrem Smartphone ein.
-            </p>
-            <!--
-            TODO: #12 make text field a otp field when released in vuetify
-        -->
-            <VTextField
-                type="text"
-                label="2FA-Code"
-                v-model="totp"
-                placeholder="123456"
-                hint="Geben Sie hier den Code ein."
-                :rules="[rules.required, rules.totpLength, rules.totpNumbers]"
-            >
-            </VTextField>
-
-            <VBtn :loading="button.loading" type="submit" size="large" variant="outlined"
-                >Einloggen</VBtn
-            >
-            <NuxtLink to="/support">Ich kann mich nicht einloggen</NuxtLink>
-        </VForm>
-    </div>
-</template>
-
-<script setup>
+<script>
 definePageMeta({
     layout: "login",
 });
-</script>
-
-<script>
 export default {
     data() {
         return {
@@ -97,6 +63,36 @@ export default {
     },
 };
 </script>
+<template>
+    <div class="loginform small">
+        <VForm @submit.prevent="login">
+            <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
+
+            <h1>2-Faktor Authentizierung</h1>
+            <p>
+                Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App (z.B. Authy) von
+                Ihrem Smartphone ein.
+            </p>
+            <!--
+            TODO: #12 make text field a otp field when released in vuetify
+        -->
+            <VTextField
+                type="text"
+                label="2FA-Code"
+                v-model="totp"
+                placeholder="123456"
+                hint="Geben Sie hier den Code ein."
+                :rules="[rules.required, rules.totpLength, rules.totpNumbers]"
+            >
+            </VTextField>
+
+            <VBtn :loading="button.loading" type="submit" size="large" variant="outlined"
+                >Einloggen</VBtn
+            >
+            <NuxtLink to="/support">Ich kann mich nicht einloggen</NuxtLink>
+        </VForm>
+    </div>
+</template>
 
 <style scoped>
 @import url("../assets/login.css");

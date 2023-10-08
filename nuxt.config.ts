@@ -27,6 +27,11 @@ export default defineNuxtConfig({
                     name: "description",
                     content: "Das Kommunikations-Tool für Schulen",
                 },
+                {
+                    hid: "viewport",
+                    name: "viewport",
+                    content: "width=device-width, initial-scale=1, user-scalable=no",
+                },
                 // Open Graph
                 { hid: "og:title", property: "og:title", content: "DolphinSchool" },
                 { hid: "og:site_name", property: "og:site_name", content: "DolphinSchool" },
@@ -82,7 +87,7 @@ export default defineNuxtConfig({
                     dark: true,
                     colors: {
                         background: "#222222", // Background-Color (dunkler)
-                        surface: "#525252", // Form-Background-Color (heller)
+                        surface: "#0e0e0e", // Form-Background-Color (heller)
                         primary: "#207178", // Darker-Dolphin-Color
                         secondary: "#50a4ab", // Lighter-Dolphin-Color
                         error: "#ef2d13", // Rot

@@ -1,29 +1,29 @@
-<script setup lang="ts">
+<script lang="ts">
 import QRCode from "qrcode";
 import { client as pwless } from "@passwordless-id/webauthn";
 
 definePageMeta({
     layout: "login",
 });
-</script>
-
-<script lang="ts">
 export default {
     data() {
         return {
-            username: "",
-            pwd: "",
+            username: "" as string,
+            pwd: "" as string,
             error: {
                 shown: false,
                 message: "",
             },
             passwordless: {
-                avaible: true,
+                avaible: false,
+                localAvaible: false,
+                localUser: "",
                 token: "",
+                tokenHash: "",
                 challenge: "",
                 qr_url: "",
                 qr_code: "",
-                interval: ref<NodeJS.Timer | undefined>(undefined),
+                interval: undefined as NodeJS.Timeout | undefined,
             },
         };
     },
@@ -88,50 +88,52 @@ export default {
                 return;
             }
 
-            console.log(response.data.value.url);
             QRCode.toDataURL(response.data.value.url, (err, dataUrl) => {
                 if (err) {
                     this.passwordless.avaible = false;
                     return;
                 }
+                this.passwordless.avaible = true;
                 this.passwordless.qr_code = dataUrl;
-                this.passwordless.token = response.data.value?.token ?? "";
             });
+            this.passwordless.token = response.data.value.token ?? "";
+            this.passwordless.tokenHash = response.data.value.tokenHash ?? "";
 
             this.passwordless.interval = setInterval(() => {
                 this.checkPasswordless();
             }, 3_000);
+            const data = JSON.parse(localStorage.getItem("passwordless") ?? "");
 
-            try {
-                const data = JSON.parse(localStorage.getItem("passwordless") ?? "");
-
-                if (!data || !data.username || !data.credId) {
-                    return;
-                }
-
-                if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {
-                    return;
-                }
-
-                const signed = await pwless.authenticate(
-                    [data.credId],
-                    response.data.value?.challenge,
-                    {
-                        userVerification: "required",
-                    },
-                );
-
-                await useFetch("/api/auth/passwordless/approve", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        username: data.username,
-                        tokenHash: response.data.value?.tokenHash,
-                        signed: signed,
-                    }),
-                });
-            } catch {
+            if (!data || !data.username || !data.credId) {
                 return;
             }
+
+            if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {
+                return;
+            }
+            this.passwordless.localAvaible = true;
+            this.passwordless.localUser = data.username;
+        },
+        async singnInusingLocalPasswordless() {
+            const data = JSON.parse(localStorage.getItem("passwordless") ?? "");
+            if (!data || !data.username || !data.credId) {
+                return;
+            }
+            if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {
+                return;
+            }
+            const signed = await pwless.authenticate([data.credId], this.passwordless.challenge, {
+                userVerification: "required",
+            });
+
+            await useFetch("/api/auth/passwordless/approve", {
+                method: "POST",
+                body: JSON.stringify({
+                    username: data.username,
+                    tokenHash: this.passwordless.tokenHash,
+                    signed: signed,
+                }),
+            });
         },
         async checkPasswordless() {
             if (this.passwordless.avaible === false) {
@@ -173,6 +175,11 @@ export default {
         <VForm @submit.prevent="login">
             <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
             <h1>Login</h1>
+            <VBtn v-if="passwordless.localAvaible" variant="outlined" prepend-icon="mdi-key"
+                >Als {{ passwordless.localUser }} anmelden.</VBtn
+            >
+            <div class="hr-sect">ODER</div>
+            <VSpacer v-if="passwordless.localAvaible" />
             <VTextField
                 label="Benutzername"
                 v-model="username"
@@ -189,7 +196,7 @@ export default {
             <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
             <NuxtLink to="/support">Ich kann mich nicht einloggen</NuxtLink>
         </VForm>
-        <div>
+        <div class="only-on-pc">
             <h1>passwordless</h1>
             <VAlert
                 v-if="passwordless.avaible"
@@ -220,5 +227,24 @@ export default {
 .v-progress-circular {
     width: 200px;
     height: 200px;
+}
+
+.hr-sect {
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    color: rgb(var(--v-theme-on-surface));
+    margin: 8px 0px;
+}
+
+.hr-sect:before,
+.hr-sect:after {
+    content: "";
+    flex-grow: 1;
+    background: rgb(var(--v-theme-on-surface));
+    height: 1px;
+    font-size: 0px;
+    line-height: 0px;
+    margin: 0px 8px;
 }
 </style>

@@ -1,12 +1,9 @@
-<script setup>
+<script>
 import QRCode from "qrcode";
 
 definePageMeta({
     layout: "login",
 });
-</script>
-
-<script>
 export default {
     data() {
         return {

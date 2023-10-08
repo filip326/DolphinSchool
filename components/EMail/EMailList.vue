@@ -6,6 +6,10 @@ export default {
             type: String,
             required: true,
         },
+        title: {
+            type: String,
+            required: true,
+        },
     },
     data() {
         return {
@@ -75,6 +79,9 @@ export default {
 <template>
     <div>
         <VList bg-color="background">
+            <VListItem variant="tonal" density="comfortable" class="list-title-wrapper">
+                <div class="list-title">{{ title }}</div>
+            </VListItem>
             <VListItem
                 variant="tonal"
                 density="comfortable"
@@ -125,10 +132,21 @@ export default {
 
 .v-list-item:first-child {
     margin-top: 5px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
 .v-list-item:last-child {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+}
+
+.list-title-wrapper {
+    background-color: rgb(var(--v-theme-primary));
+}
+
+.list-title {
+    font-weight: 600;
+    font-size: 1.5em;
 }
 </style>

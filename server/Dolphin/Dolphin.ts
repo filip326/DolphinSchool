@@ -1,4 +1,5 @@
 import { MongoClient, Db } from "mongodb";
+import Session from "./Session/Session";
 
 class Dolphin {
     ready: boolean = false;
@@ -20,6 +21,8 @@ class Dolphin {
         this.client = client;
 
         this.ready = true;
+
+        setInterval(Session.tick, 1000 * 60); // 1 minute
 
         Dolphin._instance = this;
 
