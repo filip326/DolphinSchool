@@ -22,6 +22,13 @@ export default {
             },
         };
     },
+    async beforeCreate() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChange: true,
+        });
+    },
     beforeMount() {
         this.search();
     },
