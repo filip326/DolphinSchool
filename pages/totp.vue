@@ -76,16 +76,23 @@ export default {
             <!--
             TODO: #12 make text field a otp field when released in vuetify
         -->
-            <VTextField type="text" label="2FA-Code" v-model="totp" placeholder="123456" hint="Geben Sie hier den Code ein."
-                :rules="[rules.required, rules.totpLength, rules.totpNumbers]">
+            <VTextField
+                type="text"
+                label="2FA-Code"
+                v-model="totp"
+                placeholder="123456"
+                hint="Geben Sie hier den Code ein."
+                :rules="[rules.required, rules.totpLength, rules.totpNumbers]"
+            >
             </VTextField>
 
-            <VBtn :loading="button.loading" type="submit" size="large" variant="outlined">Einloggen</VBtn>
+            <VBtn :loading="button.loading" type="submit" size="large" variant="outlined"
+                >Einloggen</VBtn
+            >
             <NuxtLink to="/support">Ich kann mich nicht einloggen</NuxtLink>
         </VForm>
     </div>
 </template>
-
 
 <style scoped>
 @import url("../assets/login.css");
