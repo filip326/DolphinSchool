@@ -10,10 +10,10 @@ interface ICourse {
     subject: ObjectId; // tut-kurse?
 
     type:
-        | "LK" // Leistungskurs in Sek II
-        | "GK" // Grundkurs in Sek II
-        | "single-class" // Unterricht im Klassenverband in Sek 1
-        | "out-of-class"; // Unterricht außerhalb des Klassenverbandes in Sek 1
+    | "LK" // Leistungskurs in Sek II
+    | "GK" // Grundkurs in Sek II
+    | "single-class" // Unterricht im Klassenverband in Sek 1
+    | "out-of-class"; // Unterricht außerhalb des Klassenverbandes in Sek 1
 
     grade: number; // 5-13; 11 = E, 12 = Q1/2, 13 = Q3/4
     name: string;
@@ -282,6 +282,25 @@ class Course implements WithId<ICourse> {
         const dbResult = await courses.findOne({ _id: id });
         if (!dbResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
         return [new Course(dbResult, courses), null];
+    }
+
+    static async list({ limit, skip, search }: { limit?: number, skip?: number, search?: string }): Promise<MethodResult<Course[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        const dbResult = await courses
+            .find({
+                name: {
+                    $regex: `${search}`,
+                    $options: "i",
+                    // $options: "i" means case-insensitive
+                },
+            })
+            .skip(skip ?? 0)
+            .limit(limit ?? 25)
+            .toArray();
+
+        return [dbResult.map((c) => new Course(c, courses)), null];
     }
 
     static async listByMember(user: ObjectId): Promise<MethodResult<Course[]>> {
