@@ -1,11 +1,16 @@
 import { ObjectId } from "mongodb";
-import Course, { CreateCourseOptions, CreateSingleClassCourseOptions } from "~/server/Dolphin/Course/Course";
+import Course, {
+    CreateCourseOptions,
+    CreateSingleClassCourseOptions,
+} from "~/server/Dolphin/Course/Course";
 import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
 import User from "~/server/Dolphin/User/User";
 
-export default defineEventHandler(async event => {
-    const { success, statusCode } = await event.context.auth.checkAuth({ PermissionLevel: Permissions.MANAGE_COURSES });
+export default defineEventHandler(async (event) => {
+    const { success, statusCode } = await event.context.auth.checkAuth({
+        PermissionLevel: Permissions.MANAGE_COURSES,
+    });
     if (!success) {
         throw createError({
             statusCode: statusCode,
@@ -41,7 +46,13 @@ export default defineEventHandler(async event => {
 
     // then check for a valid teacher
     // the teacher is an string array. each string is an hexademical string of an ObjectId
-    if (!("teacher" in body) || !Array.isArray(body.teacher) || body.teacher.some((teacher: any) => typeof teacher !== "string" || !ObjectId.isValid(teacher))) {
+    if (
+        !("teacher" in body) ||
+        !Array.isArray(body.teacher) ||
+        body.teacher.some(
+            (teacher: any) => typeof teacher !== "string" || !ObjectId.isValid(teacher),
+        )
+    ) {
         throw createError({
             statusCode: 400,
             message: "Invalid body - teacher is missing",
@@ -49,7 +60,9 @@ export default defineEventHandler(async event => {
     }
 
     for await (const teacher of body.teacher as string[]) {
-        const [teacherObj, teacherFindError] = await User.getUserById(ObjectId.createFromHexString(teacher as string));
+        const [teacherObj, teacherFindError] = await User.getUserById(
+            ObjectId.createFromHexString(teacher as string),
+        );
         if (teacherFindError) {
             throw createError({
                 statusCode: 400,
@@ -73,13 +86,19 @@ export default defineEventHandler(async event => {
 
     // then check for a valid subject
     // the subject is an hexademical string of an ObjectId
-    if (!("subject" in body) || typeof body.subject !== "string" || !ObjectId.isValid(body.subject)) {
+    if (
+        !("subject" in body) ||
+        typeof body.subject !== "string" ||
+        !ObjectId.isValid(body.subject)
+    ) {
         throw createError({
             statusCode: 400,
             message: "Invalid body - subject is missing",
         });
     }
-    const [subject, subjectFindError] = await User.getUserById(ObjectId.createFromHexString(body.subject));
+    const [subject, subjectFindError] = await User.getUserById(
+        ObjectId.createFromHexString(body.subject),
+    );
     if (subjectFindError) {
         throw createError({
             statusCode: 400,
@@ -105,7 +124,11 @@ export default defineEventHandler(async event => {
     // the semester is an number 0, 1 or 2
     // default: 0
     let semester: 0 | 1 | 2;
-    if (!("semester" in body) || typeof body.semester !== "number" || ![0, 1, 2].includes(body.semester)) {
+    if (
+        !("semester" in body) ||
+        typeof body.semester !== "number" ||
+        ![0, 1, 2].includes(body.semester)
+    ) {
         semester = 0;
     } else {
         semester = body.semester as 0 | 1 | 2;
@@ -114,7 +137,11 @@ export default defineEventHandler(async event => {
     // then check for a valid grade
     // the grade is an number 5 to 13
     // no default value; must be specified
-    if (!("grade" in body) || typeof body.grade !== "number" || ![5, 6, 7, 8, 9, 10, 11, 12, 13].includes(body.grade)) {
+    if (
+        !("grade" in body) ||
+        typeof body.grade !== "number" ||
+        ![5, 6, 7, 8, 9, 10, 11, 12, 13].includes(body.grade)
+    ) {
         throw createError({
             statusCode: 400,
             message: "Invalid body - grade is missing",
@@ -127,7 +154,12 @@ export default defineEventHandler(async event => {
     // no default value; must be specified
     let number: number | undefined;
     if (body.type === "LK" || body.type === "GK") {
-        if (!("number" in body) || typeof body.number !== "number" || !Number.isInteger(body.number) || body.number <= 0) {
+        if (
+            !("number" in body) ||
+            typeof body.number !== "number" ||
+            !Number.isInteger(body.number) ||
+            body.number <= 0
+        ) {
             throw createError({
                 statusCode: 400,
                 message: "Invalid body - number is missing",
@@ -140,7 +172,13 @@ export default defineEventHandler(async event => {
     // the linkedTut is a hexademical string of an ObjectId
     // if type is not single-class, linkedTut is neiter required nor used
     if (body.type === "single-class") {
-        if (!("linkedTuts" in body) || !Array.isArray(body.linkedTuts) || body.linkedTuts.some((linkedTut: any) => typeof linkedTut !== "string" || !ObjectId.isValid(linkedTut))) {
+        if (
+            !("linkedTuts" in body) ||
+            !Array.isArray(body.linkedTuts) ||
+            body.linkedTuts.some(
+                (linkedTut: any) => typeof linkedTut !== "string" || !ObjectId.isValid(linkedTut),
+            )
+        ) {
             throw createError({
                 statusCode: 400,
                 message: "Invalid body - linkedTuts is missing",
@@ -153,7 +191,9 @@ export default defineEventHandler(async event => {
             });
         }
 
-        const [linkedTut, linkedTutFindError] = await TutCourse.getTutCourseById(ObjectId.createFromHexString(body.linkedTuts[0]));
+        const [linkedTut, linkedTutFindError] = await TutCourse.getTutCourseById(
+            ObjectId.createFromHexString(body.linkedTuts[0]),
+        );
         if (linkedTutFindError) {
             throw createError({
                 statusCode: 400,
@@ -183,7 +223,7 @@ export default defineEventHandler(async event => {
             name: courseCreate.name,
             id: courseCreate._id.toHexString(),
         };
-    };
+    }
 
     // else create the course without linkedTuts
     const courseCreateOptions: CreateCourseOptions = {

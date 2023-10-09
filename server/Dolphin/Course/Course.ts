@@ -10,10 +10,10 @@ interface ICourse {
     subject: ObjectId; // tut-kurse?
 
     type:
-    | "LK" // Leistungskurs in Sek II
-    | "GK" // Grundkurs in Sek II
-    | "single-class" // Unterricht im Klassenverband in Sek 1
-    | "out-of-class"; // Unterricht außerhalb des Klassenverbandes in Sek 1
+        | "LK" // Leistungskurs in Sek II
+        | "GK" // Grundkurs in Sek II
+        | "single-class" // Unterricht im Klassenverband in Sek 1
+        | "out-of-class"; // Unterricht außerhalb des Klassenverbandes in Sek 1
 
     grade: number; // 5-13; 11 = E, 12 = Q1/2, 13 = Q3/4
     name: string;
@@ -284,7 +284,15 @@ class Course implements WithId<ICourse> {
         return [new Course(dbResult, courses), null];
     }
 
-    static async list({ limit, skip, search }: { limit?: number, skip?: number, search?: string }): Promise<MethodResult<Course[]>> {
+    static async list({
+        limit,
+        skip,
+        search,
+    }: {
+        limit?: number;
+        skip?: number;
+        search?: string;
+    }): Promise<MethodResult<Course[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const courses = dolphin.database.collection<ICourse>("courses");
 
@@ -307,13 +315,15 @@ class Course implements WithId<ICourse> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const courses = dolphin.database.collection<ICourse>("courses");
 
-        return (search) ? await courses.countDocuments({
-            name: {
-                $regex: `${search}`,
-                $options: "i",
-                // $options: "i" means case-insensitive
-            },
-        }) : await courses.countDocuments();
+        return search
+            ? await courses.countDocuments({
+                  name: {
+                      $regex: `${search}`,
+                      $options: "i",
+                      // $options: "i" means case-insensitive
+                  },
+              })
+            : await courses.countDocuments();
     }
 
     static async listByMember(user: ObjectId): Promise<MethodResult<Course[]>> {

@@ -1,8 +1,10 @@
 import Course from "~/server/Dolphin/Course/Course";
 import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 
-export default defineEventHandler(async event => {
-    const { success, statusCode } = await event.context.auth.checkAuth({ PermissionLevel: Permissions.MANAGE_COURSES });
+export default defineEventHandler(async (event) => {
+    const { success, statusCode } = await event.context.auth.checkAuth({
+        PermissionLevel: Permissions.MANAGE_COURSES,
+    });
     if (!success) {
         throw createError({
             statusCode: statusCode,
@@ -37,7 +39,11 @@ export default defineEventHandler(async event => {
     // default value for search is undefined
     // default value for limit is 25
     // default value for skip is 0
-    const [courses, coursesFindError] = await Course.list({ search: search as string | undefined, limit: limit as number | undefined, skip: skip as number | undefined });
+    const [courses, coursesFindError] = await Course.list({
+        search: search as string | undefined,
+        limit: limit as number | undefined,
+        skip: skip as number | undefined,
+    });
 
     if (coursesFindError) {
         throw createError({
@@ -52,7 +58,7 @@ export default defineEventHandler(async event => {
     // teacher: string;
     // student_count: number; }[]
 
-    return courses.map(course => ({
+    return courses.map((course) => ({
         name: course.name,
         id: course._id.toHexString(),
         teacher: course.teacher,
