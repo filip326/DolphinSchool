@@ -165,7 +165,7 @@ export default defineEventHandler(async event => {
         const courseCreateOptions: CreateSingleClassCourseOptions = {
             type: body.type,
             teacher: body.teacher.map((teacher: string) => ObjectId.createFromHexString(teacher)),
-            subject: ObjectId.createFromHexString(body.subject),
+            subject: subject._id,
             schoolYear,
             semester,
             grade: body.grade,
@@ -189,7 +189,7 @@ export default defineEventHandler(async event => {
     const courseCreateOptions: CreateCourseOptions = {
         type: body.type,
         teacher: body.teacher.map((teacher: string) => ObjectId.createFromHexString(teacher)),
-        subject: ObjectId.createFromHexString(body.subject),
+        subject: subject._id,
         schoolYear,
         semester,
         grade: body.grade,
