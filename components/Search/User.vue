@@ -42,8 +42,6 @@ export default {
                 return;
             }
 
-            console.log("New autocomple value: " + JSON.stringify(response.data.value));
-
             this.autocompleteItems = [
                 ...this.autocompleteItems.filter((i) => i.id === this.modelValue),
                 ...response.data.value!.map((user) => ({
@@ -60,8 +58,6 @@ export default {
         },
 
         searchTimer() {
-            console.log("searchTimer");
-            console.log("searchQuery: " + this.searchQuery);
             const searchTerm = this.searchQuery.split("(")[0].trim();
             if (searchTerm.length < 3) {
                 if (this.modelValue === "") this.autocompleteItems = [];
@@ -73,7 +69,6 @@ export default {
             }
             if (this.autocompleteItems.length === 0) this.autocomplete_loading = true;
             this.timeout = setTimeout(() => {
-                console.log("searching... " + searchTerm);
                 this.autocomplete_loading = false;
                 this.search();
             }, 1000);
