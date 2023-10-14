@@ -39,7 +39,17 @@ export default {
         };
     },
     methods: {
-        async deleteUser() {},
+        async deleteUser() {
+            const res = await useFetch(`/api/admin/users/${this.user.id}`, {
+                method: "DELETE",
+            });
+            if (res.status.value === "success" && res.data.value) {
+                navigateTo("/admin/users");
+            } else {
+                this.error.show = true;
+                this.error.message = "Fehler beim Löschen des Benutzers";
+            }
+        },
         async saveUser() {},
     },
 };
