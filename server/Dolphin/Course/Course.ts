@@ -284,6 +284,48 @@ class Course implements WithId<ICourse> {
         return [new Course(dbResult, courses), null];
     }
 
+    static async list({
+        limit,
+        skip,
+        search,
+    }: {
+        limit?: number;
+        skip?: number;
+        search?: string;
+    }): Promise<MethodResult<Course[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        const dbResult = await courses
+            .find({
+                name: {
+                    $regex: `${search}`,
+                    $options: "i",
+                    // $options: "i" means case-insensitive
+                },
+            })
+            .skip(skip ?? 0)
+            .limit(limit ?? 25)
+            .toArray();
+
+        return [dbResult.map((c) => new Course(c, courses)), null];
+    }
+
+    static async count(search?: string): Promise<number> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+
+        return search
+            ? await courses.countDocuments({
+                  name: {
+                      $regex: `${search}`,
+                      $options: "i",
+                      // $options: "i" means case-insensitive
+                  },
+              })
+            : await courses.countDocuments();
+    }
+
     static async listByMember(user: ObjectId): Promise<MethodResult<Course[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const courses = dolphin.database.collection<ICourse>("courses");
@@ -473,4 +515,4 @@ class Course implements WithId<ICourse> {
 }
 
 export default Course;
-export { ICourse };
+export { ICourse, CreateSingleClassCourseOptions, CreateCourseOptions };

@@ -66,6 +66,9 @@ class User implements WithId<IUser> {
         return dbResult.deletedCount;
     }
 
+    /**
+     * @deprecated use searchUsersByName instead
+     */
     static async searchUsers(options: SearchUserOptions): Promise<MethodResult<User[]>> {
         if (
             options.nameQuery ||
@@ -127,11 +130,17 @@ class User implements WithId<IUser> {
         return [new User(userCollection, user), null];
     }
 
-    static async searchUsersByName(query: string): Promise<MethodResult<User[]>> {
+    static async searchUsersByName(
+        query: string,
+        limit = 0,
+        skip = 0,
+    ): Promise<MethodResult<User[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const userCollection = dolphin.database.collection<IUser>("users");
         const users = await userCollection
             .find({ fullName: { $regex: query, $options: "i" } })
+            .skip(skip)
+            .limit(limit)
             .toArray();
         return [users.map((user) => new User(userCollection, user)), null];
     }

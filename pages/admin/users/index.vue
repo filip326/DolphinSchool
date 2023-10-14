@@ -71,7 +71,7 @@ export default {
             <VBtn
                 title="create user"
                 link
-                href="/admin/users/create"
+                to="/admin/users/create"
                 prepend-icon="mdi-plus"
                 color="primary"
                 style="z-index: 1024"

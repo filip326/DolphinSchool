@@ -77,13 +77,13 @@ export default {
         </VCardText>
         <VCardText v-if="user.type === 'student'">
             <VBtn link :href="'/admin/users/' + parent" :key="i" v-for="(parent, i) in user.parents"
-                >Elternteil {{ i + 1 }}</VBtn
-            >
+                >Elternteil {{ i + 1 }}
+            </VBtn>
             <!-- TODO -->
             <!-- textfield with ASMSQ to add parents -->
         </VCardText>
         <VCardActions>
-            <VBtn variant="flat" link href="/admin/users" color="primary">Zurück</VBtn>
+            <VBtn variant="flat" link to="/admin/users" color="primary">Zurück</VBtn>
             <VBtn variant="flat" color="error" @click="deleteUser">Benutzer löschen</VBtn>
         </VCardActions>
     </VCard>
