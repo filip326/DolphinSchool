@@ -1,6 +1,4 @@
 <script lang="ts">
-import { Permissions } from "~/composables/hasPerm";
-
 export default {
     async beforeCreate() {
         await checkAuth({
@@ -8,13 +6,6 @@ export default {
             throwErrorOnNotAuthenticated: true,
             redirectOnPwdChange: true,
         });
-        if (!(await hasPerm(Permissions.MANAGE_BLOCKED_PWDS))) {
-            throw createError({
-                statusCode: 403,
-                statusMessage: "Forbidden",
-                fatal: true,
-            });
-        }
     },
     data() {
         return {
