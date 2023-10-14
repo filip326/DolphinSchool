@@ -46,34 +46,36 @@ export default {
 </script>
 
 <template>
-    <VAlert title="Fehler" type="error" :text="error.message" />
+    <VAlert v-if="error.show" title="Fehler" type="error" :text="error.message" />
     <VForm @submit.prevent="saveUser">
         <VCard>
             <VCardTitle>Benutzer {{ user.username }}</VCardTitle>
             <VCardText>
-                <VTextField label="Voller Name" :v-model="user.fullName" />
-                <VTextField label="Benutzername" :v-model="user.username" />
+                <VTextField label="Voller Name" v-model="user.fullName" />
+                <VTextField label="Benutzername" v-model="user.username" />
                 <VSelect
                     label="Typ"
-                    :items="['studen', 'teacher', 'parent']"
-                    :v-model="user.type"
+                    :items="['student', 'teacher', 'parent']"
+                    v-model="user.type"
                 />
-                <VTextField label="Kürzel" :v-model="user.kuezel" v-if="user.type === 'teacher'" />
-                <VCheckbox label="2FA aktiviert" :v-model="user.mfaEnabled" readonly />
+                <VTextField label="Kürzel" v-model="user.kuezel" v-if="user.type === 'teacher'" />
+                <VCheckbox label="2FA aktiviert" v-model="user.mfaEnabled" readonly />
             </VCardText>
             <VCardText v-if="user.type === 'student'">
                 <VBtn
                     link
-                    :href="'/admin/user/' + parent"
+                    :href="'/admin/users/' + parent"
                     :key="i"
                     v-for="(parent, i) in user.parents"
                     >Elternteil {{ i + 1 }}</VBtn
                 >
+                <!-- TODO -->
+                <!-- textfield with ASMSQ to add parents -->
             </VCardText>
             <VCardActions>
-                <VBtn type="submit" color="primary">Änderungen speichern</VBtn>
-                <VBtn type="reset">Änderungen verwerfen</VBtn>
-                <VBtn @click="deleteUser">Benutzer löschen</VBtn>
+                <VBtn variant="flat" type="submit" color="primary">Änderungen speichern</VBtn>
+                <VBtn link href="/admin/users">Änderungen verwerfen</VBtn>
+                <VBtn variant="flat" color="error" @click="deleteUser">Benutzer löschen</VBtn>
             </VCardActions>
         </VCard>
     </VForm>
