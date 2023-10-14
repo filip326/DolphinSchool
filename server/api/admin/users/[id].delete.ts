@@ -4,7 +4,7 @@ import User from "~/server/Dolphin/User/User";
 
 export default eventHandler(async (event) => {
     const checkAuthResult = await event.context.auth.checkAuth({
-        PermissionLevel: Permissions.MANAGE_USERS_PERMISSIONS,
+        PermissionLevel: Permissions.DELETE_USERS,
     });
     if (!checkAuthResult.success || !checkAuthResult.user) {
         throw createError({ statusCode: checkAuthResult.statusCode, message: "Failed" });
@@ -17,7 +17,7 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 404, message: "User not found" });
     }
 
-    userRes[0].userCollection.deleteOne({ _id: userRes[0]._id });
+    userRes[0].setDeleted(true);
 
     return {
         statusCode: 200,

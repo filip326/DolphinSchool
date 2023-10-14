@@ -1,5 +1,6 @@
 import { MongoClient, Db } from "mongodb";
 import Session from "./Session/Session";
+import User from "./User/User";
 
 class Dolphin {
     ready: boolean = false;
@@ -23,6 +24,7 @@ class Dolphin {
         this.ready = true;
 
         setInterval(Session.tick, 1000 * 60); // 1 minute
+        setInterval(User.deleteAllDeletedUsersAfter30d, 1000 * 60 * 60 * 24); // 1 day
 
         Dolphin._instance = this;
 

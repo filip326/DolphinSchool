@@ -22,6 +22,10 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 400, message: "Invalid type" });
     }
 
+    if (!fullName || !type || !username) {
+        throw createError({ statusCode: 400, message: "Missing required fields" });
+    }
+
     const user = await User.createUser({
         fullName,
         type,

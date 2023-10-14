@@ -9,6 +9,7 @@ enum Permissions {
     GRANT_ADMIN_LEVEL_PERMISSIONS = 1 << 7,
     ASSIGN_COURSES_TO_TEACHERS = 1 << 8,
     ASSIGN_STUDENTS_TO_COURSES = 1 << 9,
+    DELETE_USERS = 1 << 10,
 }
 
 class PermissionManager {
