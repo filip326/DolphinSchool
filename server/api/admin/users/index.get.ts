@@ -13,12 +13,11 @@ export default eventHandler(async (event) => {
 
     let searchResult;
 
-    if (!query.s) {
+    if (typeof query.s !== "string" || query.s.length < 1) {
         searchResult = await User.listUsers({});
     } else {
-        searchResult = await User.searchUsers({
-            nameQuery: query.s.toString(),
-        });
+        console.log("Searching for users with name: " + query.s);
+        searchResult = await User.searchUsersByName(query.s);
     }
 
     if (!searchResult[0] || searchResult[1]) {

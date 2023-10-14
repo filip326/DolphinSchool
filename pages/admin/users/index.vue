@@ -59,23 +59,10 @@ export default {
 </script>
 
 <template>
-    <VTextField
-        v-model="searchQuery"
-        label="User search"
-        dense
-        outlined
-        hide-details
-        @change="search"
-    >
+    <VTextField v-model="searchQuery" label="User search" dense outlined hide-details @change="search">
         <template #append>
-            <VBtn
-                title="create user"
-                link
-                href="/admin/users/create"
-                prepend-icon="mdi-plus"
-                color="primary"
-                style="z-index: 1024"
-            >
+            <VBtn title="create user" link to="/admin/users/create" prepend-icon="mdi-plus" color="primary"
+                style="z-index: 1024">
                 Create
             </VBtn>
         </template>

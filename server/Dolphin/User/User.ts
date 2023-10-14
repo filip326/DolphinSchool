@@ -36,17 +36,17 @@ interface IUser {
 
     webAuthNCredentials?: {
         [key: string]:
-            | {
-                  credential: {
-                      id: string;
-                      publicKey: string;
-                      algorithm: "RS256" | "ES256";
-                  };
-                  authenticator: {
-                      name: string;
-                  };
-              }
-            | undefined;
+        | {
+            credential: {
+                id: string;
+                publicKey: string;
+                algorithm: "RS256" | "ES256";
+            };
+            authenticator: {
+                name: string;
+            };
+        }
+        | undefined;
     };
 }
 
@@ -66,6 +66,9 @@ class User implements WithId<IUser> {
         return dbResult.deletedCount;
     }
 
+    /**
+     * @deprecated use searchUsersByName instead
+     */
     static async searchUsers(options: SearchUserOptions): Promise<MethodResult<User[]>> {
         if (
             options.nameQuery ||
@@ -226,17 +229,17 @@ class User implements WithId<IUser> {
 
     webAuthNCredentials?: {
         [key: string]:
-            | {
-                  credential: {
-                      id: string;
-                      publicKey: string;
-                      algorithm: "RS256" | "ES256";
-                  };
-                  authenticator: {
-                      name: string;
-                  };
-              }
-            | undefined;
+        | {
+            credential: {
+                id: string;
+                publicKey: string;
+                algorithm: "RS256" | "ES256";
+            };
+            authenticator: {
+                name: string;
+            };
+        }
+        | undefined;
     };
 
     private _totp?: OTPAuth.TOTP;

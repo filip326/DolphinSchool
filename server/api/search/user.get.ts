@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // filter search to only contain letters and spaces
-    const maskedSearch = search.replace(/[^a-zA-Z ]/g, "");
+    const maskedSearch = search.replace(/[^a-zA-Z0-9 ]/g, "");
 
     if (maskedSearch.length < 3) {
         throw createError({
@@ -52,14 +52,13 @@ export default defineEventHandler(async (event) => {
 
     return users.map((user) => ({
         id: user._id.toHexString(),
-        label: `${user.fullName} (${
-            user.type === "student"
+        label: `${user.fullName} (${user.type === "student"
                 ? course.has(user._id.toHexString())
                     ? `Schüler:in ${course.get(user._id.toHexString())}`
                     : "Schüler:in"
                 : user.type === "parent"
-                ? "Elternteil"
-                : "Lehrkraft"
-        })`,
+                    ? "Elternteil"
+                    : "Lehrkraft"
+            })`,
     }));
 });
