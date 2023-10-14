@@ -38,7 +38,7 @@ export default {
     },
     methods: {
         async createUser() {
-            const res = await useFetch("/api/admin/users/create", {
+            const res = await useFetch("/api/admin/users", {
                 method: "POST",
                 body: JSON.stringify({
                     fullName: this.fullName,
