@@ -47,16 +47,34 @@ export default defineEventHandler(async (event) => {
     }
 
     // get teacher name
-    const teachers = ((await Promise.all(course.teacher.map(async (teacherId) => { return (await User.getUserById(teacherId))[0]; }))).filter((user) => user !== null) as User[]).map((user) => user.fullName).join(", ");
+    const teachers = (
+        (
+            await Promise.all(
+                course.teacher.map(async (teacherId) => {
+                    return (await User.getUserById(teacherId))[0];
+                }),
+            )
+        ).filter((user) => user !== null) as User[]
+    )
+        .map((user) => user.fullName)
+        .join(", ");
 
     // get members
-    const members = (await Promise.all(course.students.map(async (memberId) => { return (await User.getUserById(memberId))[0]; }))).filter((user) => user !== null).map((user) => user!.fullName);
+    const members = (
+        await Promise.all(
+            course.students.map(async (memberId) => {
+                return (await User.getUserById(memberId))[0];
+            }),
+        )
+    )
+        .filter((user) => user !== null)
+        .map((user) => user!.fullName);
 
     return {
         _id: course._id.toHexString(),
         name: course.name,
         subject: subject.longName,
         teacher: teachers,
-        members
+        members,
     };
 });

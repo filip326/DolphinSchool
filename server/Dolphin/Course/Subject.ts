@@ -35,17 +35,21 @@ class Subject implements ISubject {
         }
     }
 
-    static async search(options: SubjectSearchOptions): Promise<MethodResult<ISubject[]>> {
+    static async search(query: string): Promise<MethodResult<Subject[]>> {
         try {
             const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
             const dbResult = await dolphin.database.collection<ISubject>("subjects").find({
-                _id: options.id,
-                long: options.long,
-                short: options.short,
-                teacher: options.teacher,
-                main: options.main,
+                $or: [
+                    { longName: { $regex: query, $options: "i" } },
+                    { short: { $regex: query, $options: "i" } },
+                ],
             });
-            return [await dbResult.toArray(), null];
+            return [
+                (await dbResult.toArray()).map(
+                    (s) => new Subject(dolphin.database.collection<ISubject>("subjects"), s),
+                ),
+                null,
+            ];
         } catch {
             return [undefined, DolphinErrorTypes.DATABASE_ERROR];
         }
