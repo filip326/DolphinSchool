@@ -178,8 +178,8 @@ export default {
             <VBtn v-if="passwordless.localAvaible" variant="outlined" prepend-icon="mdi-key"
                 >Als {{ passwordless.localUser }} anmelden.</VBtn
             >
-            <div class="hr-sect">ODER</div>
             <VSpacer v-if="passwordless.localAvaible" />
+            <div v-if="passwordless.localAvaible" class="hr-sect">ODER</div>
             <VTextField
                 label="Benutzername"
                 v-model="username"
@@ -227,24 +227,5 @@ export default {
 .v-progress-circular {
     width: 200px;
     height: 200px;
-}
-
-.hr-sect {
-    display: flex;
-    flex-basis: 100%;
-    align-items: center;
-    color: rgb(var(--v-theme-on-surface));
-    margin: 8px 0px;
-}
-
-.hr-sect:before,
-.hr-sect:after {
-    content: "";
-    flex-grow: 1;
-    background: rgb(var(--v-theme-on-surface));
-    height: 1px;
-    font-size: 0px;
-    line-height: 0px;
-    margin: 0px 8px;
 }
 </style>
