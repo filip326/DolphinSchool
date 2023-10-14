@@ -24,7 +24,7 @@ class Dolphin {
         this.ready = true;
 
         setInterval(Session.tick, 1000 * 60); // 1 minute
-        setInterval(User.deleteAllDeletedUsersAfter30d, 1000 * 60 * 60 * 24); // 1 day
+        setInterval(User.deleteAllDeletedUsersAfter60d, 1000 * 60 * 60 * 24); // 1 day
 
         Dolphin._instance = this;
 
