@@ -34,5 +34,8 @@ export default eventHandler(async (event) => {
         };
     });
 
-    return users;
+    return {
+        users,
+        count: users.length,
+    };
 });

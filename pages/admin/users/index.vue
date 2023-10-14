@@ -41,7 +41,7 @@ export default {
                 },
             );
             if (res.status.value === "success") {
-                this.users = res.data.value as Array<{
+                this.users = res.data.value?.users as Array<{
                     type: "student" | "teacher" | "parent";
                     name: string;
                     id: string;
