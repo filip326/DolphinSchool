@@ -1,6 +1,4 @@
 <script lang="ts">
-import { ObjectId } from "mongodb";
-
 export default {
     data(): {
         course: {
