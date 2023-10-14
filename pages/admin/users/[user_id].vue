@@ -61,12 +61,23 @@ export default {
         <VCardText>
             <VTextField label="Voller Name" v-model="user.fullName" readonly />
             <VTextField label="Benutzername" v-model="user.username" readonly />
-            <VSelect label="Typ" :items="['student', 'teacher', 'parent']" v-model="user.type" readonly />
-            <VTextField label="Kürzel" v-model="user.kuezel" v-if="user.type === 'teacher'" readonly />
+            <VSelect
+                label="Typ"
+                :items="['student', 'teacher', 'parent']"
+                v-model="user.type"
+                readonly
+            />
+            <VTextField
+                label="Kürzel"
+                v-model="user.kuezel"
+                v-if="user.type === 'teacher'"
+                readonly
+            />
             <VCheckbox label="2FA aktiviert" v-model="user.mfaEnabled" readonly />
         </VCardText>
         <VCardText v-if="user.type === 'student'">
-            <VBtn link :href="'/admin/users/' + parent" :key="i" v-for="(parent, i) in user.parents">Elternteil {{ i + 1 }}
+            <VBtn link :href="'/admin/users/' + parent" :key="i" v-for="(parent, i) in user.parents"
+                >Elternteil {{ i + 1 }}
             </VBtn>
             <!-- TODO -->
             <!-- textfield with ASMSQ to add parents -->

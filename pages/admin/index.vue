@@ -9,13 +9,16 @@ export default {
     },
     data() {
         return {
-            settings: Array<{ name: string; link: string }>({
-                name: "Blockierte Passwörter",
-                link: "/admin/blocked-pwds",
-            }, {
-                name: "Benutzer verwalten",
-                link: "/admin/users",
-            }),
+            settings: Array<{ name: string; link: string }>(
+                {
+                    name: "Blockierte Passwörter",
+                    link: "/admin/blocked-pwds",
+                },
+                {
+                    name: "Benutzer verwalten",
+                    link: "/admin/users",
+                },
+            ),
         };
     },
 };

@@ -26,7 +26,6 @@ export default {
     },
     methods: {
         async search() {
-
             const searchTerm = this.searchQuery.split("(")[0].trim();
             if (searchTerm.length < 3) {
                 return;
@@ -52,8 +51,7 @@ export default {
 
             // filter out duplicates
             this.autocompleteItems = this.autocompleteItems.filter(
-                (item, index, self) =>
-                    index === self.findIndex((t) => t.id === item.id),
+                (item, index, self) => index === self.findIndex((t) => t.id === item.id),
             );
         },
 
@@ -83,8 +81,22 @@ export default {
 
 <template>
     User-Id: {{ modelValue }}
-    <VAutocomplete v-model="modelValue" v-model:search="searchQuery" :items="autocompleteItems" item-title="label"
-        item-value="id" :custom-filter="() => true" label="Suche nach Benutzer" outlined dense @update:search="searchTimer"
+    <VAutocomplete
+        v-model="modelValue"
+        v-model:search="searchQuery"
+        :items="autocompleteItems"
+        item-title="label"
+        item-value="id"
+        :custom-filter="() => true"
+        label="Suche nach Benutzer"
+        outlined
+        dense
+        @update:search="searchTimer"
         :loading="autocomplete_loading"
-        :no-data-text="(searchQuery.split('(')[0].trim().length < 3) ? 'Es müssen mindestens 3 Buchstaben eingegeben werden.' : 'Es wurde kein passender Benutzer gefunden'" />
+        :no-data-text="
+            searchQuery.split('(')[0].trim().length < 3
+                ? 'Es müssen mindestens 3 Buchstaben eingegeben werden.'
+                : 'Es wurde kein passender Benutzer gefunden'
+        "
+    />
 </template>
