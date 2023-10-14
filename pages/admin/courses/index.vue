@@ -16,6 +16,28 @@ export default {
             visibleCourses: [],
         };
     },
+    methods: {
+        async fetchCourses() {
+            const response = await useFetch("/api/admin/courses", { method: "get" });
+            if (response.status.value !== "success") {
+                // todo Handle error with error page
+                return;
+            }
+
+            this.visibleCourses = [];
+            response.data.value!.map(course => {
+                this.visibleCourses.push({
+                    name: course.name,
+                    id: course.id,
+                    teacher: course.teacher.join(", "),
+                    student_count: course.student_count,
+                });
+            });
+        }
+    },
+    beforeCreate() {
+        this.fetchCourses();
+    },
 };
 </script>
 <template>
