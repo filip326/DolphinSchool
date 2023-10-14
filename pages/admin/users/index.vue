@@ -35,7 +35,7 @@ export default {
     methods: {
         async search() {
             const res = await useFetch(
-                `/api/admin/users/search?s=${encodeURIComponent(this.searchQuery)}`,
+                `/api/admin/users?s=${encodeURIComponent(this.searchQuery)}`,
                 {
                     method: "GET",
                 },
