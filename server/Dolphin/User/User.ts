@@ -23,6 +23,8 @@ interface IUser {
     doNotAskForMFASetupUntil?: number;
     permissions: number;
 
+    deleted?: number;
+
     changePasswordRequired: boolean;
 
     // student properties
@@ -50,6 +52,19 @@ interface IUser {
 
 class User implements WithId<IUser> {
     // static methods to create, find, get or delete users
+
+    static async deleteAllDeletedUsersAfter60d() {
+        // fetch all user with deleted property set and deleted > 60d
+        // delete them
+        // return the number of deleted users
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const userCollection = dolphin.database.collection<IUser>("users");
+        if (!userCollection) throw new Error("User collection not found");
+        const dbResult = await userCollection.deleteMany({
+            deleted: { $lt: Date.now() - 1000 * 60 * 60 * 24 * 60 },
+        });
+        return dbResult.deletedCount;
+    }
 
     static async searchUsers(options: SearchUserOptions): Promise<MethodResult<User[]>> {
         if (
@@ -203,6 +218,8 @@ class User implements WithId<IUser> {
     subjects?: ISubject[];
     kuerzel?: string;
 
+    deleted?: number;
+
     _permissionManager: PermissionManager;
 
     userCollection: Collection<IUser>;
@@ -270,6 +287,14 @@ class User implements WithId<IUser> {
         }
 
         this.webAuthNCredentials = user.webAuthNCredentials;
+    }
+
+    setDeleted(deleted: boolean) {
+        if (deleted == true) {
+            this.deleted = Date.now();
+        } else {
+            this.deleted = undefined;
+        }
     }
 
     /**

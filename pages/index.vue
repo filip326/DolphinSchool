@@ -178,7 +178,7 @@ export default {
             <VBtn v-if="passwordless.localAvaible" variant="outlined" prepend-icon="mdi-key"
                 >Als {{ passwordless.localUser }} anmelden.</VBtn
             >
-            <div class="hr-sect">ODER</div>
+            <div v-if="passwordless.localAvaible" class="hr-sect">ODER</div>
             <VSpacer v-if="passwordless.localAvaible" />
             <VTextField
                 label="Benutzername"

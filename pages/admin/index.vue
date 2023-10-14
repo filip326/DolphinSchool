@@ -12,6 +12,9 @@ export default {
             settings: Array<{ name: string; link: string }>({
                 name: "Blockierte Passwörter",
                 link: "/admin/blocked-pwds",
+            }, {
+                name: "Benutzer verwalten",
+                link: "/admin/users",
             }),
         };
     },
