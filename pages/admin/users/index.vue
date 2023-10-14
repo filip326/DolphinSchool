@@ -34,9 +34,12 @@ export default {
     },
     methods: {
         async search() {
-            const res = await useFetch(`/api/admin/users/search?s=${this.searchQuery}`, {
-                method: "GET",
-            });
+            const res = await useFetch(
+                `/api/admin/users/search?s=${encodeURIComponent(this.searchQuery)}`,
+                {
+                    method: "GET",
+                },
+            );
             if (res.status.value === "success") {
                 this.users = res.data.value as Array<{
                     type: "student" | "teacher" | "parent";
@@ -47,7 +50,7 @@ export default {
             } else {
                 this.error = {
                     show: true,
-                    msg: "No users found",
+                    msg: "Keine Benutzer gefunden",
                 };
             }
         },
@@ -82,18 +85,18 @@ export default {
             <tr>
                 <th>Typ</th>
                 <th>Name</th>
-                <th>Tut-Course/ Class</th>
+                <th>Tut-Kurs/ Klasse</th>
             </tr>
         </thead>
         <tbody>
             <tr @click="navigateTo(`/admin/users/${user.id}`)" v-for="user in users" :key="user.id">
                 <td style="display: flex; flex-direction: row; align-items: center; gap: 12px">
                     <VIcon v-if="user.type == 'student'"> mdi-account </VIcon>
-                    <p v-if="user.type == 'student'">Student</p>
+                    <p v-if="user.type == 'student'">Schüler</p>
                     <VIcon v-else-if="user.type == 'teacher'"> mdi-account-tie </VIcon>
-                    <p v-if="user.type == 'teacher'">Teacher</p>
+                    <p v-if="user.type == 'teacher'">Lehrkraft</p>
                     <VIcon v-else-if="user.type == 'parent'"> mdi-account-child </VIcon>
-                    <p v-if="user.type == 'parent'">Parent</p>
+                    <p v-if="user.type == 'parent'">Elternteil</p>
                 </td>
                 <td>{{ user.name }}</td>
                 <td>{{ user.tutName }}</td>
