@@ -138,6 +138,30 @@ class TutCourse implements WithId<ITutCourse> {
         return [result.map((tutCourse) => new TutCourse(tutCourse, tutCourses)), null];
     }
 
+    static async searchTutCourseByName(
+        query: string,
+        skip: number = 0,
+        limit: number = 15,
+    ): Promise<MethodResult<TutCourse[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const tutCourses = dolphin.database.collection<ITutCourse>("tutCourses");
+        const result = await tutCourses
+            .find({
+                name: { $regex: query, $options: "i" },
+            })
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+        return [result.map((tutCourse) => new TutCourse(tutCourse, tutCourses)), null];
+    }
+
+    static async list(skip: number = 0, limit: number = 15): Promise<MethodResult<TutCourse[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const tutCourses = dolphin.database.collection<ITutCourse>("tutCourses");
+        const result = await tutCourses.find().skip(skip).limit(limit).toArray();
+        return [result.map((tutCourse) => new TutCourse(tutCourse, tutCourses)), null];
+    }
+
     _id: ObjectId;
     grade: number;
     name: string;

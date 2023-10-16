@@ -29,7 +29,11 @@ export default defineEventHandler(async (event) => {
     }
 
     if (search && typeof search === "string") {
-        const [courses, coursesFindError] = await TutCourse.searchTutCourseByName(search, (skip ?? 0) as number, (limit ?? 10) as number);
+        const [courses, coursesFindError] = await TutCourse.searchTutCourseByName(
+            search,
+            (skip ?? 0) as number,
+            (limit ?? 10) as number,
+        );
         if (coursesFindError) {
             throw createError({
                 statusCode: 500,
@@ -46,7 +50,10 @@ export default defineEventHandler(async (event) => {
 
     // get courses from db
     // default value for search is undefined
-    const [courses, coursesFindError] = await TutCourse.list((skip ?? 0) as number, (limit ?? 10) as number);
+    const [courses, coursesFindError] = await TutCourse.list(
+        (skip ?? 0) as number,
+        (limit ?? 10) as number,
+    );
     if (coursesFindError) {
         throw createError({
             statusCode: 500,
