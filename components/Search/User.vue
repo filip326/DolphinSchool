@@ -2,13 +2,13 @@
 export default {
     props: {
         user_id: {
-            type: String,
+            type: Array<string>,
             required: true,
         },
     },
     data(): {
         searchQuery: string;
-        modelValue: string;
+        modelValue: string[];
         autocompleteItems: {
             label: string;
             id: string;
@@ -17,7 +17,7 @@ export default {
         autocomplete_loading: boolean;
     } {
         return {
-            modelValue: "",
+            modelValue: [],
             searchQuery: "",
             autocompleteItems: [],
             timeout: null,
@@ -25,6 +25,11 @@ export default {
         };
     },
     methods: {
+        clearSearchOptionsAfterSelect() {
+            this.autocompleteItems = [
+                ...this.autocompleteItems.filter((i) => this.modelValue.includes(i.id)),
+            ];
+        },
         async search() {
             const searchTerm = this.searchQuery.split("(")[0].trim();
             if (searchTerm.length < 3) {
@@ -42,11 +47,11 @@ export default {
             }
 
             this.autocompleteItems = [
-                ...this.autocompleteItems.filter((i) => i.id === this.modelValue),
                 ...response.data.value!.map((user) => ({
                     label: user.label,
                     id: user.id,
                 })),
+                ...this.autocompleteItems.filter((i) => this.modelValue.includes(i.id)),
             ];
 
             // filter out duplicates
@@ -58,7 +63,7 @@ export default {
         searchTimer() {
             const searchTerm = this.searchQuery.split("(")[0].trim();
             if (searchTerm.length < 3) {
-                if (this.modelValue === "") this.autocompleteItems = [];
+                if (this.modelValue.length === 0) this.autocompleteItems = [];
                 return;
             }
             // calls search after 1500 ms, except if another key is pressed. if another key is pressed, the timer is reset
@@ -81,22 +86,11 @@ export default {
 
 <template>
     User-Id: {{ modelValue }}
-    <VAutocomplete
-        v-model="modelValue"
-        v-model:search="searchQuery"
-        :items="autocompleteItems"
-        item-title="label"
-        item-value="id"
-        :custom-filter="() => true"
-        label="Suche nach Benutzer"
-        outlined
-        dense
-        @update:search="searchTimer"
-        :loading="autocomplete_loading"
-        :no-data-text="
-            searchQuery.split('(')[0].trim().length < 3
-                ? 'Es müssen mindestens 3 Buchstaben eingegeben werden.'
-                : 'Es wurde kein passender Benutzer gefunden'
-        "
-    />
+    <VAutocomplete v-model="modelValue" v-model:search="searchQuery" :items="autocompleteItems" item-title="label"
+        item-value="id" :custom-filter="() => true" label="Suche nach Benutzer" outlined dense @update:search="searchTimer"
+        @update:model-value="searchQuery = ''; clearSearchOptionsAfterSelect()" multiple chips closable-chips
+        :loading="autocomplete_loading" :no-data-text="searchQuery.split('(')[0].trim().length < 3
+            ? 'Es müssen mindestens 3 Buchstaben eingegeben werden.'
+            : 'Es wurde kein passender Benutzer gefunden'
+            " />
 </template>
