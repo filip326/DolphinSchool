@@ -86,11 +86,29 @@ export default {
 
 <template>
     User-Id: {{ modelValue }}
-    <VAutocomplete v-model="modelValue" v-model:search="searchQuery" :items="autocompleteItems" item-title="label"
-        item-value="id" :custom-filter="() => true" label="Suche nach Benutzer" outlined dense @update:search="searchTimer"
-        @update:model-value="searchQuery = ''; clearSearchOptionsAfterSelect()" multiple chips closable-chips
-        :loading="autocomplete_loading" :no-data-text="searchQuery.split('(')[0].trim().length < 3
-            ? 'Es müssen mindestens 3 Buchstaben eingegeben werden.'
-            : 'Es wurde kein passender Benutzer gefunden'
-            " />
+    <VAutocomplete
+        v-model="modelValue"
+        v-model:search="searchQuery"
+        :items="autocompleteItems"
+        item-title="label"
+        item-value="id"
+        :custom-filter="() => true"
+        label="Suche nach Benutzer"
+        outlined
+        dense
+        @update:search="searchTimer"
+        @update:model-value="
+            searchQuery = '';
+            clearSearchOptionsAfterSelect();
+        "
+        multiple
+        chips
+        closable-chips
+        :loading="autocomplete_loading"
+        :no-data-text="
+            searchQuery.split('(')[0].trim().length < 3
+                ? 'Es müssen mindestens 3 Buchstaben eingegeben werden.'
+                : 'Es wurde kein passender Benutzer gefunden'
+        "
+    />
 </template>
