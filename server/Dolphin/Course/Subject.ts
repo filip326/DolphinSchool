@@ -7,15 +7,12 @@ interface ISubject {
     longName: string;
     short: string;
     color: { r: number; g: number; b: number };
-    teachers: ObjectId[];
 }
 
 interface SubjectSearchOptions {
     id?: ObjectId;
     long?: string;
     short?: string;
-    teacher?: string;
-    main?: boolean;
 }
 
 class Subject implements ISubject {
@@ -98,7 +95,6 @@ class Subject implements ISubject {
     longName: string;
     short: string;
     color: { r: number; g: number; b: number };
-    teachers: ObjectId[];
 
     private readonly subjectCollection: Collection<ISubject>;
 
@@ -108,46 +104,6 @@ class Subject implements ISubject {
         this.longName = subject.longName;
         this.short = subject.short;
         this.color = subject.color;
-        this.teachers = subject.teachers;
-    }
-
-    /**
-     * Add a teacher to the subject
-     * @param teacher Teacher
-     */
-    async addTeacher(teacher: User): Promise<MethodResult<boolean>> {
-        this.teachers.push(teacher._id);
-
-        try {
-            const dbResult = await this.subjectCollection.updateOne(
-                { _id: this._id },
-                { $push: { teachers: teacher._id } },
-            );
-            if (dbResult.acknowledged) {
-                return [true, null];
-            } else {
-                return [undefined, DolphinErrorTypes.FAILED];
-            }
-        } catch {
-            return [undefined, DolphinErrorTypes.FAILED];
-        }
-    }
-
-    /**
-     * Remove a teacher from the subject
-     * @param teacher Teacher
-     */
-    async removeTeacher(teacher: User): Promise<MethodResult<boolean>> {
-        this.teachers = this.teachers.filter((t) => !t.equals(teacher._id));
-        const dbResult = await this.subjectCollection.updateOne(
-            { _id: this._id },
-            { $pull: { teachers: teacher._id } },
-        );
-        if (dbResult.acknowledged) {
-            return [true, null];
-        } else {
-            return [undefined, DolphinErrorTypes.FAILED];
-        }
     }
 
     /**
