@@ -7,6 +7,9 @@ interface IUser {
     mfaEnabled: boolean;
     parents?: string[]; // Schüler only
     kuezel?: string; // Lehrkraft only
+    permissions?: {
+        [key: string]: boolean;
+    };
 }
 
 export default {
@@ -24,6 +27,7 @@ export default {
         });
         if (res.status.value === "success" && res.data.value) {
             this.user = res.data.value as IUser;
+            console.info(JSON.stringify(this.user));
         } else {
             this.error.show = true;
             this.error.message = "Fehler beim Laden des Benutzers";
@@ -74,6 +78,22 @@ export default {
                 readonly
             />
             <VCheckbox label="2FA aktiviert" v-model="user.mfaEnabled" readonly />
+            <VExpansionPanels v-if="Object.keys(user.permissions ?? {}).length !== 0">
+                <VExpansionPanel title="Berechtigungen">
+                    <template #text>
+                        <div class="permission-checkboxes">
+                            <VCheckbox
+                                v-for="permission in Object.keys(user.permissions!)"
+                                class="permission-checkbox"
+                                :label="permission"
+                                :key="permission"
+                                :value="user.permissions![permission]"
+                                readonly
+                            />
+                        </div>
+                    </template>
+                </VExpansionPanel>
+            </VExpansionPanels>
         </VCardText>
         <VCardText v-if="user.type === 'student'">
             <VBtn link :href="'/admin/users/' + parent" :key="i" v-for="(parent, i) in user.parents"
@@ -88,3 +108,18 @@ export default {
         </VCardActions>
     </VCard>
 </template>
+
+<style>
+.permission-checkboxes {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+}
+.permission-checkbox {
+    margin: 0;
+}
+.permission-checkboxes .v-input__details {
+    display: none;
+    height: 0px;
+}
+</style>

@@ -52,7 +52,7 @@ export default eventHandler(async (event) => {
             Permissions.MANAGE_ADMIN_LEVEL_PERMISSIONS,
         );
         returnObject.permissions = {};
-        for (const permission in Object.keys(Permissions)) {
+        for (const permission of Object.keys(Permissions)) {
             if (typeof permission === "string" && isNaN(parseInt(permission))) {
                 if (
                     manageAdmin ||
@@ -65,4 +65,6 @@ export default eventHandler(async (event) => {
             }
         }
     }
+
+    return returnObject;
 });
