@@ -56,23 +56,28 @@ class Subject implements ISubject {
     }
 
     static async create(subject: ISubject): Promise<MethodResult<Subject>> {
-        try {
-            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-            const dbResult = await dolphin.database
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+
+        if (
+            (await dolphin.database
                 .collection<ISubject>("subjects")
-                .insertOne(subject);
-            if (dbResult.acknowledged) {
-                return [
-                    new Subject(dolphin.database.collection<ISubject>("subjects"), {
-                        ...subject,
-                        _id: dbResult.insertedId,
-                    }),
-                    null,
-                ];
-            } else {
-                return [undefined, DolphinErrorTypes.FAILED];
-            }
-        } catch {
+                .countDocuments({
+                    $or: [{ longName: subject.longName }, { short: subject.short }],
+                })) > 0
+        ) {
+            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
+        }
+
+        const dbResult = await dolphin.database.collection<ISubject>("subjects").insertOne(subject);
+        if (dbResult.acknowledged) {
+            return [
+                new Subject(dolphin.database.collection<ISubject>("subjects"), {
+                    ...subject,
+                    _id: dbResult.insertedId,
+                }),
+                null,
+            ];
+        } else {
             return [undefined, DolphinErrorTypes.FAILED];
         }
     }
