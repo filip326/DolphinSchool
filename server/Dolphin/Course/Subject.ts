@@ -55,11 +55,9 @@ class Subject implements ISubject {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
         if (
-            (await dolphin.database
-                .collection<ISubject>("subjects")
-                .countDocuments({
-                    $or: [{ longName: subject.longName }, { short: subject.short }],
-                })) > 0
+            (await dolphin.database.collection<ISubject>("subjects").countDocuments({
+                $or: [{ longName: subject.longName }, { short: subject.short }],
+            })) > 0
         ) {
             return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
         }
