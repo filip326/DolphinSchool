@@ -6,11 +6,18 @@ enum Permissions {
     MANAGE_USERS_PERMISSIONS = 1 << 4,
     CREATE_STUDENT_OR_PARENT = 1 << 5,
     CREATE_TEACHER = 1 << 6,
-    GRANT_ADMIN_LEVEL_PERMISSIONS = 1 << 7,
+    MANAGE_ADMIN_LEVEL_PERMISSIONS = 1 << 7,
     ASSIGN_COURSES_TO_TEACHERS = 1 << 8,
     ASSIGN_STUDENTS_TO_COURSES = 1 << 9,
     DELETE_USERS = 1 << 10,
     MANAGE_SUBJECTS = 1 << 11,
+}
+
+function isAdminLevelPermission(permission: Permissions) {
+    return [
+        // permissions that require MANAGE_ADMIN_LEVEL_PERMISSIONS permission to grant or revoke
+        Permissions.MANAGE_ADMIN_LEVEL_PERMISSIONS,
+    ].includes(permission);
 }
 
 class PermissionManager {
@@ -53,4 +60,4 @@ class PermissionManager {
 }
 
 export default PermissionManager;
-export { Permissions };
+export { Permissions, isAdminLevelPermission };
