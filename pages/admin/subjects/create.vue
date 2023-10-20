@@ -28,7 +28,7 @@ export default {
             if (response.status.value === "success") {
                 this.$router.push("/admin/subjects");
             }
-            // TODO: implement error handling
+            // TODO: #51 implement error handling
         },
     },
 };
