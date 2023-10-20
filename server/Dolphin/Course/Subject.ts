@@ -16,39 +16,31 @@ interface SubjectSearchOptions {
 
 class Subject implements ISubject {
     static async list(): Promise<MethodResult<Subject[]>> {
-        try {
-            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-            const dbResult = await dolphin.database.collection<ISubject>("subjects").find({});
-            return [
-                (await dbResult.toArray()).map(
-                    (subject) =>
-                        new Subject(dolphin.database.collection<ISubject>("subjects"), subject),
-                ),
-                null,
-            ];
-        } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
-        }
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const dbResult = await dolphin.database.collection<ISubject>("subjects").find({});
+        return [
+            (await dbResult.toArray()).map(
+                (subject) =>
+                    new Subject(dolphin.database.collection<ISubject>("subjects"), subject),
+            ),
+            null,
+        ];
     }
 
     static async search(query: string): Promise<MethodResult<Subject[]>> {
-        try {
-            const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-            const dbResult = await dolphin.database.collection<ISubject>("subjects").find({
-                $or: [
-                    { longName: { $regex: query, $options: "i" } },
-                    { short: { $regex: query, $options: "i" } },
-                ],
-            });
-            return [
-                (await dbResult.toArray()).map(
-                    (s) => new Subject(dolphin.database.collection<ISubject>("subjects"), s),
-                ),
-                null,
-            ];
-        } catch {
-            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
-        }
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const dbResult = await dolphin.database.collection<ISubject>("subjects").find({
+            $or: [
+                { longName: { $regex: query, $options: "i" } },
+                { short: { $regex: query, $options: "i" } },
+            ],
+        });
+        return [
+            (await dbResult.toArray()).map(
+                (s) => new Subject(dolphin.database.collection<ISubject>("subjects"), s),
+            ),
+            null,
+        ];
     }
 
     static async create(subject: ISubject): Promise<MethodResult<Subject>> {
