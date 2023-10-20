@@ -1,7 +1,6 @@
 import Dolphin from "../Dolphin";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import { Collection, ObjectId, WithId } from "mongodb";
-import User from "../User/User";
 
 interface ISubject {
     longName: string;
