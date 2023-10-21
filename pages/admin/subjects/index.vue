@@ -56,7 +56,6 @@ export default {
         to="/admin/subjects/create"
         prependIcon="mdi-plus"
         color="primary"
-        style="z-index: 1024"
     >
         Neues Fach
     </VBtn>
