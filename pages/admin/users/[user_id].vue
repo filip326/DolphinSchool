@@ -54,6 +54,37 @@ export default {
                 this.error.message = "Fehler beim Löschen des Benutzers";
             }
         },
+        async updatePermission(permission: string) {
+            if (!this.user.permissions || !(permission in this.user.permissions!)) {
+                return;
+            }
+            if (this.user.permissions[permission] === true) {
+                // grant permission
+                const res = await useFetch(
+                    `/api/admin/users/${this.user.id}/permissions/${permission}`,
+                    { method: "POST" }, // post to add permission
+                );
+
+                if (res.status.value === "success" && res.data.value?.success === true) {
+                    return;
+                } else {
+                    // change checkbox back to false if permission could not be granted
+                    this.user.permissions[permission] = false;
+                }
+            } else {
+                // revoke permission
+                const res = await useFetch(
+                    `/api/admin/users/${this.user.id}/permissions/${permission}`,
+                    { method: "DELETE" }, // delete to revoke permission
+                );
+                if (res.status.value === "success" && res.data.value?.success === true) {
+                    return;
+                } else {
+                    // change checkbox back to true if permission could not be revoked
+                    this.user.permissions[permission] = true;
+                }
+            }
+        },
     },
 };
 </script>
@@ -87,10 +118,15 @@ export default {
                                 class="permission-checkbox"
                                 :label="permission"
                                 :key="permission"
-                                :value="user.permissions![permission]"
-                                readonly
+                                v-model="user.permissions![permission]"
+                                @update:model-value="updatePermission(permission)"
                             />
                         </div>
+                    </template>
+                </VExpansionPanel>
+                <VExpansionPanel title="JSON">
+                    <template #text>
+                        <pre>{{ JSON.stringify(user, null, 4) }}</pre>
                     </template>
                 </VExpansionPanel>
             </VExpansionPanels>
@@ -118,8 +154,8 @@ export default {
 .permission-checkbox {
     margin: 0;
 }
-.permission-checkboxes .v-input__details {
+/* .permission-checkboxes .v-input__details {
     display: none;
     height: 0px;
-}
+} */
 </style>
