@@ -18,6 +18,13 @@ export default {
             searchQuery: "",
         };
     },
+    async beforeCreate() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            throwErrorOnNotAuthenticated: true,
+            redirectOnPwdChange: true,
+        });
+    },
     methods: {
         async loadSubjects() {
             const response = await useFetch("/api/admin/subjects", { method: "get" });
