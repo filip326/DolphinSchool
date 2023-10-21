@@ -81,7 +81,6 @@ export default {
                 href="/admin/courses/create"
                 prepend-icon="mdi-plus"
                 color="primary"
-                style="z-index: 1024"
             >
                 Erstellen
             </VBtn>

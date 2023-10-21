@@ -74,7 +74,6 @@ export default {
                 to="/admin/users/create"
                 prepend-icon="mdi-plus"
                 color="primary"
-                style="z-index: 1024"
             >
                 Create
             </VBtn>
