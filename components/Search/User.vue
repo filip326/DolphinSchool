@@ -85,7 +85,6 @@ export default {
 </script>
 
 <template>
-    User-Id: {{ modelValue }}
     <VAutocomplete
         v-model="modelValue"
         v-model:search="searchQuery"
