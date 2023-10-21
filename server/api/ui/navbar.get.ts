@@ -256,6 +256,10 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
         adminNavbar.push({ label: "Benutzer verwalten", location: "/admin/users" });
     }
 
+    if (user.hasPermission(Permissions.MANAGE_SUBJECTS)) {
+        adminNavbar.push({ label: "Fächer verwalten", location: "/admin/subjects" });
+    }
+
     if (adminNavbar.length > 0) {
         navbar.push({
             icon: "mdi-shield-account",
