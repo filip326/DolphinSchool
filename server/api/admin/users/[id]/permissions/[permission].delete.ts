@@ -25,11 +25,11 @@ export default defineEventHandler(async (event) => {
     const { id, permission } = getRouterParams(event);
 
     if (!id || !permission) {
-        throw createError({ statusCode: 400 });
+        throw createError({ statusCode: 400, statusMessage: "Missing params" });
     }
 
     if (typeof id !== "string" || !ObjectId.isValid(id)) {
-        throw createError({ statusCode: 400 });
+        throw createError({ statusCode: 400, statusMessage: "Invalid user id" });
     }
 
     const [target, targetFindError] = await User.getUserById(ObjectId.createFromHexString(id));
@@ -37,8 +37,8 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 404 });
     }
 
-    if (typeof permission !== "string" || isNaN(parseInt(permission))) {
-        throw createError({ statusCode: 400 });
+    if (typeof permission !== "string" || !isNaN(parseInt(permission))) {
+        throw createError({ statusCode: 400, statusMessage: "Invalid permission type" });
     }
 
     if (!(permission in Permissions)) {

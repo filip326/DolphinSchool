@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 404 });
     }
 
-    if (typeof permission !== "string" || isNaN(parseInt(permission))) {
+    if (typeof permission !== "string" || !isNaN(parseInt(permission))) {
         throw createError({ statusCode: 400 });
     }
 
