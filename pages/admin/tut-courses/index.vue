@@ -65,10 +65,10 @@ export default {
 };
 </script>
 <template>
-    <h1>Kurse</h1>
+    <h1>Klassen und Tutorkurse</h1>
     <VTextField
         v-model="searchQuery"
-        label="Kurs suchen"
+        label="Klasse oder Tut-Kurs suchen"
         dense
         outlined
         hide-details
@@ -78,7 +78,7 @@ export default {
             <VBtn
                 title="create user"
                 link
-                href="/admin/courses/create"
+                href="/admin/tut-courses/create"
                 prepend-icon="mdi-plus"
                 color="primary"
             >
@@ -96,7 +96,11 @@ export default {
             </tr>
         </thead>
         <tbody>
-            <tr v-for="course in visibleCourses" :key="course.id">
+            <tr
+                v-for="course in visibleCourses"
+                :key="course.id"
+                @click="navigateTo(`/admin/tut-courses/${course.id}`)"
+            >
                 <td>{{ course.name }}</td>
                 <td>{{ course.teacher }}</td>
                 <td>{{ course.student_count }}</td>

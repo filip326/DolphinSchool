@@ -5,6 +5,14 @@ export default {
             type: Array<string>,
             required: true,
         },
+        label: {
+            type: String,
+            required: false,
+        },
+        limit: {
+            type: Number,
+            required: false,
+        },
     },
     data(): {
         searchQuery: string;
@@ -61,6 +69,11 @@ export default {
         },
 
         searchTimer() {
+            if (this.limit && this.modelValue.length >= this.limit) {
+                // if limit is reached, do not search
+                // also display warning message
+                return;
+            }
             const searchTerm = this.searchQuery.split("(")[0].trim();
             if (searchTerm.length < 3) {
                 if (this.modelValue.length === 0) this.autocompleteItems = [];
@@ -77,8 +90,18 @@ export default {
             }, 1000);
         },
         customFilter(itemTitle: string, queryText: string) {
+            if (this.limit && this.modelValue.length >= this.limit) {
+                return false;
+            }
             const searchTerm = queryText.split("(")[0].trim();
             return itemTitle.toLowerCase().includes(searchTerm.toLowerCase());
+        },
+    },
+    watch: {
+        modelValue(newVal: string[]) {
+            if (this.limit && newVal.length > this.limit) {
+                this.modelValue = newVal.slice(0, this.limit);
+            }
         },
     },
 };
@@ -92,7 +115,7 @@ export default {
         item-title="label"
         item-value="id"
         :custom-filter="() => true"
-        label="Suche nach Benutzer"
+        :label="label ?? 'Suche nach Benutzer'"
         outlined
         dense
         @update:search="searchTimer"
@@ -100,12 +123,15 @@ export default {
             searchQuery = '';
             clearSearchOptionsAfterSelect();
         "
-        multiple
-        chips
+        :counter="limit"
+        :multiple="true"
+        :chips="true"
         closable-chips
         :loading="autocomplete_loading"
         :no-data-text="
-            searchQuery.split('(')[0].trim().length < 3
+            limit && modelValue.length >= limit
+                ? 'Maximale Anzahl an Benutzern erreicht'
+                : searchQuery.split('(')[0].trim().length < 3
                 ? 'Es müssen mindestens 3 Buchstaben eingegeben werden.'
                 : 'Es wurde kein passender Benutzer gefunden'
         "

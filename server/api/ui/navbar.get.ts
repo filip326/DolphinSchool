@@ -249,7 +249,7 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
 
     if (user.hasPermission(Permissions.MANAGE_COURSES)) {
         adminNavbar.push({ label: "Kurse verwalten", location: "/admin/courses" });
-        adminNavbar.push({ label: "Klasse und Tutorkurse", location: "/admin/tut-courses" });
+        adminNavbar.push({ label: "Klassen und Tutorkurse", location: "/admin/tut-courses" });
     }
 
     if (user.hasPermission(Permissions.VIEW_ALL_USERS)) {
