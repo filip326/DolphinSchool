@@ -31,7 +31,14 @@ export default {
     },
     methods: {
         async createSubject() {
-            const response = await useFetch("/api/admin/subject", { method: "post" });
+            const response = await useFetch("/api/admin/subject", {
+                method: "post",
+                body: {
+                    name: this.subject_name,
+                    shortName: this.subject_short_name,
+                    color: this.subject_color,
+                },
+            });
             if (response.status.value === "success") {
                 this.$router.push("/admin/subjects");
             }

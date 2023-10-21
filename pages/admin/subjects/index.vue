@@ -25,6 +25,9 @@ export default {
             redirectOnPwdChange: true,
         });
     },
+    async beforeMount() {
+        this.loadSubjects();
+    },
     methods: {
         async loadSubjects() {
             const response = await useFetch("/api/admin/subjects", { method: "get" });
