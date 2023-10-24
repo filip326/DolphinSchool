@@ -18,6 +18,18 @@ export default {
                     name: "Benutzer verwalten",
                     link: "/admin/users",
                 },
+                {
+                    name: "Fächer verwalten",
+                    link: "/admin/subjects",
+                },
+                {
+                    name: "Kurse verwalten",
+                    link: "/admin/courses",
+                },
+                {
+                    name: "Klassen verwalten",
+                    link: "/admin/tut-courses",
+                },
             ),
         };
     },
@@ -26,7 +38,7 @@ export default {
 
 <template>
     <h2><VIcon>mdi-security</VIcon>Administrator Tools</h2>
-    <div class="settings__wrapper">
+    <div class="__wrapper">
         <MenuOneLinkCard
             v-for="(setting, index) in settings"
             v-bind:key="index"
@@ -36,4 +48,10 @@ export default {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.__wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 500px));
+    gap: 10px;
+}
+</style>

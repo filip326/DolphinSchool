@@ -31,7 +31,7 @@ export default {
     },
     methods: {
         async createSubject() {
-            const response = await useFetch("/api/admin/subject", {
+            const response = await useFetch("/api/admin/subjects", {
                 method: "post",
                 body: {
                     name: this.subject_name,

@@ -28,7 +28,7 @@ export default {
     },
     methods: {
         async createCourse() {
-            const response = await useFetch("/api/admin/course", {
+            const response = await useFetch("/api/admin/courses", {
                 method: "post",
                 body: {},
             });
