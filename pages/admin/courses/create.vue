@@ -37,7 +37,7 @@ export default {
                 return;
             }
 
-            this.$router.push(`/admin/courses/${response.data.value!.id}`);
+            await navigateTo(`/admin/courses/${response.data.value!.id}`);
         },
         async fetchSubjects() {
             const response = await useFetch("/api/subjects", { method: "get" });
