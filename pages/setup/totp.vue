@@ -13,7 +13,8 @@ export default {
             rules: {
                 required: (v) => !!v || "Dieses Feld ist erforderlich!",
                 totpLength: (v) => v.length === 6 || "Der Code muss 6-stellig sein!",
-                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!",
+                totpNumbers: (v) =>
+                    /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen!",
             },
             userInfo: {
                 fullName: "" | undefined,
@@ -101,19 +102,20 @@ export default {
                 <h1>2FA</h1>
                 <ol>
                     <li>
-                        Ihr Konto hat keine 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres
-                        Kontos erheblich erhöht.
+                        Ihr Konto hat keine 2-Faktor-Authentizierung (2FA), die die
+                        Sicherheit Ihres Kontos erheblich erhöht.
                     </li>
                     <li>
                         Installieren Sie eine App wie "Authy" (oder eine andere) auf Ihrem
                         Smartphone, um die 2-Faktor-Authentifizierung zu aktivieren.
                     </li>
                     <li>
-                        Scannen Sie den QR-Code und geben Sie den angezeigten 6-stelligen Code ein.
+                        Scannen Sie den QR-Code und geben Sie den angezeigten 6-stelligen
+                        Code ein.
                     </li>
                     <li>
-                        Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem
-                        Smartphone für den Zugriff.
+                        Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code
+                        von Ihrem Smartphone für den Zugriff.
                     </li>
                 </ol>
                 <ul>
@@ -124,8 +126,8 @@ export default {
                     <li>Sie können die 2-Faktor-Authentizierung später einrichten.</li>
                     <li>
                         <b
-                            >Nach der Einrichtung ist ein Zugriff auf das Konto nur mit Ihrem
-                            Smartphone möglich.</b
+                            >Nach der Einrichtung ist ein Zugriff auf das Konto nur mit
+                            Ihrem Smartphone möglich.</b
                         >
                     </li>
                 </ul>
@@ -133,9 +135,17 @@ export default {
         </div>
 
         <VForm @submit.prevent="submit2FA()">
-            <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
+            <VAlert
+                v-if="error.shown"
+                type="error"
+                variant="text"
+                :text="error.message"
+            />
 
-            <p>Scannen Sie diesen QR Code mit Ihrer Authentizierungs-App auf dem Smartphone ein:</p>
+            <p>
+                Scannen Sie diesen QR Code mit Ihrer Authentizierungs-App auf dem
+                Smartphone ein:
+            </p>
             <div class="qr-code">
                 <VImg v-if="qr_code" :src="qr_code" />
                 <VProgressCircular v-else indeterminate color="primary" />
@@ -150,7 +160,9 @@ export default {
             />
 
             <VBtn type="submit" color="primary" class="mr-4">2FA-Aktivieren</VBtn>
-            <VBtn @click.prevent="skip()" :loading="skip_button_loading">Überspringen</VBtn>
+            <VBtn @click.prevent="skip()" :loading="skip_button_loading"
+                >Überspringen</VBtn
+            >
         </VForm>
     </div>
 </template>

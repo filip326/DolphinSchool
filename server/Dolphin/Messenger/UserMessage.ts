@@ -40,15 +40,17 @@ class UserMessage implements IUserMessage {
         }: { read?: boolean; stared?: boolean; newsletter?: boolean } = {},
     ): Promise<MethodResult<UserMessage[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-        const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").find(
-            {
-                owner: user._id,
-                read,
-                stared,
-                newsletter,
-            },
-            { limit, skip },
-        );
+        const dbResult = await dolphin.database
+            .collection<IUserMessage>("userMessages")
+            .find(
+                {
+                    owner: user._id,
+                    read,
+                    stared,
+                    newsletter,
+                },
+                { limit, skip },
+            );
         return [
             (await dbResult.toArray()).map(
                 (userMessage) =>
@@ -67,10 +69,12 @@ class UserMessage implements IUserMessage {
         receiver: User,
     ): Promise<MethodResult<UserMessage>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-        const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({
-            owner: receiver._id,
-            author: author._id,
-        });
+        const dbResult = await dolphin.database
+            .collection<IUserMessage>("userMessages")
+            .findOne({
+                owner: receiver._id,
+                author: author._id,
+            });
         if (!dbResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
         return [
             new UserMessage(
@@ -104,7 +108,8 @@ class UserMessage implements IUserMessage {
     ): Promise<MethodResult<IUserMessage[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
-        const userMessageCollection = dolphin.database.collection<IUserMessage>("userMessages");
+        const userMessageCollection =
+            dolphin.database.collection<IUserMessage>("userMessages");
         const messageCollection = dolphin.database.collection<IMessage>("messages");
 
         if (!user) {
@@ -131,7 +136,9 @@ class UserMessage implements IUserMessage {
         }
 
         return [
-            dbResult.map((msg) => new UserMessage(messageCollection, userMessageCollection, msg)),
+            dbResult.map(
+                (msg) => new UserMessage(messageCollection, userMessageCollection, msg),
+            ),
             null,
         ];
     }

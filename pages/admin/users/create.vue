@@ -81,9 +81,13 @@ export default {
             label="Typ"
             required
         ></VSelect>
-        <VBtn :loading="btn.loading" :disabled="btn.disabled" :color="btn.color" type="submit">{{
-            btn.text
-        }}</VBtn>
+        <VBtn
+            :loading="btn.loading"
+            :disabled="btn.disabled"
+            :color="btn.color"
+            type="submit"
+            >{{ btn.text }}</VBtn
+        >
         <VSpacer></VSpacer>
         <VTextField
             v-if="createdUserPwd"

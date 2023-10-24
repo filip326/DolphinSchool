@@ -34,7 +34,11 @@ export default defineNuxtConfig({
                 },
                 // Open Graph
                 { hid: "og:title", property: "og:title", content: "DolphinSchool" },
-                { hid: "og:site_name", property: "og:site_name", content: "DolphinSchool" },
+                {
+                    hid: "og:site_name",
+                    property: "og:site_name",
+                    content: "DolphinSchool",
+                },
                 { hid: "og:type", property: "og:type", content: "website" },
                 {
                     hid: "og:url",
@@ -45,7 +49,9 @@ export default defineNuxtConfig({
                 {
                     hid: "og:image",
                     property: "og:image",
-                    content: `${process.env.DOMAIN ?? "http://127.0.0.1:3000/"}favicon.ico`,
+                    content: `${
+                        process.env.DOMAIN ?? "http://127.0.0.1:3000/"
+                    }favicon.ico`,
                 },
             ],
             link: [{ rel: "shortcut icon", type: "image/x-icon", href: "/favicon.ico" }],

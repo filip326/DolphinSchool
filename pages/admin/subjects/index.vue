@@ -71,9 +71,9 @@ export default {
                 <td>
                     <div
                         :class="`subject-color`"
-                        :style="`background-color: rgb(${subject.color.r}, ${subject.color.g}, ${
-                            subject.color.b
-                        }); color: ${getTextColor(subject.color)}`"
+                        :style="`background-color: rgb(${subject.color.r}, ${
+                            subject.color.g
+                        }, ${subject.color.b}); color: ${getTextColor(subject.color)}`"
                     >
                         {{ subject.short_name }}
                     </div>

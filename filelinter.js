@@ -4,7 +4,13 @@ const path = require("path");
 
 function lintFilesAndDirectories(objects) {
     objects.forEach((obj) => {
-        const { path: basePath, directoryRegex, regex, extensions = [], ignoreRegex } = obj;
+        const {
+            path: basePath,
+            directoryRegex,
+            regex,
+            extensions = [],
+            ignoreRegex,
+        } = obj;
 
         fs.readdirSync(basePath).forEach((name) => {
             const fullPath = path.join(basePath, name);

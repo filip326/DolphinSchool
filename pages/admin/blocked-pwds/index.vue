@@ -80,9 +80,20 @@ export default {
             <VForm @submit.prevent="createPwd()">
                 <VAlert v-if="error.shown" type="error" :text="error.message" />
                 <h1>Passwort blocken</h1>
+                <div>
+                    Passwörter werden egal ob sie am Ende vom Benutzer groß oder klein
+                    geschrieben werden, immer geblockt. Wenn Sie also das Passwort
+                    "Dolphin" blockieren möchten, sind unter anderem folgende Passwörter
+                    nicht mehr möglich:
+                    <ul>
+                        <li>dolphin</li>
+                        <li>Dolphin</li>
+                        <li>DoLpHiNSchool123</li>
+                    </ul>
+                </div>
                 <VTextField
                     v-model="blockedPwd"
-                    placeholder="/password/i"
+                    placeholder="Dolphin"
                     label="Passwort blocken"
                     :rules="[rules.required]"
                 />
@@ -93,7 +104,12 @@ export default {
 
     <VList bg-color="background">
         <VAlert v-if="error.shown" type="error" :text="error.message" />
-        <VListItem variant="tonal" density="comfortable" v-for="pwd in blockedPwds" :key="pwd">
+        <VListItem
+            variant="tonal"
+            density="comfortable"
+            v-for="pwd in blockedPwds"
+            :key="pwd"
+        >
             <VListItemTitle>{{ pwd }}</VListItemTitle>
             <VListItemAction>
                 <VBtn icon @click="unblockPwd(pwd)">

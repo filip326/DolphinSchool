@@ -162,7 +162,8 @@ describe("User class", () => {
         expect(userFindError).toBeNull();
         expect(user).toBeDefined();
 
-        const [passwordChangeResult, passwordChangeError] = await user!.setPassword("short");
+        const [passwordChangeResult, passwordChangeError] =
+            await user!.setPassword("short");
 
         expect(passwordChangeError).toBeDefined();
         expect(passwordChangeError).toBe(DolphinErrorTypes.INVALID_ARGUMENT);

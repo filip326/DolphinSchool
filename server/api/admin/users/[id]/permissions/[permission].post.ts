@@ -32,7 +32,9 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400 });
     }
 
-    const [target, targetFindError] = await User.getUserById(ObjectId.createFromHexString(id));
+    const [target, targetFindError] = await User.getUserById(
+        ObjectId.createFromHexString(id),
+    );
     if (targetFindError || !target) {
         throw createError({ statusCode: 404 });
     }

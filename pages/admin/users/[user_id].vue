@@ -132,7 +132,11 @@ export default {
             </VExpansionPanels>
         </VCardText>
         <VCardText v-if="user.type === 'student'">
-            <VBtn link :href="'/admin/users/' + parent" :key="i" v-for="(parent, i) in user.parents"
+            <VBtn
+                link
+                :href="'/admin/users/' + parent"
+                :key="i"
+                v-for="(parent, i) in user.parents"
                 >Elternteil {{ i + 1 }}
             </VBtn>
             <!-- TODO -->

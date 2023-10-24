@@ -22,7 +22,12 @@ export default {
 <template>
     <div class="loginform">
         <VForm>
-            <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
+            <VAlert
+                v-if="error.shown"
+                type="error"
+                variant="text"
+                :text="error.message"
+            />
             <h1>Ticket öffnen</h1>
             <VTextField
                 v-model="supportcode"

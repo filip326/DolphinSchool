@@ -99,7 +99,10 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
                 icon: "mdi-account-group",
                 label: "Meine Klassenleitungen",
                 location: "/tut",
-                children: tuts.map((tut) => ({ label: tut.name, location: `/tut/${tut._id}` })),
+                children: tuts.map((tut) => ({
+                    label: tut.name,
+                    location: `/tut/${tut._id}`,
+                })),
             });
         }
 
@@ -173,7 +176,11 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
             const [students, studentsFindError] = await user.getStudents();
             if (!studentsFindError) {
                 const tutCourses = (
-                    (await Promise.all(students.map((s) => TutCourse.getTutCourseByUser(s._id))))
+                    (
+                        await Promise.all(
+                            students.map((s) => TutCourse.getTutCourseByUser(s._id)),
+                        )
+                    )
                         .map((tut) => tut[0])
                         .filter((tut) => tut != undefined) as TutCourse[]
                 ).filter(
@@ -198,7 +205,9 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
 
                 await Promise.all(
                     students.map(async (s) => {
-                        const [courses, coursesFindError] = await Course.listByMember(s._id);
+                        const [courses, coursesFindError] = await Course.listByMember(
+                            s._id,
+                        );
                         if (coursesFindError)
                             throw createError({
                                 statusCode: 500,
@@ -244,12 +253,18 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
 
     // check for different permissions and add the corresponding links
     if (user.hasPermission(Permissions.MANAGE_BLOCKED_PWDS)) {
-        adminNavbar.push({ label: "Gesperrte Passwörter", location: "/admin/blocked-pwds" });
+        adminNavbar.push({
+            label: "Gesperrte Passwörter",
+            location: "/admin/blocked-pwds",
+        });
     }
 
     if (user.hasPermission(Permissions.MANAGE_COURSES)) {
         adminNavbar.push({ label: "Kurse verwalten", location: "/admin/courses" });
-        adminNavbar.push({ label: "Klassen und Tutorkurse", location: "/admin/tut-courses" });
+        adminNavbar.push({
+            label: "Klassen und Tutorkurse",
+            location: "/admin/tut-courses",
+        });
     }
 
     if (user.hasPermission(Permissions.VIEW_ALL_USERS)) {

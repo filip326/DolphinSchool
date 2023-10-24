@@ -14,7 +14,10 @@ export default {
                 message: "",
             },
             fastProblemRecognitionItems: [
-                { title: "Passwort vergessen", descr: "Mein Passwort muss zurückgesetzt werden." },
+                {
+                    title: "Passwort vergessen",
+                    descr: "Mein Passwort muss zurückgesetzt werden.",
+                },
                 {
                     title: "Login-Probleme",
                     descr: "Ich kann mich nicht anmelden.",
@@ -28,7 +31,10 @@ export default {
                     title: "Entwicklungsfehler",
                     descr: "Ich habe einen Bug oder eine Sicherheitslücke entdeckt.",
                 },
-                { title: "Sonstiges", descr: "Mein Problem kann nicht kategorisiert werden." },
+                {
+                    title: "Sonstiges",
+                    descr: "Mein Problem kann nicht kategorisiert werden.",
+                },
             ] as { title: string; descr: string }[],
             supportData: {
                 fullName: "",
@@ -46,7 +52,12 @@ export default {
 <template>
     <div class="loginform">
         <VForm>
-            <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
+            <VAlert
+                v-if="error.shown"
+                type="error"
+                variant="text"
+                :text="error.message"
+            />
             <h1>Ticket erstellen</h1>
             <VTextField
                 v-model="supportData.fullName"

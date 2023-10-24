@@ -1,5 +1,9 @@
 .login-wrapper {
-    background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 1) 100%),
+    background-image: linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.4) 40%,
+            rgba(0, 0, 0, 1) 100%
+        ),
         url("/img/other/GymnasiumRiedberg.jpg");
     background-repeat: no-repeat;
     background-size: cover;

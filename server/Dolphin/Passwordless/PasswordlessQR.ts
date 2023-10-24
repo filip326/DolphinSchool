@@ -27,7 +27,12 @@ interface IPasswordlessQR {
 
 class PasswordlessQR {
     static async requestChallenge(): Promise<
-        MethodResult<{ token: string; url: string; challenge: string; tokenSHA256: string }>
+        MethodResult<{
+            token: string;
+            url: string;
+            challenge: string;
+            tokenSHA256: string;
+        }>
     > {
         this.tick();
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
@@ -208,7 +213,8 @@ class PasswordlessQR {
             }
 
             // write credentials to database
-            const [addResult, addError] = await user.addWebAuthNCredential(solvedChallenge);
+            const [addResult, addError] =
+                await user.addWebAuthNCredential(solvedChallenge);
 
             if (addError || !addResult) {
                 return [undefined, DolphinErrorTypes.DATABASE_ERROR];

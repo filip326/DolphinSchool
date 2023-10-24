@@ -32,7 +32,8 @@ export default {
             return {
                 statusCode: this.error.statusCode ?? 500,
                 statusMessage:
-                    this.error.statusMessage ?? "Unknown Error. Please contact the support.",
+                    this.error.statusMessage ??
+                    "Unknown Error. Please contact the support.",
             };
         },
     },
@@ -40,9 +41,13 @@ export default {
         title(): string {
             switch (this.type) {
                 case "http":
-                    return `${this.valError().statusCode} - ${this.valError().statusMessage}`;
+                    return `${this.valError().statusCode} - ${
+                        this.valError().statusMessage
+                    }`;
                 case "api":
-                    return `${this.valError().statusCode} - ${this.valError().statusMessage}`;
+                    return `${this.valError().statusCode} - ${
+                        this.valError().statusMessage
+                    }`;
                 default:
                     return this.valError().statusMessage;
             }

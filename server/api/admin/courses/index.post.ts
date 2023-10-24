@@ -37,7 +37,10 @@ export default defineEventHandler(async (event) => {
     }; */
 
     // first check for a valid type
-    if (!("type" in body) || !["LK", "GK", "single-class", "out-of-class"].includes(body.type)) {
+    if (
+        !("type" in body) ||
+        !["LK", "GK", "single-class", "out-of-class"].includes(body.type)
+    ) {
         throw createError({
             statusCode: 400,
             message: "Invalid body - type is missing",
@@ -176,7 +179,8 @@ export default defineEventHandler(async (event) => {
             !("linkedTuts" in body) ||
             !Array.isArray(body.linkedTuts) ||
             body.linkedTuts.some(
-                (linkedTut: any) => typeof linkedTut !== "string" || !ObjectId.isValid(linkedTut),
+                (linkedTut: any) =>
+                    typeof linkedTut !== "string" || !ObjectId.isValid(linkedTut),
             )
         ) {
             throw createError({
@@ -187,7 +191,8 @@ export default defineEventHandler(async (event) => {
         if (body.linkedTuts.length !== 1) {
             throw createError({
                 statusCode: 400,
-                message: "Invalid body - linkedTut needs to be an array with exactly one element",
+                message:
+                    "Invalid body - linkedTut needs to be an array with exactly one element",
             });
         }
 
@@ -204,14 +209,17 @@ export default defineEventHandler(async (event) => {
         // create the course now
         const courseCreateOptions: CreateSingleClassCourseOptions = {
             type: body.type,
-            teacher: body.teacher.map((teacher: string) => ObjectId.createFromHexString(teacher)),
+            teacher: body.teacher.map((teacher: string) =>
+                ObjectId.createFromHexString(teacher),
+            ),
             subject: subject._id,
             schoolYear,
             semester,
             grade: body.grade,
             linkedTuts: [linkedTut._id],
         };
-        const [courseCreate, courseCreateError] = await Course.create(courseCreateOptions);
+        const [courseCreate, courseCreateError] =
+            await Course.create(courseCreateOptions);
         if (courseCreateError) {
             throw createError({
                 statusCode: 500,
@@ -228,7 +236,9 @@ export default defineEventHandler(async (event) => {
     // else create the course without linkedTuts
     const courseCreateOptions: CreateCourseOptions = {
         type: body.type,
-        teacher: body.teacher.map((teacher: string) => ObjectId.createFromHexString(teacher)),
+        teacher: body.teacher.map((teacher: string) =>
+            ObjectId.createFromHexString(teacher),
+        ),
         subject: subject._id,
         schoolYear,
         semester,

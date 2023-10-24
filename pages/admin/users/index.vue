@@ -88,8 +88,19 @@ export default {
             </tr>
         </thead>
         <tbody>
-            <tr @click="navigateTo(`/admin/users/${user.id}`)" v-for="user in users" :key="user.id">
-                <td style="display: flex; flex-direction: row; align-items: center; gap: 12px">
+            <tr
+                @click="navigateTo(`/admin/users/${user.id}`)"
+                v-for="user in users"
+                :key="user.id"
+            >
+                <td
+                    style="
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 12px;
+                    "
+                >
                     <VIcon v-if="user.type == 'student'"> mdi-account </VIcon>
                     <p v-if="user.type == 'student'">Schüler</p>
                     <VIcon v-else-if="user.type == 'teacher'"> mdi-account-tie </VIcon>
@@ -102,5 +113,11 @@ export default {
             </tr>
         </tbody>
     </VTable>
-    <VAlert style="margin: 6px" type="error" variant="flat" v-if="error.show" :title="error.msg" />
+    <VAlert
+        style="margin: 6px"
+        type="error"
+        variant="flat"
+        v-if="error.show"
+        :title="error.msg"
+    />
 </template>

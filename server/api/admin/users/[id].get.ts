@@ -56,7 +56,9 @@ export default eventHandler(async (event) => {
             if (typeof permission === "string" && isNaN(parseInt(permission))) {
                 if (
                     manageAdmin ||
-                    !isAdminLevelPermission(Permissions[permission as keyof typeof Permissions])
+                    !isAdminLevelPermission(
+                        Permissions[permission as keyof typeof Permissions],
+                    )
                 ) {
                     returnObject.permissions[permission] = user.hasPermission(
                         Permissions[permission as keyof typeof Permissions],

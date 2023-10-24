@@ -12,7 +12,9 @@ interface ParsedASMSQResult {
 }
 
 export default class ASMSQ {
-    public static async suggest(query: string): Promise<MethodResult<ParsedASMSQResult[]>> {
+    public static async suggest(
+        query: string,
+    ): Promise<MethodResult<ParsedASMSQResult[]>> {
         const result: ASMSQResult[] = new ASMSQInterpreter(query).result;
 
         if (!result || result.length === 0) {

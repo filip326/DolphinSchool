@@ -68,10 +68,15 @@ export default {
         <VCardTitle> passwordless Login </VCardTitle>
         <VCardSubtitle> passwordless Login auf diesem Gerät einrichten? </VCardSubtitle>
         <VCardText>
-            Richten Sie auf diesem Gerät passwordless Login ein, um sich noch einfacher anzumelden!
+            Richten Sie auf diesem Gerät passwordless Login ein, um sich noch einfacher
+            anzumelden!
         </VCardText>
         <VCardActions>
-            <VBtn @click="navigateTo('/passwordless/setup')" variant="elevated" color="primary">
+            <VBtn
+                @click="navigateTo('/passwordless/setup')"
+                variant="elevated"
+                color="primary"
+            >
                 Jetzt Einrichten
             </VBtn>
             <VBtn @click="passwordless_setup = true" variant="text"> Jetzt nicht </VBtn>

@@ -6,7 +6,12 @@ import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 export default eventHandler(async (event) => {
     const { username, password } = await readBody(event);
 
-    if (!username || !password || typeof username !== "string" || typeof password !== "string") {
+    if (
+        !username ||
+        !password ||
+        typeof username !== "string" ||
+        typeof password !== "string"
+    ) {
         throw createError({ statusCode: 400, message: "Invalid body" });
     }
 
@@ -87,13 +92,18 @@ export default eventHandler(async (event) => {
             username,
             parseCookies(event)["bf-bypass-token"] as string,
         );
-        setCookie(event, "bf-bypass-token", parseCookies(event)["bf-bypass-token"] as string, {
-            maxAge: 90 * 24 * 60 * 60, // 90 days
-            secure: useRuntimeConfig().prod,
-            httpOnly: true,
-            sameSite: "strict",
-            path: "/",
-        });
+        setCookie(
+            event,
+            "bf-bypass-token",
+            parseCookies(event)["bf-bypass-token"] as string,
+            {
+                maxAge: 90 * 24 * 60 * 60, // 90 days
+                secure: useRuntimeConfig().prod,
+                httpOnly: true,
+                sameSite: "strict",
+                path: "/",
+            },
+        );
     }
 
     if (user.mfaEnabled) {

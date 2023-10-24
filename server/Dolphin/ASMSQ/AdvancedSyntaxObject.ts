@@ -9,7 +9,8 @@ const pattern2 =
 // Schueler von [Lehrkraft]
 // Eltern von [Schueler]
 // Lehrer von [Schueler]
-const pattern3 = /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (von|vom) (?<userOf>[a-zA-Z ]+)$/;
+const pattern3 =
+    /^(?<type>(L|l)ehrer|(S|s)chüler|(E|e)ltern) (von|vom) (?<userOf>[a-zA-Z ]+)$/;
 
 // Schueler im TUT-Kurs [jahrgang] [lehrkraft]
 const pattern4 =
@@ -108,7 +109,10 @@ class ASMSQInterpreter {
                 subresult.course.grade = match2.groups?.grade;
                 subresult.course.subject = match2.groups?.subject;
                 subresult.course.teacher = match2.groups?.teacher;
-                if (match2.groups?.courseType === "LK" || match2.groups?.courseType === "GK")
+                if (
+                    match2.groups?.courseType === "LK" ||
+                    match2.groups?.courseType === "GK"
+                )
                     subresult.course.courseType = match2.groups?.courseType;
                 subresult.course.courseNumber = match2.groups?.courseNumber;
                 subresult.course.teacher = match2.groups?.teacher;

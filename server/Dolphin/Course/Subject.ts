@@ -21,7 +21,10 @@ class Subject implements ISubject {
         return [
             (await dbResult.toArray()).map(
                 (subject) =>
-                    new Subject(dolphin.database.collection<ISubject>("subjects"), subject),
+                    new Subject(
+                        dolphin.database.collection<ISubject>("subjects"),
+                        subject,
+                    ),
             ),
             null,
         ];
@@ -54,7 +57,9 @@ class Subject implements ISubject {
             return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
         }
 
-        const dbResult = await dolphin.database.collection<ISubject>("subjects").insertOne(subject);
+        const dbResult = await dolphin.database
+            .collection<ISubject>("subjects")
+            .insertOne(subject);
         if (dbResult.acknowledged) {
             return [
                 new Subject(dolphin.database.collection<ISubject>("subjects"), {
@@ -74,7 +79,10 @@ class Subject implements ISubject {
             .collection<ISubject>("subjects")
             .findOne({ _id: id });
         if (dbResult) {
-            return [new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult), null];
+            return [
+                new Subject(dolphin.database.collection<ISubject>("subjects"), dbResult),
+                null,
+            ];
         } else {
             return [undefined, DolphinErrorTypes.NOT_FOUND];
         }

@@ -29,7 +29,9 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const [course, courseFindError] = await Course.getById(ObjectId.createFromHexString(id));
+    const [course, courseFindError] = await Course.getById(
+        ObjectId.createFromHexString(id),
+    );
     if (courseFindError) {
         throw createError({
             statusCode: 404,

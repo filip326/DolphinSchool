@@ -31,7 +31,11 @@ class Dolphin {
         cb(this);
     }
 
-    static init(config: { prod: boolean; DB_URL: string; DB_NAME: string }): Promise<Dolphin> {
+    static init(config: {
+        prod: boolean;
+        DB_URL: string;
+        DB_NAME: string;
+    }): Promise<Dolphin> {
         return new Promise(async (resolve: (value: Dolphin) => void, reject) => {
             if (Dolphin.instance) return resolve(Dolphin.instance);
 

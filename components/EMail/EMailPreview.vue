@@ -56,9 +56,15 @@ export default {
     <VContainer class="email-preview" v-if="width >= 900">
         <div class="read-unread">
             <!-- if message is already read -->
-            <VBtn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </VBtn>
+            <VBtn density="comfortable" icon="mdi-email-open-outline" v-if="!unread">
+            </VBtn>
             <!-- if message is not read yet -->
-            <VBtn density="comfortable" icon="mdi-email-alert-outline" v-if="unread" class="unread">
+            <VBtn
+                density="comfortable"
+                icon="mdi-email-alert-outline"
+                v-if="unread"
+                class="unread"
+            >
             </VBtn>
         </div>
         <div class="sendby" @click="onEmailSelected(id)">
@@ -107,7 +113,8 @@ export default {
         <div class="upper-line" @click="onEmailSelected(id)">
             <div class="read-unread">
                 <!-- if message is already read -->
-                <VBtn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </VBtn>
+                <VBtn density="comfortable" icon="mdi-email-open-outline" v-if="!unread">
+                </VBtn>
                 <!-- if message is not read yet -->
                 <VBtn
                     density="comfortable"

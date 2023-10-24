@@ -78,7 +78,8 @@ class User implements WithId<IUser> {
             options.child
         ) {
             try {
-                const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+                const dolphin =
+                    Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
                 const userCollection = dolphin.database.collection<IUser>("users");
                 if (!userCollection) throw new Error("User collection not found");
                 const dbResult = await userCollection
@@ -589,7 +590,13 @@ class User implements WithId<IUser> {
         }
 
         // 2. check if code is valid
-        if (this._setupTotp.validate({ token: code, window: 30, timestamp: Date.now() }) === null) {
+        if (
+            this._setupTotp.validate({
+                token: code,
+                window: 30,
+                timestamp: Date.now(),
+            }) === null
+        ) {
             console.log("Expected code" + this._setupTotp.generate());
             console.log("Actual code" + code);
             return [false, null];
@@ -706,7 +713,9 @@ class User implements WithId<IUser> {
         return this.webAuthNCredentials?.[id]?.credential;
     }
 
-    async addWebAuthNCredential(credential: RegistrationEncoded): Promise<MethodResult<boolean>> {
+    async addWebAuthNCredential(
+        credential: RegistrationEncoded,
+    ): Promise<MethodResult<boolean>> {
         // 1. get credential id
         const id = credential.credential.id;
 

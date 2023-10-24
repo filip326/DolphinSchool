@@ -56,7 +56,8 @@ class TutCourse implements WithId<ITutCourse> {
 
         // check if the tut-course already exists
         const checkForAlreadyExistingCourse = await tutCourses.countDocuments({ name });
-        if (checkForAlreadyExistingCourse > 0) return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
+        if (checkForAlreadyExistingCourse > 0)
+            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
 
         // create the tut-course
         const tutCourseToCreate: ITutCourse = {
@@ -69,7 +70,10 @@ class TutCourse implements WithId<ITutCourse> {
         const dbResult = await tutCourses.insertOne(tutCourseToCreate);
         if (dbResult.acknowledged) {
             return [
-                new TutCourse({ ...tutCourseToCreate, _id: dbResult.insertedId }, tutCourses),
+                new TutCourse(
+                    { ...tutCourseToCreate, _id: dbResult.insertedId },
+                    tutCourses,
+                ),
                 null,
             ];
         }
@@ -112,7 +116,10 @@ class TutCourse implements WithId<ITutCourse> {
             .project({ name: 1, _id: 1 })
             .toArray()) as { name: string; _id: ObjectId }[];
 
-        return [result.map((tutCourse) => ({ name: tutCourse.name, value: tutCourse._id })), null];
+        return [
+            result.map((tutCourse) => ({ name: tutCourse.name, value: tutCourse._id })),
+            null,
+        ];
     }
 
     static async getTutCourseByUser(user: ObjectId): Promise<MethodResult<TutCourse>> {
@@ -155,7 +162,10 @@ class TutCourse implements WithId<ITutCourse> {
         return [result.map((tutCourse) => new TutCourse(tutCourse, tutCourses)), null];
     }
 
-    static async list(skip: number = 0, limit: number = 15): Promise<MethodResult<TutCourse[]>> {
+    static async list(
+        skip: number = 0,
+        limit: number = 15,
+    ): Promise<MethodResult<TutCourse[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const tutCourses = dolphin.database.collection<ITutCourse>("tutCourses");
         const result = await tutCourses.find().skip(skip).limit(limit).toArray();
@@ -170,7 +180,10 @@ class TutCourse implements WithId<ITutCourse> {
     students: ObjectId[];
     private readonly collection: Collection<ITutCourse>;
 
-    private constructor(tutCourse: WithId<ITutCourse>, collection: Collection<ITutCourse>) {
+    private constructor(
+        tutCourse: WithId<ITutCourse>,
+        collection: Collection<ITutCourse>,
+    ) {
         this._id = tutCourse._id;
         this.grade = tutCourse.grade;
         this.name = tutCourse.name;
@@ -203,7 +216,10 @@ class TutCourse implements WithId<ITutCourse> {
     }
 
     async setTeacher(teacher: ObjectId): Promise<MethodResult<boolean>> {
-        const result = await this.collection.updateOne({ _id: this._id }, { $set: { teacher } });
+        const result = await this.collection.updateOne(
+            { _id: this._id },
+            { $set: { teacher } },
+        );
         if (result.acknowledged) {
             // check if class name needs to be updated
             if (this.grade > 10) {

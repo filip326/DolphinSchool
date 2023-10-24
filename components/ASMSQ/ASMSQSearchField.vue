@@ -15,7 +15,9 @@ export default {
             rules: {
                 required: (value: any) => !!value || "Eingabe erforderlich",
                 onlyUsers: (value: any) =>
-                    !this.onlyUsers || (value && value.type === "user") || "Nur Benutzer erlaubt",
+                    !this.onlyUsers ||
+                    (value && value.type === "user") ||
+                    "Nur Benutzer erlaubt",
             },
             searchText: "",
             asmsqSuggestions: [],
