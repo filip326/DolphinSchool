@@ -1,10 +1,6 @@
 <script lang="ts">
 export default {
     props: {
-        user_id: {
-            type: Array<string>,
-            required: true,
-        },
         label: {
             type: String,
             required: false,
@@ -102,6 +98,7 @@ export default {
             if (this.limit && newVal.length > this.limit) {
                 this.modelValue = newVal.slice(0, this.limit);
             }
+            this.$emit("modelValue", this.modelValue);
         },
     },
 };

@@ -16,7 +16,7 @@ interface ITutCourse {
 class TutCourse implements WithId<ITutCourse> {
     static async create(
         tutCourse: Omit<Omit<ITutCourse, "students">, "name"> & { letter?: string },
-    ): Promise<MethodResult<ITutCourse>> {
+    ): Promise<MethodResult<TutCourse>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const tutCourses = dolphin.database.collection<ITutCourse>("tutCourses");
         // get teacher's name

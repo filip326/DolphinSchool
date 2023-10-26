@@ -20,7 +20,7 @@ export default {
     },
     methods: {
         async fetchCourses() {
-            const response = await useFetch("/api/admin/courses", { method: "get" });
+            const response = await useFetch("/api/admin/tut-courses", { method: "get" });
             if (response.status.value !== "success") {
                 // todo Handle error with error page
                 return;
@@ -31,13 +31,13 @@ export default {
                 this.visibleCourses.push({
                     name: course.name,
                     id: course.id,
-                    teacher: course.teacher.join(", "),
+                    teacher: course.teacher,
                     student_count: course.student_count,
                 });
             });
         },
         async search() {
-            const response = await useFetch("/api/admin/courses", {
+            const response = await useFetch("/api/admin/tut-courses", {
                 method: "get",
                 params: {
                     search: this.searchQuery,
@@ -53,13 +53,13 @@ export default {
                 this.visibleCourses.push({
                     name: course.name,
                     id: course.id,
-                    teacher: course.teacher.join(", "),
+                    teacher: course.teacher,
                     student_count: course.student_count,
                 });
             });
         },
     },
-    onMounted() {
+    beforeMount() {
         this.fetchCourses();
     },
 };
