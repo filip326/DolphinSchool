@@ -17,15 +17,12 @@ export default {
             required: true,
         },
     },
+    mounted() {
+        this.render();
+    },
     data() {
-        const rendered = "";
-
-        onMounted(() => {
-            this.render();
-        });
-
         return {
-            rendered_html: rendered,
+            rendered_html: "",
         };
     },
 
@@ -64,14 +61,13 @@ export default {
                     html: true,
                     svg: true,
                     mathMl: true,
-                    svgFilters: false,
+                    svgFilters: true,
                 },
             });
         },
     },
     watch: {
         md() {
-            console.log(this.md);
             this.render();
         },
     },
@@ -79,7 +75,7 @@ export default {
 </script>
 
 <template>
-    <div readonly class="markdown-rendered" :v-html="rendered_html" />
+    <div readonly class="markdown-rendered" v-html="rendered_html" />
 </template>
 
 <style>

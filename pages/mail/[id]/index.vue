@@ -43,6 +43,7 @@ export default {
     },
     mounted() {
         this.subject = `AW: ${this.email.subject}`;
+        // console.log(this.email.content);
     },
     async beforeMount() {
         const id = this.$route.params.id;
