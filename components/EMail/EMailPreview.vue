@@ -22,8 +22,14 @@ export default {
             type: String,
             required: true,
         },
-        unread: Boolean,
-        stared: Boolean,
+        unread: {
+            type: Boolean,
+            default: false,
+        },
+        stared: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         const width = ref(0);
@@ -36,17 +42,39 @@ export default {
         return {
             width,
             hover: false,
+            read: !this.unread,
+            star: this.stared,
         };
     },
     methods: {
         async markAsRead() {
-            alert(this.id); // todo
+            const res = await useFetch(`/api/mail/user/${this.id}`, {
+                method: "PATCH",
+                body: JSON.stringify({
+                    action: "read",
+                    value: !this.read,
+                }),
+            });
+
+            if (res.status.value === "success") {
+                this.read = !this.read;
+            }
         },
         onEmailSelected(email) {
             this.$emit("email_clicked", email);
         },
         async setStared() {
-            alert(this.id); // todo
+            const res = await useFetch(`/api/mail/user/${this.id}`, {
+                method: "PATCH",
+                body: JSON.stringify({
+                    action: "star",
+                    value: !this.star,
+                }),
+            });
+
+            if (res.status.value === "success") {
+                this.star = !this.star;
+            }
         },
     },
 };
@@ -60,14 +88,14 @@ export default {
                 @click="markAsRead"
                 density="comfortable"
                 icon="mdi-email-open-outline"
-                v-if="!unread"
+                v-if="read"
             >
             </VBtn>
             <!-- if message is not read yet -->
             <VBtn
                 density="comfortable"
                 icon="mdi-email-alert-outline"
-                v-if="unread"
+                v-if="!read"
                 class="unread"
                 @click="markAsRead"
             >
@@ -89,7 +117,7 @@ export default {
                 elevation="0"
                 class="delete"
                 icon="mdi-star-outline"
-                v-if="!stared"
+                v-if="!star"
                 @click="setStared"
             >
             </VBtn>
@@ -99,7 +127,7 @@ export default {
                 elevation="0"
                 class="delete"
                 icon="mdi-star"
-                v-if="stared"
+                v-if="star"
                 @click="setStared"
             >
             </VBtn>

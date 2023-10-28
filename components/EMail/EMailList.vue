@@ -76,7 +76,7 @@ export default {
                     @email_clicked="onEmailSelected"
                     :id="email.id"
                     :sendby="email.sendBy"
-                    :unread="email.read"
+                    :unread="!email.read"
                     :subject="email.subject"
                     :timestamp="UTCToStr(email.timestamp)"
                     :stared="email.stared"
