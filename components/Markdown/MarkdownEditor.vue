@@ -1,9 +1,16 @@
 <script lang="ts">
 export default {
     name: "MarkdownEditor",
+    props: {
+        premd: {
+            type: String,
+            required: false,
+            default: "",
+        },
+    },
     data() {
         return {
-            md: "",
+            md: this.premd ?? "",
             tab: null,
         };
     },

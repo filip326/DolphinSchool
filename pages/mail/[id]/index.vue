@@ -9,7 +9,16 @@ export default {
     },
     data() {
         return {
-            email: {} as {
+            email: {
+                id: "",
+                subject: "",
+                content: "",
+                sendBy: "",
+                sentTo: [],
+                read: false,
+                stared: false,
+                timestamp: 0,
+            } as {
                 id: string;
                 subject: string;
                 content: string;
@@ -19,7 +28,21 @@ export default {
                 stared?: boolean;
                 timestamp: number;
             },
+            absender: "Du",
+            empfaenger: [] as string[],
+            content: "",
+            subject: "",
+            rules: {
+                required: (value: string) => !!value || "Dieses Feld ist erforderlich",
+            },
+            error: {
+                shown: false,
+                message: "",
+            },
         };
+    },
+    mounted() {
+        this.subject = `AW: ${this.email.subject}`;
     },
     async beforeMount() {
         const id = this.$route.params.id;
@@ -28,7 +51,7 @@ export default {
         });
 
         if (res.status.value == "success") {
-            this.email = res.data.value.mail as {
+            this.email = res.data.value?.mail! as {
                 id: string;
                 subject: string;
                 content: string;
@@ -76,18 +99,58 @@ export default {
                 this.email.stared = !this.email.stared;
             }
         },
+        setEmpf(users: string[]) {
+            this.empfaenger = users;
+        },
+        setContent(content: string) {
+            this.content = content;
+        },
+        async sendMail() {
+            if (!this.empfaenger || !this.subject || !this.content) {
+                this.error = {
+                    shown: true,
+                    message: "Bitte füllen Sie alle Felder aus",
+                };
+                return;
+            }
+
+            const res = await useFetch("/api/mail", {
+                method: "POST",
+                body: JSON.stringify({
+                    sendTo: this.empfaenger,
+                    subject: this.subject,
+                    content: this.content,
+                }),
+            });
+
+            if (res.status.value != "success") {
+                console.log(res.error.value);
+                this.error = {
+                    shown: true,
+                    message: "Nachricht konnte nicht gesendet werden",
+                };
+            } else {
+                await navigateTo("/mail");
+            }
+        },
     },
 };
 </script>
 
 <template>
     <VCard>
-        <VCardTitle>
-            {{ email.subject }} von {{ email.sendBy }} an {{ email.sentTo.join(", ") }}
-        </VCardTitle>
+        <VCardTitle> {{ email.subject }}</VCardTitle>
 
         <VCardSubtitle>
-            {{ email.timestamp }}
+            {{ UTCToStr(email.timestamp) }}
+        </VCardSubtitle>
+
+        <VCardSubtitle>
+            <span><b>Von:</b> {{ email.sendBy }}</span>
+        </VCardSubtitle>
+
+        <VCardSubtitle>
+            <span><b>An:</b> {{ email.sentTo.join(",") }}</span>
         </VCardSubtitle>
 
         <VCardText>
@@ -143,6 +206,10 @@ export default {
 </template>
 
 <style scoped>
+.v-form .v-btn {
+    padding: 0px 20px;
+}
+
 .v-card-title {
     font-size: 1.5em;
 }

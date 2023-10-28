@@ -1,3 +1,4 @@
+import Mail from "~/server/Dolphin/Mail/Mail";
 import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 import Course from "~/server/Dolphin/Course/Course";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
@@ -50,6 +51,35 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
     if (user.hasPermission(Permissions.SEND_MAIL)) {
         mailNavbar.push({ label: "Postausgang", location: "/mail/outbox" });
         mailNavbar.push({ label: "Neue Nachricht", location: "/mail/write" });
+    }
+
+    const [staredMails, staredMailsErr] = await Mail.getMails({
+        postfachSearch: {
+            postfach: "stared",
+        },
+        user: user._id,
+    });
+
+    if (!staredMailsErr && staredMails != undefined && staredMails.length > 0) {
+        mailNavbar.push({
+            label: "Markiert",
+            location: "/mail/stared",
+        });
+    }
+
+    const [unreadMails, unreadMailsErr] = await Mail.getMails({
+        postfachSearch: {
+            postfach: "unread",
+        },
+        user: user._id,
+    });
+
+    if (!unreadMailsErr && unreadMails != undefined && unreadMails.length > 0) {
+        mailNavbar.push({
+            label: "Ungelesen",
+            location: "/mail/unread",
+            notification: unreadMails.length,
+        });
     }
 
     navbar.push({
