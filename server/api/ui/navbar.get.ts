@@ -1,6 +1,5 @@
 import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 import Course from "~/server/Dolphin/Course/Course";
-import UserMessage from "~/server/Dolphin/Messenger/UserMessage";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
 
 type NavBarSubelement = { label: string; location: string; notification?: number };
@@ -33,53 +32,32 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
     navbar.push({ icon: "mdi-home", label: "Home", location: "/home" });
 
     // add the "Kommunikation" link with sublinks
-    // - Posteingang
-    // - Ungelesen (only if there are unread messages)
-    // - Markiert
-    // - Postausgang
-    // - Neue Nachricht
+    // navbar.push({
+    //     icon: "mdi-email",
+    //     label: "Kommunikation",
+    //     location: "/mail/inbox",
+    //     children: [
+    //         { label: "Markiert", location: "/mail/stared" },
+    //         { label: "Postausgang", location: "/mail/outbox" },
+    //         { label: "Neue Nachricht", location: "/mail/write" },
+    //     ],
+    // });
 
-    // check if there are unread messages
-    const [unreadMessage, unreadMessageFindError] = await UserMessage.listUsersMessages(
-        user,
-        {},
-        { read: false },
-    );
-    if (unreadMessageFindError)
-        throw createError({
-            statusCode: 500,
-            name: "unreadMessageFindError",
-            message: "Could not find unread messages",
-        });
+    const mailNavbar: NavBarSubelement[] = [
+        { label: "Posteingang", location: "/mail/inbox" },
+    ];
 
-    if (unreadMessage.length > 0) {
-        navbar.push({
-            icon: "mdi-email",
-            label: "Kommunikation",
-            location: "/mail/inbox",
-            children: [
-                {
-                    label: "Ungelesen",
-                    location: "/mail/unread",
-                    notification: unreadMessage.length,
-                },
-                { label: "Markiert", location: "/mail/stared" },
-                { label: "Postausgang", location: "/mail/outbox" },
-                { label: "Neue Nachricht", location: "/mail/write" },
-            ],
-        });
-    } else {
-        navbar.push({
-            icon: "mdi-email",
-            label: "Kommunikation",
-            location: "/mail/inbox",
-            children: [
-                { label: "Markiert", location: "/mail/stared" },
-                { label: "Postausgang", location: "/mail/outbox" },
-                { label: "Neue Nachricht", location: "/mail/write" },
-            ],
-        });
+    if (user.hasPermission(Permissions.SEND_MAIL)) {
+        mailNavbar.push({ label: "Postausgang", location: "/mail/outbox" });
+        mailNavbar.push({ label: "Neue Nachricht", location: "/mail/write" });
     }
+
+    navbar.push({
+        icon: "mdi-email",
+        label: "Kommunikation",
+        location: "/mail/inbox",
+        children: mailNavbar,
+    });
 
     // check if user is a teacher
     if (user.isTeacher()) {

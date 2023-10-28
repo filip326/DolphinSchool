@@ -13,64 +13,48 @@ export default {
     },
     data() {
         return {
-            emails: [
-                {
-                    id: "1",
-                    subject: "Bug",
-                    sendby: "1234567890123456789",
-                    timestamp: "2023-05-05",
-                    read: true,
-                    stared: false,
-                },
-                {
-                    id: "2",
-                    subject: "Testo Pestoq",
-                    sendby: "langer Name - wirklich sehr lang",
-                    timestamp: "2023-05-05",
-                    read: true,
-                    stared: false,
-                },
-                {
-                    id: "3",
-                    subject: "lorem100",
-                    sendby: "heeecker",
-                    timestamp: "2023-05-05",
-                    read: false,
-                    stared: false,
-                },
-                {
-                    id: "4",
-                    subject: "lorem100",
-                    sendby: "heeecker",
-                    timestamp: "2023-05-05",
-                    read: true,
-                    stared: false,
-                },
-                {
-                    id: "5",
-                    subject: "lorem100",
-                    sendby: "heeecker",
-                    timestamp: "2023-05-05",
-                    read: false,
-                    stared: false,
-                },
-                {
-                    id: "6",
-                    subject: "lorem100abcdefghijklmnopqrstuvw",
-                    sendby: "heeecker",
-                    timestamp: "2023-05-05",
-                    read: false,
-                    stared: false,
-                },
-            ],
+            emails: Array<{
+                id: string;
+                subject: string;
+                content: string;
+                sendBy: string;
+                sentTo: string[];
+                read?: boolean;
+                stared?: boolean;
+                timestamp: number;
+            }>(),
         };
     },
+    async beforeMount() {
+        const res = await useFetch(this.url, {
+            method: "GET",
+        });
+
+        if (res.status.value == "success") {
+            this.emails = res.data.value.mails as Array<{
+                id: string;
+                subject: string;
+                content: string;
+                sendBy: string;
+                sentTo: string[];
+                read?: boolean;
+                stared?: boolean;
+                timestamp: number;
+            }>;
+        } else {
+            throw createError({
+                statusCode: 500,
+                statusMessage: "Fehler beim Laden der E-Mails.",
+                fatal: true,
+            });
+        }
+    },
     methods: {
-        onEmailSelected(email: string) {
-            this.$emit("email_selected", email);
+        async onEmailSelected(email: string) {
+            await navigateTo("/mail/" + email);
         },
-        loadMore() {
-            // todo
+        UTCToStr(time: number): string {
+            return new Date(time).toLocaleString();
         },
     },
 };
@@ -91,10 +75,10 @@ export default {
                 <EMailPreview
                     @email_clicked="onEmailSelected"
                     :id="email.id"
-                    :sendby="email.sendby"
+                    :sendby="email.sendBy"
                     :unread="email.read"
                     :subject="email.subject"
-                    :timestamp="email.timestamp"
+                    :timestamp="UTCToStr(email.timestamp)"
                     :stared="email.stared"
                 />
             </VListItem>

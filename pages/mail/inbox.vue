@@ -12,7 +12,7 @@ export default {
 </script>
 
 <template>
-    <EMailList title="Posteingang" url="/emails/get/ungelesen" @email_selected="" />
+    <EMailList title="Posteingang" url="/api/mail/inbox" />
 </template>
 
 <style scoped>

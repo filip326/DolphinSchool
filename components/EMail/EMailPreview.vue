@@ -39,14 +39,14 @@ export default {
         };
     },
     methods: {
-        markAsRead() {
-            return alert(this.id); // todo
-        },
-        deleteMail() {
-            return alert(this.id); // todo
+        async markAsRead() {
+            alert(this.id); // todo
         },
         onEmailSelected(email) {
             this.$emit("email_clicked", email);
+        },
+        async setStared() {
+            alert(this.id); // todo
         },
     },
 };
@@ -56,7 +56,12 @@ export default {
     <VContainer class="email-preview" v-if="width >= 900">
         <div class="read-unread">
             <!-- if message is already read -->
-            <VBtn density="comfortable" icon="mdi-email-open-outline" v-if="!unread">
+            <VBtn
+                @click="markAsRead"
+                density="comfortable"
+                icon="mdi-email-open-outline"
+                v-if="!unread"
+            >
             </VBtn>
             <!-- if message is not read yet -->
             <VBtn
@@ -64,6 +69,7 @@ export default {
                 icon="mdi-email-alert-outline"
                 v-if="unread"
                 class="unread"
+                @click="markAsRead"
             >
             </VBtn>
         </div>
@@ -84,6 +90,7 @@ export default {
                 class="delete"
                 icon="mdi-star-outline"
                 v-if="!stared"
+                @click="setStared"
             >
             </VBtn>
             <VBtn
@@ -93,18 +100,7 @@ export default {
                 class="delete"
                 icon="mdi-star"
                 v-if="stared"
-            >
-            </VBtn>
-        </div>
-        <div class="deleteMail mail-button">
-            <VBtn
-                @mouseover="hover = true"
-                @mouseleave="hover = false"
-                density="comfortable"
-                variant="plain"
-                elevation="0"
-                class="delete"
-                :icon="!hover ? 'mdi-delete' : 'mdi-delete-empty'"
+                @click="setStared"
             >
             </VBtn>
         </div>

@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-    <EMailList title="Markiert" url="/emails/get/stared" @email_selected="" />
+    <EMailList title="Markiert" url="/api/mail/stared" />
 </template>
 
 <style scoped>

@@ -11,6 +11,7 @@ interface IMail {
     content: string;
     readBy?: ObjectId[];
     staredBy?: ObjectId[];
+    timestamp: number;
 }
 
 class Mail implements IMail {
@@ -22,7 +23,10 @@ class Mail implements IMail {
     }): Promise<MethodResult<boolean>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const mailCollection = dolphin.database.collection<IMail>("mails");
-        const result = await mailCollection.insertOne(mail);
+        // add the time the mail was created to the mail object
+        const timestamp = Date.now();
+        const mailWithTime = { ...mail, timestamp };
+        const result = await mailCollection.insertOne(mailWithTime);
         if (result.acknowledged) {
             return [true, null];
         } else {
@@ -84,9 +88,10 @@ class Mail implements IMail {
             const mailCollection = dolphin.database.collection<IMail>("mails");
 
             if (options.postfachSearch.postfach === "inbox") {
-                // get all mails where sendTo contains user id
+                // get all mails that are send to user id
+                // ! the query makes no sense but works
                 const result = await mailCollection
-                    .find({ sendTo: options.user })
+                    .find({ sendTo: options.user.toString() })
                     .toArray();
                 returningResult = result.map(
                     (mail) => new Mail(mailCollection, mail, options.user),
@@ -102,7 +107,7 @@ class Mail implements IMail {
             } else if (options.postfachSearch.postfach === "stared") {
                 // get all mails where staredBy contains user id
                 const result = await mailCollection
-                    .find({ staredBy: options.user })
+                    .find({ staredBy: options.user.toString() })
                     .toArray();
                 returningResult = result.map(
                     (mail) => new Mail(mailCollection, mail, options.user),
@@ -110,7 +115,7 @@ class Mail implements IMail {
             } else if (options.postfachSearch.postfach === "read") {
                 // get all mails where readBy contains user id
                 const result = await mailCollection
-                    .find({ readBy: options.user })
+                    .find({ readBy: options.user.toString() })
                     .toArray();
                 returningResult = result.map(
                     (mail) => new Mail(mailCollection, mail, options.user),
@@ -136,6 +141,7 @@ class Mail implements IMail {
     read?: boolean; // send to client
     user: ObjectId;
     mailCollection: Collection<IMail>;
+    timestamp: number;
 
     private constructor(
         collection: Collection<IMail>,
@@ -155,6 +161,7 @@ class Mail implements IMail {
         this.stared = this.staredBy?.includes(user);
         this.user = user;
         this.mailCollection = collection;
+        this.timestamp = mail.timestamp;
     }
 
     async setRead(read: boolean): Promise<MethodResult<boolean>> {

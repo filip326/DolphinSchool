@@ -12,7 +12,7 @@ async function main() {
         fullName: "Test Tester",
         type: "student",
         password: await hash("password", 10),
-        permissions: 4095, // max permission number at the moment (23.10.2023, 12:54)
+        permissions: 8183, // max permission number at the moment (28.10.2023, 12:35)
         changePasswordRequired: true,
     };
 
