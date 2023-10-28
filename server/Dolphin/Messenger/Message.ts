@@ -63,19 +63,6 @@ class Message implements IMessage {
         this.edited = message.edited;
     }
 
-    // static async getMessageById(id: ObjectId): Promise<MethodResult<Message>> {
-    //     const dolphin = Dolphin.instance;
-    //     if (!dolphin || ! dolphin.database) {
-    //          return [ undefined, Error("Dolphin is not initialized.")]
-    //     }
-    //     const db = dolphin.database;
-    //     const collection = db.collection<IMessage>("messages");
-    //     const message = await collection.findOne({ _id: id });
-    //     if (!message)
-    //         return [ undefined, Error("Message not found.")];
-    //     return [ new Message(collection, db.collection<IUserMessage>("userMessages"), message), null ];
-    // }
-
     async deleteForAll(): Promise<MethodResult<boolean>> {
         try {
             const deleteResult = await this.messageCollection.deleteOne({
