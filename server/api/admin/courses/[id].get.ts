@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
         (
             await Promise.all(
                 course.teacher.map(async (teacherId) => {
-                    return (await User.getUserById(new ObjectId(teacherId)))[0];
+                    return (await User.getUserById(teacherId))[0];
                 }),
             )
         ).filter((user) => user !== undefined) as User[]
@@ -64,9 +64,7 @@ export default defineEventHandler(async (event) => {
         .join(", ");
 
     // get subject name
-    const [subject, subjectFindError] = await Subject.getSubjectById(
-        new ObjectId(course.subject),
-    );
+    const [subject, subjectFindError] = await Subject.getSubjectById(course.subject);
     if (subjectFindError) {
         throw createError({
             statusCode: 404,
