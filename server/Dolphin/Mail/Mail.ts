@@ -5,6 +5,9 @@ import Dolphin from "../Dolphin";
 
 type Postfaecher = "inbox" | "outbox" | "stared" | "unread";
 
+/**
+ * @deprecated
+ */
 interface IMail {
     sendBy: ObjectId;
     sendTo: ObjectId[];
@@ -15,7 +18,16 @@ interface IMail {
     timestamp: number;
 }
 
+/**
+ * @deprecated
+ */
 class Mail implements IMail {
+    /**
+     * @deprecated
+     * @param user 
+     * @param mail 
+     * @returns 
+     */
     public static async createMail(
         user: User,
         mail: {
@@ -38,6 +50,12 @@ class Mail implements IMail {
         }
     }
 
+    /**
+     * @deprecated
+     * @param id 
+     * @param user 
+     * @returns 
+     */
     public static async getMail(
         id: ObjectId,
         user: ObjectId,
@@ -52,6 +70,11 @@ class Mail implements IMail {
         }
     }
 
+    /**
+     * @deprecated
+     * @param options 
+     * @returns 
+     */
     public static async getMails(options: {
         sendBy?: ObjectId;
         sendTo?: ObjectId;
@@ -94,7 +117,7 @@ class Mail implements IMail {
             if (options.postfachSearch.postfach === "inbox") {
                 // get all mails that are send to user id
                 const result = await mailCollection
-                    .find({ sendTo: options.user.toString() })
+                    .find({ sendTo: options.user })
                     .toArray();
                 returningResult = result.map(
                     (mail) => new Mail(mailCollection, mail, options.user),
@@ -148,6 +171,12 @@ class Mail implements IMail {
     mailCollection: Collection<IMail>;
     timestamp: number;
 
+    /**
+     * @deprecated
+     * @param collection 
+     * @param mail 
+     * @param user 
+     */
     private constructor(
         collection: Collection<IMail>,
         mail: WithId<IMail>,
@@ -177,6 +206,9 @@ class Mail implements IMail {
         this.timestamp = mail.timestamp;
     }
 
+    /**
+     * @deprecated
+     */
     async setRead(read: boolean): Promise<MethodResult<boolean>> {
         if (read) {
             if (!this.readBy?.includes(this.user)) {
@@ -211,6 +243,9 @@ class Mail implements IMail {
         return [true, null]; // return true, because it is already set to the value
     }
 
+    /**
+     * @deprecated
+     */
     async setStared(stared: boolean): Promise<MethodResult<boolean>> {
         if (stared) {
             if (!this.staredBy?.includes(this.user)) {
