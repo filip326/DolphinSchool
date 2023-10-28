@@ -77,9 +77,6 @@ export default eventHandler(async (event) => {
             return mails;
         }),
     );
-
-    console.log(mails);
-
     return {
         success: true,
         mails: mails,
