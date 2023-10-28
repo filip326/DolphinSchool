@@ -1,4 +1,4 @@
-import { User } from "@/server/Dolphin/User/User";
+import User from "@/server/Dolphin/User/User";
 import { Collection, ObjectId, WithId } from "mongodb";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import Dolphin from "../Dolphin";
@@ -93,7 +93,6 @@ class Mail implements IMail {
 
             if (options.postfachSearch.postfach === "inbox") {
                 // get all mails that are send to user id
-                // ! the query makes no sense but works
                 const result = await mailCollection
                     .find({ sendTo: options.user.toString() })
                     .toArray();
