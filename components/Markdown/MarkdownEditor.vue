@@ -7,6 +7,11 @@ export default {
             tab: null,
         };
     },
+    watch: {
+        md() {
+            this.$emit("md-model", this.md);
+        },
+    },
 };
 </script>
 

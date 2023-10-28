@@ -98,7 +98,7 @@ export default {
             if (this.limit && newVal.length > this.limit) {
                 this.modelValue = newVal.slice(0, this.limit);
             }
-            this.$emit("modelValue", this.modelValue);
+            this.$emit("user-ids", this.modelValue);
         },
     },
 };

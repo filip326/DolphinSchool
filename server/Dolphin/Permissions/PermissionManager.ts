@@ -11,6 +11,7 @@ enum Permissions {
     ASSIGN_STUDENTS_TO_COURSES = 1 << 9,
     DELETE_USERS = 1 << 10,
     MANAGE_SUBJECTS = 1 << 11,
+    SEND_MAIL = 1 << 12,
 }
 
 function isAdminLevelPermission(permission: Permissions) {
