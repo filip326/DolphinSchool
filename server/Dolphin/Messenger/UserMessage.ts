@@ -151,14 +151,14 @@ class UserMessage implements IUserMessage {
      * @return true if the message was sent successfully
      */
     static async sendMessage(
-        receiver: User,
+        receiver: ObjectId,
         message: Message,
         newsletter: boolean = false,
     ): Promise<MethodResult<boolean>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
         const userMessage: IUserMessage = {
-            owner: receiver._id,
+            owner: receiver,
 
             subject: message.subject,
             author: message.sender,
