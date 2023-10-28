@@ -35,10 +35,13 @@ class Message implements IMessage {
         ];
     }
 
-    static async createMessage(message: Omit<Omit<IMessage, "edited">, "anonymous">): Promise<MethodResult<Message>> {
+    static async createMessage(
+        message: Omit<Omit<IMessage, "edited">, "anonymous">,
+    ): Promise<MethodResult<Message>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const messageCollection = dolphin.database.collection<IMessage>("messages");
-        const userMessageCollection = dolphin.database.collection<IUserMessage>("userMessages");
+        const userMessageCollection =
+            dolphin.database.collection<IUserMessage>("userMessages");
 
         const result = await messageCollection.insertOne({
             ...message,

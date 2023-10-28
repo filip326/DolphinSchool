@@ -24,9 +24,9 @@ interface IMail {
 class Mail implements IMail {
     /**
      * @deprecated
-     * @param user 
-     * @param mail 
-     * @returns 
+     * @param user
+     * @param mail
+     * @returns
      */
     public static async createMail(
         user: User,
@@ -52,9 +52,9 @@ class Mail implements IMail {
 
     /**
      * @deprecated
-     * @param id 
-     * @param user 
-     * @returns 
+     * @param id
+     * @param user
+     * @returns
      */
     public static async getMail(
         id: ObjectId,
@@ -72,8 +72,8 @@ class Mail implements IMail {
 
     /**
      * @deprecated
-     * @param options 
-     * @returns 
+     * @param options
+     * @returns
      */
     public static async getMails(options: {
         sendBy?: ObjectId;
@@ -173,9 +173,9 @@ class Mail implements IMail {
 
     /**
      * @deprecated
-     * @param collection 
-     * @param mail 
-     * @param user 
+     * @param collection
+     * @param mail
+     * @param user
      */
     private constructor(
         collection: Collection<IMail>,

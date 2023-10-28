@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import Course from "~/server/Dolphin/Course/Course";
 import Message from "~/server/Dolphin/Messenger/Message";
 import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
@@ -114,6 +115,81 @@ export default eventHandler(async (event) => {
                         ...(
                             await Promise.all(
                                 tut3.students.map(async (studentId) => {
+                                    const [student] = await User.getUserById(studentId);
+                                    if (!student || !student.isStudent()) {
+                                        throw createError({
+                                            statusCode: 400,
+                                            statusMessage: "Bad Request",
+                                        });
+                                    }
+                                    return (await student.getParents())[0];
+                                }),
+                            )
+                        )
+                            .filter((value) => value != undefined)
+                            .flat()
+                            .map((value) => value!._id), // exclamation mark because we filtered out undefined values two lines above already.
+                    );
+                    // check for duplicates
+                    receiversIds.filter(
+                        (id, index) => receiversIds.indexOf(id) === index,
+                    );
+                    break;
+
+                case "teachers_in_course":
+                    // eslint-disable-next-line no-case-declarations
+                    const [course, courseFindError] = await Course.getById(
+                        new ObjectId(id.split(":")[1]),
+                    );
+                    if (courseFindError) {
+                        throw createError({
+                            statusCode: 400,
+                            statusMessage: "Bad Request",
+                        });
+                    }
+                    receiversText.push(`Lehrer:innen in ${course.name}`);
+                    receiversIds.push(...course.teacher);
+                    // check for duplicates
+                    receiversIds.filter(
+                        (id, index) => receiversIds.indexOf(id) === index,
+                    );
+                    break;
+
+                case "students_in_course":
+                    // eslint-disable-next-line no-case-declarations
+                    const [course2, courseFindError2] = await Course.getById(
+                        new ObjectId(id.split(":")[1]),
+                    );
+                    if (courseFindError2) {
+                        throw createError({
+                            statusCode: 400,
+                            statusMessage: "Bad Request",
+                        });
+                    }
+                    receiversText.push(`Schüler:innen in ${course2.name}`);
+                    receiversIds.push(...course2.students);
+                    // check for duplicates
+                    receiversIds.filter(
+                        (id, index) => receiversIds.indexOf(id) === index,
+                    );
+                    break;
+
+                case "parents_in_course":
+                    // eslint-disable-next-line no-case-declarations
+                    const [course3, courseFindError3] = await Course.getById(
+                        new ObjectId(id.split(":")[1]),
+                    );
+                    if (courseFindError3) {
+                        throw createError({
+                            statusCode: 400,
+                            statusMessage: "Bad Request",
+                        });
+                    }
+                    receiversText.push(`Eltern in ${course3.name}`);
+                    receiversIds.push(
+                        ...(
+                            await Promise.all(
+                                course3.students.map(async (studentId) => {
                                     const [student] = await User.getUserById(studentId);
                                     if (!student || !student.isStudent()) {
                                         throw createError({
