@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-    <EMailList title="Markiert" url="/api/mail/read" />
+    <EMailList title="Markiert" url="/api/mail/unread" />
 </template>
 
 <style scoped>

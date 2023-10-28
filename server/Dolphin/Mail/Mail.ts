@@ -2,7 +2,7 @@ import { Collection, ObjectId, WithId } from "mongodb";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import Dolphin from "../Dolphin";
 
-type Postfaecher = "inbox" | "outbox" | "stared" | "read";
+type Postfaecher = "inbox" | "outbox" | "stared" | "unread";
 
 interface IMail {
     sendBy: ObjectId;
@@ -107,15 +107,17 @@ class Mail implements IMail {
             } else if (options.postfachSearch.postfach === "stared") {
                 // get all mails where staredBy contains user id
                 const result = await mailCollection
-                    .find({ staredBy: options.user.toString() })
+                    .find({ staredBy: options.user })
                     .toArray();
                 returningResult = result.map(
                     (mail) => new Mail(mailCollection, mail, options.user),
                 );
-            } else if (options.postfachSearch.postfach === "read") {
-                // get all mails where readBy contains user id
+            } else if (options.postfachSearch.postfach === "unread") {
+                // get all mails where readBy not contains user id
                 const result = await mailCollection
-                    .find({ readBy: options.user.toString() })
+                    .find({
+                        readBy: { $ne: options.user },
+                    })
                     .toArray();
                 returningResult = result.map(
                     (mail) => new Mail(mailCollection, mail, options.user),
@@ -155,10 +157,18 @@ class Mail implements IMail {
         this.content = mail.content;
         this.readBy = mail.readBy;
         this.staredBy = mail.staredBy;
-        // if user is in readBy array, set read to true
-        this.read = this.readBy?.includes(user);
-        // if user is in staredBy array, set stared to true
-        this.stared = this.staredBy?.includes(user);
+        // array.includes does not work with ObjectId
+        this.readBy?.forEach((id) => {
+            if (id.equals(user)) {
+                this.read = true;
+            }
+        });
+        // array.includes does not work with ObjectId
+        this.staredBy?.forEach((id) => {
+            if (id.equals(user)) {
+                this.stared = true;
+            }
+        });
         this.user = user;
         this.mailCollection = collection;
         this.timestamp = mail.timestamp;

@@ -22,7 +22,7 @@ export default eventHandler(async (event) => {
     });
 
     if (!mailRes[0] || mailRes[1]) {
-        throw createError({ statusCode: 500, message: "Failed" });
+        throw createError({ statusCode: 500, message: mailRes[1] });
     }
 
     const mails: Array<{
@@ -78,6 +78,8 @@ export default eventHandler(async (event) => {
         }),
     );
 
+    console.log(mails);
+
     return {
         success: true,
         mails: mails,
@@ -89,7 +91,7 @@ function checkValidPostfach(postfach: string) {
         postfach == "inbox" ||
         postfach == "outbox" ||
         postfach == "stared" ||
-        postfach == "read"
+        postfach == "unread"
     ) {
         return true;
     } else {
