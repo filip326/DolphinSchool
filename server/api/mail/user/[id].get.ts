@@ -17,7 +17,7 @@ export default eventHandler(async (event) => {
     }
 
     if (
-        !mail[0].sendTo.includes(checkAuthResult.user._id) &&
+        !mailWasSentToUser(mail[0], checkAuthResult.user._id) &&
         !mail[0].sendBy.equals(checkAuthResult.user._id)
     ) {
         throw createError({ statusCode: 403, message: "Forbidden" });
@@ -69,4 +69,8 @@ async function processMail(mail: Mail) {
     };
 
     return mails;
+}
+
+function mailWasSentToUser(mail: Mail, userId: ObjectId) {
+    return mail.sendTo.some((id: ObjectId) => userId.equals(id));
 }

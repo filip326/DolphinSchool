@@ -71,6 +71,7 @@ export default {
     },
     watch: {
         md() {
+            console.log(this.md);
             this.render();
         },
     },
@@ -78,7 +79,7 @@ export default {
 </script>
 
 <template>
-    <div readonly class="markdown-rendered" v-html="rendered_html" />
+    <div readonly class="markdown-rendered" :v-html="rendered_html" />
 </template>
 
 <style>

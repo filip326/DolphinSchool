@@ -155,7 +155,7 @@ export default {
 
         <VCardText>
             <VDivider></VDivider>
-            <Markdown :md="content" />
+            <Markdown :md="email.content" />
             <VDivider></VDivider>
         </VCardText>
 
