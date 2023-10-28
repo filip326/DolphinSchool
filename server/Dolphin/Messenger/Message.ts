@@ -13,7 +13,7 @@ interface IMessage {
     attachments?: IMessageAttachement[];
     subject: string;
     content: string;
-    receivers: ObjectId[];
+    receivers: string; // a string with the receivers (names) seperated by a semicolon
     anonymous: boolean;
     edited?: number;
 }
@@ -35,13 +35,31 @@ class Message implements IMessage {
         ];
     }
 
+    static async createMessage(message: Omit<Omit<IMessage, "edited">, "anonymous">): Promise<MethodResult<Message>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const messageCollection = dolphin.database.collection<IMessage>("messages");
+        const userMessageCollection = dolphin.database.collection<IUserMessage>("userMessages");
+
+        const result = await messageCollection.insertOne({
+            ...message,
+            anonymous: false,
+        });
+        if (!result.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
+        const messageResult = await messageCollection.findOne({ _id: result.insertedId });
+        if (!messageResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
+        return [
+            new Message(messageCollection, userMessageCollection, messageResult),
+            null,
+        ];
+    }
+
     id: ObjectId;
     sender: ObjectId;
     anonymous: boolean;
     attachments?: IMessageAttachement[];
     _subject: string;
     _content: string;
-    receivers: ObjectId[];
+    receivers: string;
     edited?: number;
     private readonly messageCollection: Collection<IMessage>;
     private readonly userMessageCollection: Collection<IUserMessage>;
@@ -102,10 +120,10 @@ class Message implements IMessage {
     }
 
     get subject(): string {
-        return "not implemented";
+        return this._subject;
     }
     get content(): string {
-        return "not implemented";
+        return this._content;
     }
 }
 
