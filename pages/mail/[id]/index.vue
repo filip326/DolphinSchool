@@ -155,7 +155,7 @@ export default {
 
         <VCardText>
             <VDivider></VDivider>
-            <Markdown md="# Hello World" />
+            <Markdown :md="content" />
             <VDivider></VDivider>
         </VCardText>
 

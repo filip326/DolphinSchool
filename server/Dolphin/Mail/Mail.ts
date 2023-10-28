@@ -1,3 +1,4 @@
+import { User } from "@/server/Dolphin/User/User";
 import { Collection, ObjectId, WithId } from "mongodb";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import Dolphin from "../Dolphin";
@@ -15,17 +16,20 @@ interface IMail {
 }
 
 class Mail implements IMail {
-    public static async createMail(mail: {
-        sendBy: ObjectId;
-        sendTo: ObjectId[];
-        subject: string;
-        content: string;
-    }): Promise<MethodResult<boolean>> {
+    public static async createMail(
+        user: User,
+        mail: {
+            sendBy: ObjectId;
+            sendTo: ObjectId[];
+            subject: string;
+            content: string;
+        },
+    ): Promise<MethodResult<boolean>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const mailCollection = dolphin.database.collection<IMail>("mails");
         // add the time the mail was created to the mail object
         const timestamp = Date.now();
-        const mailWithTime = { ...mail, timestamp };
+        const mailWithTime = { ...mail, timestamp, readBy: [user._id] };
         const result = await mailCollection.insertOne(mailWithTime);
         if (result.acknowledged) {
             return [true, null];

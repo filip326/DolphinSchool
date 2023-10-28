@@ -29,7 +29,7 @@ export default eventHandler(async (event) => {
         });
     }
 
-    const result = await Mail.createMail({
+    const result = await Mail.createMail(user, {
         sendBy: user._id,
         sendTo,
         subject,
