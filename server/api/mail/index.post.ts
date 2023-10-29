@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import Course from "~/server/Dolphin/Course/Course";
 import Message from "~/server/Dolphin/Messenger/Message";
+import UserMessage from "~/server/Dolphin/Messenger/UserMessage";
 import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
 import User from "~/server/Dolphin/User/User";
@@ -16,7 +17,7 @@ export default eventHandler(async (event) => {
         });
     }
 
-    const { sendTo, subject, content } = await readBody(event);
+    const { sendTo, subject, content, newsletter } = await readBody(event);
     if (
         !sendTo ||
         !subject ||
@@ -31,7 +32,9 @@ export default eventHandler(async (event) => {
         ) || // check for each id if it is a string, including a column (:) and the part after the column is a valid ObjectId
         // examples: user:1234567890abcdef12345678, group:1234567890abcdef12345678
         typeof subject != "string" ||
-        typeof content != "string"
+        typeof content != "string" ||
+        // newsletter is optional, but if it is provided, it must be a boolean
+        (newsletter != undefined && typeof newsletter !== "boolean")
     ) {
         throw createError({
             statusCode: 400,
@@ -43,7 +46,7 @@ export default eventHandler(async (event) => {
     const receiversIds: ObjectId[] = [];
 
     await Promise.all(
-        sendTo.map(async (id) => {
+        sendTo.map(async (id: string) => {
             switch (id.split(":")[0]) {
                 case "user":
                     // eslint-disable-next-line no-case-declarations
@@ -228,14 +231,37 @@ export default eventHandler(async (event) => {
         receivers: receiversText.join(", "),
     });
 
-    if (!result[0] || result[1]) {
+    if (createMessageError) {
         throw createError({
             statusCode: 500,
             statusMessage: "Internal Server Error",
         });
-    } else {
-        return {
-            statusCode: 200,
-        };
     }
+
+    for await (const receiverId of receiversIds) {
+        // now create a user message
+        const createUserMessageError = (
+            await UserMessage.sendMessage(receiverId, createMessage, newsletter)
+        )[1];
+        if (createUserMessageError) {
+            // undo the message creation by deleting each user message and the message itself bc an error occured
+            // else, the message would be visible to some users but not all of them. this would be confusing. to prevent this, we delete the message to evryone and ask the user to try again.
+            await createMessage.delete();
+
+            throw createError({
+                statusCode: 500,
+                statusMessage: "Internal Server Error",
+            });
+        }
+    }
+
+    // TODO: #53 send email notifications / push notifications to users
+
+    return {
+        statusCode: 200,
+        statusMessage: "OK",
+        body: {
+            success: true,
+        },
+    };
 });

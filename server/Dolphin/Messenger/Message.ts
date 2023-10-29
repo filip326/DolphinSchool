@@ -56,7 +56,7 @@ class Message implements IMessage {
         ];
     }
 
-    id: ObjectId;
+    _id: ObjectId;
     sender: ObjectId;
     anonymous: boolean;
     attachments?: IMessageAttachement[];
@@ -72,7 +72,7 @@ class Message implements IMessage {
         userMessageCollection: Collection<IUserMessage>,
         message: WithId<IMessage>,
     ) {
-        this.id = message._id;
+        this._id = message._id;
         this.sender = message.sender;
         this.attachments = message.attachments;
         this._subject = message.subject;
@@ -87,10 +87,10 @@ class Message implements IMessage {
     async deleteForAll(): Promise<MethodResult<boolean>> {
         try {
             const deleteResult = await this.messageCollection.deleteOne({
-                _id: this.id,
+                _id: this._id,
             });
             const deleteAllResult = await this.userMessageCollection.deleteMany({
-                message: { $eq: this.id },
+                message: { $eq: this._id },
             });
             return [deleteAllResult.acknowledged && deleteResult.acknowledged, null];
         } catch {
@@ -104,7 +104,7 @@ class Message implements IMessage {
 
         try {
             const updateResult = await this.messageCollection.updateOne(
-                { _id: this.id },
+                { _id: this._id },
                 {
                     $set: {
                         content: newContent,
@@ -118,8 +118,22 @@ class Message implements IMessage {
         }
     }
 
+    async delete(): Promise<MethodResult<boolean>> {
+        try {
+            const deleteResult = await this.userMessageCollection.deleteMany({
+                message: { $eq: this._id },
+            });
+            const deleteResult2 = await this.messageCollection.deleteOne({
+                _id: this._id,
+            });
+            return [deleteResult.acknowledged ?? deleteResult2.acknowledged, null];
+        } catch {
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+        }
+    }
+
     get time() {
-        return this.id.getTimestamp();
+        return this._id.getTimestamp();
     }
 
     get subject(): string {

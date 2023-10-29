@@ -143,6 +143,26 @@ class UserMessage implements IUserMessage {
         ];
     }
 
+    static async getUserMessagesByMessageId(
+        id: ObjectId,
+    ): Promise<MethodResult<UserMessage[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const dbResult = await dolphin.database
+            .collection<IUserMessage>("userMessages")
+            .find({ message: id });
+        return [
+            (await dbResult.toArray()).map(
+                (v) =>
+                    new UserMessage(
+                        dolphin.database.collection<IMessage>("messages"),
+                        dolphin.database.collection<IUserMessage>("userMessages"),
+                        v,
+                    ),
+            ),
+            null,
+        ];
+    }
+
     /**
      * sends a message to a user
      * @param receiver
@@ -162,7 +182,7 @@ class UserMessage implements IUserMessage {
 
             subject: message.subject,
             author: message.sender,
-            message: message.id,
+            message: message._id,
             read: false,
             stared: false,
             newsletter,
