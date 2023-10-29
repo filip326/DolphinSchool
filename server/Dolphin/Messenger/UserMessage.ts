@@ -4,6 +4,8 @@ import User from "../User/User";
 import Message, { IMessage } from "./Message";
 import { Collection, ObjectId, WithId } from "mongodb";
 
+type Postfaecher = "inbox" | "outbox" | "stared" | "unread";
+
 interface IUserMessage {
     owner: ObjectId;
 
@@ -12,7 +14,6 @@ interface IUserMessage {
     message: ObjectId;
     read: boolean;
     stared: boolean;
-    newsletter: boolean;
 }
 
 interface MessageFilterOptions {
@@ -173,7 +174,6 @@ class UserMessage implements IUserMessage {
     static async sendMessage(
         receiver: ObjectId,
         message: Message,
-        newsletter: boolean = false,
     ): Promise<MethodResult<boolean>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
@@ -185,7 +185,6 @@ class UserMessage implements IUserMessage {
             message: message._id,
             read: false,
             stared: false,
-            newsletter,
         };
 
         const dbResult = await dolphin.database
@@ -224,7 +223,6 @@ class UserMessage implements IUserMessage {
         this.message = userMessage.message;
         this.read = userMessage.read;
         this.stared = userMessage.stared;
-        this.newsletter = userMessage.newsletter;
         this.messageCollection = messageCollection;
         this.userMessageCollection = userMessageCollection;
     }
@@ -304,4 +302,4 @@ class UserMessage implements IUserMessage {
 }
 
 export default UserMessage;
-export { IUserMessage };
+export { IUserMessage, Postfaecher };
