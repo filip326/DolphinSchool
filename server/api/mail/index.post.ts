@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import ASMSQ, { ASMSQResponseTypes } from "~/server/Dolphin/ASMSQ/ASMSQ";
 import Course from "~/server/Dolphin/Course/Course";
 import Message from "~/server/Dolphin/Messenger/Message";
 import UserMessage from "~/server/Dolphin/Messenger/UserMessage";
@@ -47,7 +48,7 @@ export default eventHandler(async (event) => {
 
     await Promise.all(
         sendTo.map(async (id: string) => {
-            switch (id.split(":")[0]) {
+            switch (id.split(":")[0] as ASMSQResponseTypes) {
                 case "user":
                     // eslint-disable-next-line no-case-declarations
                     const [sendToUser, userFindError] = await User.getUserById(
@@ -265,3 +266,4 @@ export default eventHandler(async (event) => {
         },
     };
 });
+

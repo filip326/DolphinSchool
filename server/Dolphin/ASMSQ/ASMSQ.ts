@@ -3,72 +3,125 @@ import { ObjectId } from "mongodb";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import ASMSQInterpreter, { ASMSQResult } from "./AdvancedSyntaxObject";
 import User from "../User/User";
+import TutCourse from "../Tut/TutCourse";
+import Course from "../Course/Course";
 
+type ASMSQResponseTypes =
+    | "user" // represents a single user
+    | "students_in_tut" // represents a list of students in a tut course
+    | "students_in_course" // represents a list of students in a course
+    | "teachers_in_tut" // represents a list of tutors in a tut course
+    | "teachers_in_course" // represents a list of tutors in a course
+    | "parents_in_course" // represents a course
+    | "parents_in_tut"; // represents a tut course
 interface ParsedASMSQResult {
-    name: string;
-    id: ObjectId | ObjectId[];
-    collectionName: string;
-    type: "user" | "class" | "cource" | "grade";
+    label: string;
+    value: `${ASMSQResponseTypes}:${string}`;
 }
 
-export default class ASMSQ {
+class ASMSQ {
     public static async suggest(
         query: string,
     ): Promise<MethodResult<ParsedASMSQResult[]>> {
-        const result: ASMSQResult[] = new ASMSQInterpreter(query).result;
+        const toBeReturned: ParsedASMSQResult[] = [];
 
-        if (!result || result.length === 0) {
-            return [undefined, DolphinErrorTypes.NOT_FOUND];
+        // check if the query could match a single user
+        // - find at maximum 5 users whose name matches the query
+
+        const [userMatches, userMatchesError] = await User.searchUsersByName(query, 5, 0);
+        if (userMatchesError) {
+            return [undefined, userMatchesError];
         }
 
-        const parsedResultRes = await this.processASMSQResult(result);
-        if (parsedResultRes[1]) {
-            return [undefined, parsedResultRes[1]];
-        }
-
-        return [parsedResultRes[0], null];
-    }
-
-    private static async processASMSQResult(
-        result: ASMSQResult[],
-    ): Promise<MethodResult<ParsedASMSQResult[]>> {
-        if (!result || result.length === 0) {
-            return [undefined, DolphinErrorTypes.NOT_FOUND];
-        }
-
-        const parsedResult: ParsedASMSQResult[] = [];
-
-        result.forEach(async (item) => {
-            switch (item.subtype) {
-                case "user":
-                    if (!item.name) {
-                        return;
-                    }
-                    const userResult = await User.searchUsersByName(item.name);
-                    if (!userResult[0] || userResult[1]) {
-                        return;
-                    }
-                    userResult[0].forEach((user) => {
-                        parsedResult.push({
-                            name: user.fullName,
-                            id: user._id,
-                            collectionName: "users",
-                            type: "user",
-                        });
+        for await (const user of userMatches) {
+            // if it is a student:
+            // - get the tut course's name
+            if (user.isStudent()) {
+                const [tutCourse] = await TutCourse.getTutCourseByUser(user._id);
+                if (!tutCourse) {
+                    toBeReturned.push({
+                        label: `${user.fullName} (Schüler:in)`,
+                        value: `user:${user._id.toHexString()}`,
                     });
-                    return;
-                case "class":
-                    // todo
-                    return;
-                case "course":
-                    // todo
-                    return;
-                case "grade":
-                    // todo
-                    return;
+                } else {
+                    toBeReturned.push({
+                        label: `${user.fullName} (Schüler:in, ${tutCourse.name})`,
+                        value: `user:${user._id.toHexString()}`,
+                    });
+                }
             }
-        });
+            // if it is a teacher:
+            // - just write the name (teacher)
+            else if (user.isTeacher()) {
+                toBeReturned.push({
+                    label: `${user.fullName} (Lehrer:in)`,
+                    value: `user:${user._id.toHexString()}`,
+                });
+            }
+            // if it is a parent:
+            // - get the student's tut course's name
+            // - if multiple students assigned to one parent, get each tut course comma separated
+            else if (user.isParent()) {
+                const [students, studentsError] = await user.getStudents();
+                if (studentsError) {
+                    return [undefined, studentsError];
+                }
+                const tutCourseNames: string[] = [];
+                for await (const student of students) {
+                    const [tutCourse] = await TutCourse.getTutCourseByUser(student._id);
+                    if (tutCourse) {
+                        tutCourseNames.push(tutCourse.name);
+                    }
+                }
 
-        return [parsedResult, null];
+                toBeReturned.push({
+                    label: `${user.fullName} (${["Elternteil", ...tutCourseNames].join(
+                        ", ",
+                    )})`,
+                    value: `user:${user._id.toHexString()}`,
+                });
+            } else {
+                // just a default case if some mistakes happen
+                toBeReturned.push({
+                    label: `${user.fullName}`,
+                    value: `user:${user._id.toHexString()}`,
+                });
+            }
+        }
+
+        // now also check if the query could match a tut course
+        // this could be the case if the query matches a tut course's name
+        // or if the query matches
+        // Schüler in <tut course name or course name>
+        // Lehrer in <tut course name or course name>
+        // Eltern in <tut course name or course name>
+
+        // if the query starts with
+        // Schüler in
+        // Lehrer in or
+        // Eltern in
+        // then cut off the first part and look for courses and tut courses
+
+        const courseNameToSearchFor = query.startsWith("Schüler in ")
+            ? query.slice(11)
+            : query.startsWith("Lehrer in ")
+            ? query.slice(10)
+            : query.startsWith("Eltern in ")
+            ? query.slice(10)
+            : query;
+
+        const [tutCourseMatches, tutCourseMatchesError] =
+            await TutCourse.searchTutCourseByName(courseNameToSearchFor, 0, 5);
+        const [courseMatches, courseMatchesError] = await Course.searchCourseByName(
+            courseNameToSearchFor,
+            0,
+            5,
+        );
+
+        return [toBeReturned, null];
     }
 }
+
+export default ASMSQ;
+export { ASMSQResponseTypes, ParsedASMSQResult };
+
