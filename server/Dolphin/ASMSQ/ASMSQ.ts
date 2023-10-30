@@ -110,13 +110,82 @@ class ASMSQ {
             ? query.slice(10)
             : query;
 
-        const [tutCourseMatches, tutCourseMatchesError] =
-            await TutCourse.searchTutCourseByName(courseNameToSearchFor, 0, 5);
-        const [courseMatches, courseMatchesError] = await Course.searchCourseByName(
+        const [tutCourseMatches] = await TutCourse.searchTutCourseByName(
             courseNameToSearchFor,
             0,
             5,
         );
+        const [courseMatches] = await Course.searchCourseByName(
+            courseNameToSearchFor,
+            0,
+            5,
+        );
+
+        if (tutCourseMatches && tutCourseMatches.length > 0) {
+            if (query.startsWith("Schüler in")) {
+                toBeReturned.push({
+                    label: `Schüler in ${tutCourseMatches[0].name}`,
+                    value: `students_in_tut:${tutCourseMatches[0]._id.toHexString()}`,
+                });
+            } else if (query.startsWith("Lehrer in")) {
+                toBeReturned.push({
+                    label: `Lehrer in ${tutCourseMatches[0].name}`,
+                    value: `teachers_in_tut:${tutCourseMatches[0]._id.toHexString()}`,
+                });
+            } else if (query.startsWith("Eltern in")) {
+                toBeReturned.push({
+                    label: `Eltern in ${tutCourseMatches[0].name}`,
+                    value: `parents_in_tut:${tutCourseMatches[0]._id.toHexString()}`,
+                });
+            } else {
+                // if nothing specified, return all 3 options
+                toBeReturned.push({
+                    label: `Schüler in ${tutCourseMatches[0].name}`,
+                    value: `students_in_tut:${tutCourseMatches[0]._id.toHexString()}`,
+                });
+                toBeReturned.push({
+                    label: `Lehrer in ${tutCourseMatches[0].name}`,
+                    value: `teachers_in_tut:${tutCourseMatches[0]._id.toHexString()}`,
+                });
+                toBeReturned.push({
+                    label: `Eltern in ${tutCourseMatches[0].name}`,
+                    value: `parents_in_tut:${tutCourseMatches[0]._id.toHexString()}`,
+                });
+            }
+        }
+
+        if (courseMatches && courseMatches.length > 0) {
+            if (query.startsWith("Schüler in")) {
+                toBeReturned.push({
+                    label: `Schüler in ${courseMatches[0].name}`,
+                    value: `students_in_course:${courseMatches[0]._id.toHexString()}`,
+                });
+            } else if (query.startsWith("Lehrer in")) {
+                toBeReturned.push({
+                    label: `Lehrer in ${courseMatches[0].name}`,
+                    value: `teachers_in_course:${courseMatches[0]._id.toHexString()}`,
+                });
+            } else if (query.startsWith("Eltern in")) {
+                toBeReturned.push({
+                    label: `Eltern in ${courseMatches[0].name}`,
+                    value: `parents_in_course:${courseMatches[0]._id.toHexString()}`,
+                });
+            } else {
+                // if nothing specified, return all 3 options
+                toBeReturned.push({
+                    label: `Schüler in ${courseMatches[0].name}`,
+                    value: `students_in_course:${courseMatches[0]._id.toHexString()}`,
+                });
+                toBeReturned.push({
+                    label: `Lehrer in ${courseMatches[0].name}`,
+                    value: `teachers_in_course:${courseMatches[0]._id.toHexString()}`,
+                });
+                toBeReturned.push({
+                    label: `Eltern in ${courseMatches[0].name}`,
+                    value: `parents_in_course:${courseMatches[0]._id.toHexString()}`,
+                });
+            }
+        }
 
         return [toBeReturned, null];
     }
