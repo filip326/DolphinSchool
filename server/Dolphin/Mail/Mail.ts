@@ -142,6 +142,7 @@ class Mail implements IMail {
                 // get all mails where readBy not contains user id
                 const result = await mailCollection
                     .find({
+                        sendTo: options.user,
                         readBy: { $ne: options.user },
                     })
                     .toArray();

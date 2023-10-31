@@ -102,4 +102,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.settings_form {
+    padding: 20px;
+}
+</style>

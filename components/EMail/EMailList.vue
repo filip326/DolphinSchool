@@ -41,12 +41,6 @@ export default {
                 stared?: boolean;
                 timestamp: number;
             }>;
-        } else {
-            throw createError({
-                statusCode: 500,
-                statusMessage: "Fehler beim Laden der E-Mails.",
-                fatal: true,
-            });
         }
     },
     methods: {

@@ -174,4 +174,8 @@ export default {
     height: 128px;
     margin: 0 auto;
 }
+
+.settings_form {
+    padding: 20px;
+}
 </style>
