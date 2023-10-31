@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import ASMSQ, { ASMSQResponseTypes } from "~/server/Dolphin/ASMSQ/ASMSQ";
+import { ASMSQResponseTypes } from "~/server/Dolphin/ASMSQ/ASMSQ";
 import Course from "~/server/Dolphin/Course/Course";
 import Message from "~/server/Dolphin/Messenger/Message";
 import UserMessage from "~/server/Dolphin/Messenger/UserMessage";
@@ -266,4 +266,3 @@ export default eventHandler(async (event) => {
         },
     };
 });
-
