@@ -1,6 +1,5 @@
-import { ObjectId } from "mongodb";
-import Mail, { Postfaecher } from "~/server/Dolphin/Mail/Mail";
-import User from "~/server/Dolphin/User/User";
+import Message from "~/server/Dolphin/Messenger/Message";
+import UserMessage from "~/server/Dolphin/Messenger/UserMessage";
 
 export default eventHandler(async (event) => {
     const checkAuthResult = await event.context.auth.checkAuth({});
@@ -9,89 +8,104 @@ export default eventHandler(async (event) => {
     }
 
     const { postfach } = getRouterParams(event);
-
-    if (!postfach || typeof postfach != "string" || !checkValidPostfach(postfach)) {
-        throw createError({ statusCode: 400, message: "Bad Request" });
+    let { limit, skip } = getQuery(event);
+    if (!skip || typeof skip !== "number") {
+        skip = 0;
+    }
+    if (!limit || typeof limit !== "number" || limit > 25) {
+        limit = 25;
     }
 
-    const mailRes = await Mail.getMails({
-        user: checkAuthResult.user._id,
-        postfachSearch: {
-            postfach: postfach as Postfaecher,
-        },
-    });
-
-    if (!mailRes[0] || mailRes[1]) {
-        throw createError({ statusCode: 500, message: mailRes[1] });
-    }
-
-    const mails: Array<{
-        id: string;
-        subject: string;
-        content: string;
-        sendBy: string;
-        sentTo: string[];
-        read?: boolean;
-        stared?: boolean;
-        timestamp: number;
-    }> = await Promise.all(
-        mailRes[0].map(async (mail) => {
-            // get fullName of sendBy
-            const sendByRes = await User.getUserById(mail.sendBy);
-            if (!sendByRes[0] || sendByRes[1]) {
+    switch (postfach) {
+        case "unread":
+            // eslint-disable-next-line no-case-declarations
+            const [userMessages, userMessagesListError] =
+                await UserMessage.listUsersMessages(
+                    checkAuthResult.user,
+                    {
+                        limit,
+                        skip,
+                    },
+                    { read: false },
+                );
+            if (userMessagesListError) {
                 throw createError({ statusCode: 500, message: "Failed" });
             }
-            const sendBy: User = sendByRes[0];
+            return userMessages.map((userMessage) => ({
+                id: userMessage._id,
+                subject: userMessage.subject,
+                sender: userMessage.author,
+                timestemp: userMessage.time.getTime(),
+                stared: userMessage.stared,
+                read: userMessage.read,
+            }));
+        case "inbox":
+            console.log(`looking up mails in inbox for user ${checkAuthResult.user._id}`);
+            // eslint-disable-next-line no-case-declarations
+            const [userMessagesInbox, userMessagesInboxListError] =
+                await UserMessage.listUsersMessages(
+                    checkAuthResult.user,
+                    {
+                        limit,
+                        skip,
+                    },
+                    {},
+                );
+            if (userMessagesInboxListError) {
+                throw createError({ statusCode: 500, message: "Failed" });
+            }
+            console.log(
+                `found ${userMessagesInbox.length} mails in inbox for user ${checkAuthResult.user._id}`,
+            );
+            return userMessagesInbox.map((userMessage) => ({
+                id: userMessage._id,
+                subject: userMessage.subject,
+                sender: userMessage.author,
+                timestemp: userMessage.time.getTime(),
+                stared: userMessage.stared,
+                read: userMessage.read,
+            }));
 
-            // get all fullNames of all users in sendTo
-            const sendToPromise = mail.sendTo.map(async (userId) => {
-                const userRes = await User.getUserById(new ObjectId(userId));
-                if (!userRes[0] || userRes[1]) {
-                    throw createError({ statusCode: 500, message: "Failed" });
-                }
-                return userRes[0].fullName;
-            });
+        case "outbox":
+            // eslint-disable-next-line no-case-declarations
+            const [messages, messagesListError] = await Message.listMessagesBySender(
+                checkAuthResult.user._id,
+                { limit, skip },
+            );
+            if (messagesListError) {
+                throw createError({ statusCode: 500, message: "Failed" });
+            }
+            return messages.map((message) => ({
+                id: message._id,
+                subject: message._subject,
+                sender: message.sender,
+                timestemp: message.time.getTime(),
+                stared: false,
+                flag: "outgoing",
+                read: true,
+            }));
 
-            const sendTos = await Promise.all(sendToPromise);
-
-            const mails: {
-                id: string;
-                subject: string;
-                content: string;
-                sendBy: string;
-                sentTo: string[];
-                read?: boolean;
-                stared?: boolean;
-                timestamp: number;
-            } = {
-                id: mail.id.toString(),
-                subject: mail.subject,
-                content: mail.content,
-                sendBy: sendBy.fullName,
-                sentTo: sendTos,
-                read: mail.read,
-                stared: mail.stared,
-                timestamp: mail.timestamp,
-            };
-
-            return mails;
-        }),
-    );
-    return {
-        success: true,
-        mails: mails,
-    };
-});
-
-function checkValidPostfach(postfach: string) {
-    if (
-        postfach == "inbox" ||
-        postfach == "outbox" ||
-        postfach == "stared" ||
-        postfach == "unread"
-    ) {
-        return true;
-    } else {
-        return false;
+        case "stared":
+            // eslint-disable-next-line no-case-declarations
+            const [userMessagesStared, userMessagesStaredListError] =
+                await UserMessage.listUsersMessages(
+                    checkAuthResult.user,
+                    {
+                        limit,
+                        skip,
+                    },
+                    { stared: true },
+                );
+            if (userMessagesStaredListError) {
+                throw createError({ statusCode: 500, message: "Failed" });
+            }
+            return userMessagesStared.map((userMessage) => ({
+                id: userMessage._id,
+                subject: userMessage.subject,
+                sender: userMessage.author,
+                timestemp: userMessage.time.getTime(),
+                stared: userMessage.stared,
+                read: userMessage.read,
+            }));
     }
-}
+});

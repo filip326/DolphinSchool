@@ -34,7 +34,7 @@ export default {
             const res = await useFetch("/api/mail", {
                 method: "POST",
                 body: JSON.stringify({
-                    sendTo: this.empfaenger,
+                    sendTo: this.empfaenger.map((e) => `user:${e}`), // ! debug only, later there will be an advanced search with :-id support
                     subject: this.subject,
                     content: this.content,
                 }),

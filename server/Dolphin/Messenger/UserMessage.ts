@@ -4,7 +4,7 @@ import User from "../User/User";
 import Message, { IMessage } from "./Message";
 import { Collection, ObjectId, WithId } from "mongodb";
 
-type Postfaecher = "inbox" | "outbox" | "stared" | "unread";
+type Postfaecher = "inbox" | "outbox" | "stared";
 
 interface IUserMessage {
     owner: ObjectId;
@@ -41,14 +41,15 @@ class UserMessage implements IUserMessage {
         }: { read?: boolean; stared?: boolean; newsletter?: boolean } = {},
     ): Promise<MethodResult<UserMessage[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const conditions = [];
+        if (read !== undefined) conditions.push({ read });
+        if (stared !== undefined) conditions.push({ stared });
+        if (newsletter !== undefined) conditions.push({ newsletter });
         const dbResult = await dolphin.database
             .collection<IUserMessage>("userMessages")
             .find(
                 {
-                    owner: user._id,
-                    read,
-                    stared,
-                    newsletter,
+                    $and: [{ owner: user._id }, ...conditions],
                 },
                 { limit, skip },
             );
@@ -123,7 +124,6 @@ class UserMessage implements IUserMessage {
                     owner: user._id,
                     stared: filter.stared,
                     read: filter.read,
-                    newsletter: filter.newsletter,
                 },
                 { limit: filter.limit, skip: filter.skip },
             )
@@ -179,7 +179,6 @@ class UserMessage implements IUserMessage {
 
         const userMessage: IUserMessage = {
             owner: receiver,
-
             subject: message.subject,
             author: message.sender,
             message: message._id,
@@ -206,7 +205,6 @@ class UserMessage implements IUserMessage {
     message: ObjectId;
     read: boolean;
     stared: boolean;
-    newsletter: boolean;
 
     private readonly messageCollection: Collection<IMessage>;
     private readonly userMessageCollection: Collection<IUserMessage>;
@@ -232,11 +230,16 @@ class UserMessage implements IUserMessage {
     }
 
     async star(stared = true): Promise<MethodResult<boolean>> {
-        this.stared = stared;
         try {
-            const dbResult = await this.messageCollection.updateOne(
-                { _id: this.message },
-                { $set: { stared } },
+            const dbResult = await this.userMessageCollection.updateOne(
+                {
+                    _id: this._id,
+                },
+                {
+                    $set: {
+                        stared,
+                    },
+                },
             );
             if (!dbResult.acknowledged) {
                 return [undefined, DolphinErrorTypes.DATABASE_ERROR];
@@ -298,6 +301,10 @@ class UserMessage implements IUserMessage {
         }
 
         return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+    }
+
+    get time() {
+        return this._id.getTimestamp();
     }
 }
 

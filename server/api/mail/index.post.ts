@@ -27,8 +27,8 @@ export default eventHandler(async (event) => {
         sendTo.some(
             (id) =>
                 typeof id != "string" ||
-                id.includes(":") ||
-                ObjectId.isValid(id.split(":")[1]),
+                !id.includes(":") ||
+                !ObjectId.isValid(id.split(":")[1]),
         ) || // check for each id if it is a string, including a column (:) and the part after the column is a valid ObjectId
         // examples: user:1234567890abcdef12345678, group:1234567890abcdef12345678
         typeof subject != "string" ||
@@ -36,6 +36,51 @@ export default eventHandler(async (event) => {
         // newsletter is optional, but if it is provided, it must be a boolean
         (newsletter != undefined && typeof newsletter !== "boolean")
     ) {
+        console.debug("Body-Check failed");
+        if (!sendTo) {
+            console.debug("❌ sendTo is undefined");
+        } else if (!Array.isArray(sendTo)) {
+            console.debug("❌ sendTo is not an array");
+        } else if (sendTo.length === 0) {
+            console.debug("❌ sendTo is an empty array");
+        } else if (
+            sendTo.some(
+                (id) =>
+                    typeof id != "string" ||
+                    id.includes(":") ||
+                    ObjectId.isValid(id.split(":")[1]),
+            )
+        ) {
+            console.debug("❌ sendTo contains invalid ids");
+            // find invalid ids
+            console.debug(
+                `❌ ${sendTo
+                    .filter((id) => {
+                        if (
+                            typeof id != "string" ||
+                            !id.includes(":") ||
+                            !ObjectId.isValid(id.split(":")[1])
+                        ) {
+                            return true;
+                        }
+                        return false;
+                    })
+                    .join(", ")} are invalid ids`,
+            );
+        }
+        if (!subject) {
+            console.debug("❌ subject is undefined");
+        } else if (typeof subject != "string") {
+            console.debug("❌ subject is not a string");
+        }
+        if (!content) {
+            console.debug("❌ content is undefined");
+        } else if (typeof content != "string") {
+            console.debug("❌ content is not a string");
+        }
+        if (newsletter != undefined && typeof newsletter !== "boolean") {
+            console.debug("❌ newsletter is not a boolean");
+        }
         throw createError({
             statusCode: 400,
             statusMessage: "Bad Request",
@@ -241,7 +286,7 @@ export default eventHandler(async (event) => {
     for await (const receiverId of receiversIds) {
         // now create a user message
         const createUserMessageError = (
-            await UserMessage.sendMessage(receiverId, createMessage, newsletter)
+            await UserMessage.sendMessage(receiverId, createMessage)
         )[1];
         if (createUserMessageError) {
             // undo the message creation by deleting each user message and the message itself bc an error occured

@@ -56,6 +56,28 @@ class Message implements IMessage {
         ];
     }
 
+    static async listMessagesBySender(
+        sender: ObjectId,
+        options: { limit?: number; skip?: number },
+    ): Promise<MethodResult<Message[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const messageCollection = dolphin.database.collection<IMessage>("messages");
+        const messages = await messageCollection
+            .find({ sender }, { limit: options.limit, skip: options.skip })
+            .toArray();
+        return [
+            messages.map(
+                (message) =>
+                    new Message(
+                        messageCollection,
+                        dolphin.database.collection<IUserMessage>("userMessages"),
+                        message,
+                    ),
+            ),
+            null,
+        ];
+    }
+
     _id: ObjectId;
     sender: ObjectId;
     anonymous: boolean;

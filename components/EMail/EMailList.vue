@@ -16,30 +16,30 @@ export default {
             emails: Array<{
                 id: string;
                 subject: string;
-                content: string;
-                sendBy: string;
-                sentTo: string[];
-                read?: boolean;
-                stared?: boolean;
-                timestamp: number;
+                sender: string;
+                timestemp: number;
+                stared: boolean;
+                read: boolean;
+                flag?: string;
             }>(),
         };
     },
     async beforeMount() {
+        console.log(`loading emails from ${this.url}`);
         const res = await useFetch(this.url, {
             method: "GET",
         });
 
         if (res.status.value == "success") {
-            this.emails = res.data.value.mails as Array<{
+            console.log(res.data.value);
+            this.emails = res.data.value as any as Array<{
                 id: string;
                 subject: string;
-                content: string;
-                sendBy: string;
-                sentTo: string[];
-                read?: boolean;
-                stared?: boolean;
-                timestamp: number;
+                sender: string;
+                timestemp: number;
+                stared: boolean;
+                read: boolean;
+                flag?: string;
             }>;
         } else {
             throw createError({
@@ -75,12 +75,19 @@ export default {
                 <EMailPreview
                     @email_clicked="onEmailSelected"
                     :id="email.id"
-                    :sendby="email.sendBy"
+                    :sendby="email.sender"
                     :unread="!email.read"
                     :subject="email.subject"
-                    :timestamp="UTCToStr(email.timestamp)"
+                    :timestemp="email.timestemp"
                     :stared="email.stared"
+                    :flag="email.flag"
                 />
+            </VListItem>
+            <VListItem class="no_elements" v-if="emails.length === 0">
+                <div class="no_elements_text">
+                    <VIcon>mdi-magnify-scan</VIcon>
+                    Keine E-Mails vorhanden.
+                </div>
             </VListItem>
         </VList>
     </div>
@@ -132,5 +139,28 @@ export default {
 .list-title {
     font-weight: 600;
     font-size: 1.5em;
+}
+
+.no_elements {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 50px;
+    background-color: rgb(var(--v-theme-surface));
+}
+.no_elements_text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: rgb(var(--v-theme-text-primary));
+}
+.no_elements_text .v-icon {
+    font-size: 5em;
 }
 </style>
