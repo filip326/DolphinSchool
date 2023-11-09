@@ -139,7 +139,12 @@ class User implements WithId<IUser> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const userCollection = dolphin.database.collection<IUser>("users");
         const users = await userCollection
-            .find({ fullName: { $regex: query, $options: "i" } })
+            .find({
+                $or: [
+                    { fullName: { $regex: query, $options: "i" } },
+                    { kuerzel: { $regex: query, $options: "i" } },
+                ],
+            })
             .skip(skip)
             .limit(limit)
             .toArray();

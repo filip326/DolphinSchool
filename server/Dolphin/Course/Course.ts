@@ -363,6 +363,23 @@ class Course implements WithId<ICourse> {
         return [dbResult.map((c) => new Course(c, courses)), null];
     }
 
+    static async searchCourseByName(
+        query: string,
+        skip: number = 0,
+        limit: number = 15,
+    ): Promise<MethodResult<Course[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+        const result = await courses
+            .find({
+                name: { $regex: query, $options: "i" },
+            })
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+        return [result.map((tutCourse) => new Course(tutCourse, courses)), null];
+    }
+
     _id: ObjectId;
     teacher: ObjectId[];
     subject: ObjectId;
