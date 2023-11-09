@@ -9,10 +9,6 @@ export default {
             type: Number,
             required: false,
         },
-        preInput: {
-            type: Array<string>,
-            required: false,
-        },
     },
     data(): {
         searchQuery: string;
@@ -33,23 +29,6 @@ export default {
         };
     },
     async beforeMount() {
-        // search the users in the preInput array forEach select the first result and add them to the modelValue
-        if (this.preInput) {
-            for (const user of this.preInput) {
-                const response = await useFetch("/api/search/user", {
-                    method: "get",
-                    params: {
-                        search: user,
-                    },
-                });
-                if (response.status.value !== "success") {
-                    return;
-                }
-                if (response.data.value!.length > 0) {
-                    this.modelValue.push(response.data.value![0]);
-                }
-            }
-        }
     },
     methods: {
         clearSearchOptionsAfterSelect() {
