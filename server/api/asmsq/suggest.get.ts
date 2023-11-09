@@ -1,7 +1,8 @@
 import ASMSQ from "~/server/Dolphin/ASMSQ/ASMSQ";
 
 export default eventHandler(async (event) => {
-    const checkAuthResult = await event.context.auth.checkAuth(event, {});
+    const checkAuthResult = await event.context.auth.checkAuth();
+
     if (!checkAuthResult.success || !checkAuthResult.user) {
         throw createError({ statusCode: 401, message: "Unauthorized" });
     }
