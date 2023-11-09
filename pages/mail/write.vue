@@ -34,7 +34,7 @@ export default {
             const res = await useFetch("/api/mail", {
                 method: "POST",
                 body: JSON.stringify({
-                    sendTo: this.empfaenger.map((e) => `user:${e}`), // ! debug only, later there will be an advanced search with :-id support
+                    sendTo: this.empfaenger.map((e) => `${e}`),
                     subject: this.subject,
                     content: this.content,
                 }),
@@ -70,7 +70,7 @@ export default {
                 <VForm>
                     <VTextField label="Absender" readonly v-model="absender" />
 
-                    <SearchUser label="Empfänger" @user-ids="setEmpf" />
+                    <ASMSQSearchField label="Empfänger" @user-ids="setEmpf" />
 
                     <VTextField
                         :rules="[rules.required]"
