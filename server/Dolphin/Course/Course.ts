@@ -196,6 +196,23 @@ class Course implements WithId<ICourse> {
         ];
     }
 
+    static async searchCourseByName(
+        query: string,
+        skip: number = 0,
+        limit: number = 15,
+    ): Promise<MethodResult<Course[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+        const result = await courses
+            .find({
+                name: { $regex: query, $options: "i" },
+            })
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+        return [result.map((course) => new Course(course, courses)), null];
+    }
+
     private static async createLkOrGkCourse(
         options: CreateCourseOptions,
     ): Promise<MethodResult<Course>> {
@@ -563,3 +580,4 @@ class Course implements WithId<ICourse> {
 
 export default Course;
 export { ICourse, CreateSingleClassCourseOptions, CreateCourseOptions };
+

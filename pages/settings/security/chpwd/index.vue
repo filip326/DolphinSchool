@@ -148,4 +148,8 @@ export default {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.settings_form {
+    padding: 20px;
+}
+</style>

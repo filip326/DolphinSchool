@@ -28,7 +28,7 @@ interface ParsedASMSQResult {
     value: `${ASMSQQueryType}:${string}` | SpecialASMSQQuery;
 }
 
-export default class ASMSQ {
+class ASMSQ {
     public static async suggest(
         query: string,
         specialPermissions: boolean = false, // needed for SpecialASMSQQuery queries
@@ -176,3 +176,6 @@ export default class ASMSQ {
         return [result, null];
     }
 }
+
+export default ASMSQ;
+export { ASMSQResponseTypes, ParsedASMSQResult };

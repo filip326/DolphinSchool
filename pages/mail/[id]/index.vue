@@ -52,6 +52,7 @@ export default {
         });
 
         if (res.status.value == "success") {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
             this.email = res.data.value?.mail! as {
                 id: string;
                 subject: string;

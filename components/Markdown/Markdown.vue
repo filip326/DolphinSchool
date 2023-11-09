@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import markedLinkifyIt from "marked-linkify-it";
