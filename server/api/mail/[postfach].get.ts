@@ -40,7 +40,6 @@ export default eventHandler(async (event) => {
                 read: userMessage.read,
             }));
         case "inbox":
-            console.log(`looking up mails in inbox for user ${checkAuthResult.user._id}`);
             // eslint-disable-next-line no-case-declarations
             const [userMessagesInbox, userMessagesInboxListError] =
                 await UserMessage.listUsersMessages(
@@ -54,9 +53,6 @@ export default eventHandler(async (event) => {
             if (userMessagesInboxListError) {
                 throw createError({ statusCode: 500, message: "Failed" });
             }
-            console.log(
-                `found ${userMessagesInbox.length} mails in inbox for user ${checkAuthResult.user._id}`,
-            );
             return userMessagesInbox.map((userMessage) => ({
                 id: userMessage._id,
                 subject: userMessage.subject,
