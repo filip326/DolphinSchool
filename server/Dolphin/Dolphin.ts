@@ -14,10 +14,6 @@ class Dolphin {
     }
 
     private constructor(db: Db, client: MongoClient, cb: (dolphin: Dolphin) => void) {
-        if (Dolphin.instance && Dolphin.instance.ready) {
-            console.log("Dolphin instance already exists! Class Dolphin is a singleton!");
-        }
-
         this.database = db;
         this.client = client;
 
