@@ -2,7 +2,7 @@
 export default {
     data() {
         return {
-            absender: "Du",
+            // absender: "Du",
             empfaenger: [] as string[],
             content: "",
             subject: "",
@@ -68,7 +68,7 @@ export default {
 
             <VCardText>
                 <VForm>
-                    <VTextField label="Absender" readonly v-model="absender" />
+                    <!-- <VTextField label="Absender" readonly v-model="absender" /> -->
 
                     <ASMSQSearchField label="Empfänger" v-model="empfaenger" />
 
