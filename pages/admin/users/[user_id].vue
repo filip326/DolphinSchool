@@ -32,13 +32,26 @@ export default {
             this.error.show = true;
             this.error.message = "Fehler beim Laden des Benutzers";
         }
+        const response = await useFetch("/api/permissions/CHANGE_USER_PASSWORD", {
+            method: "GET",
+        });
+        this.passwordChangeAllowed =
+            response.status.value === "success" && response.data.value;
     },
-    data() {
+    data(): {
+        error: {
+            show: boolean;
+            message: string;
+        };
+        passwordChangeAllowed: boolean | null;
+        user: IUser;
+    } {
         return {
             error: {
                 show: false,
                 message: "",
             },
+            passwordChangeAllowed: null,
             user: {} as IUser,
         };
     },
@@ -85,6 +98,15 @@ export default {
                 }
             }
         },
+        async changePassword() {
+            alert("not implemented");
+            // ask for confirmation
+            // request a new password
+            // GET /api/admin/users/:id/password
+            // show password
+
+            // TODO: #56 implement
+        },
     },
 };
 </script>
@@ -127,6 +149,16 @@ export default {
                 <VExpansionPanel title="JSON">
                     <template #text>
                         <pre>{{ JSON.stringify(user, null, 4) }}</pre>
+                    </template>
+                </VExpansionPanel>
+                <VExpansionPanel title="Anmeldung" v-if="passwordChangeAllowed">
+                    <template #text>
+                        <VBtn
+                            color="primary"
+                            @click="changePassword"
+                            prepend-icon="mdi-key"
+                            >Passwort ändern
+                        </VBtn>
                     </template>
                 </VExpansionPanel>
             </VExpansionPanels>

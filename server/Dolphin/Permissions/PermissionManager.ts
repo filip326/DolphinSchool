@@ -12,6 +12,7 @@ enum Permissions {
     DELETE_USERS = 1 << 10,
     MANAGE_SUBJECTS = 1 << 11,
     SEND_MAIL = 1 << 12,
+    CHANGE_USER_PASSWORD = 1 << 13,
 }
 
 function isAdminLevelPermission(permission: Permissions) {
