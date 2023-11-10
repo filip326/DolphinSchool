@@ -1,5 +1,7 @@
 import Message from "~/server/Dolphin/Messenger/Message";
 import UserMessage from "~/server/Dolphin/Messenger/UserMessage";
+import User from "~/server/Dolphin/User/User";
+import { ObjectId } from "mongodb";
 
 export default eventHandler(async (event) => {
     const checkAuthResult = await event.context.auth.checkAuth({});
@@ -16,6 +18,16 @@ export default eventHandler(async (event) => {
         limit = 25;
     }
 
+    let foundMessages: {
+        id: ObjectId;
+        subject: string;
+        sender: ObjectId | string;
+        timestemp: number;
+        stared: boolean;
+        flag?: "incoming" | "outgoing";
+        read: boolean;
+    }[] = [];
+
     switch (postfach) {
         case "unread":
             // eslint-disable-next-line no-case-declarations
@@ -31,7 +43,7 @@ export default eventHandler(async (event) => {
             if (userMessagesListError) {
                 throw createError({ statusCode: 500, message: "Failed" });
             }
-            return userMessages.map((userMessage) => ({
+            foundMessages = userMessages.map((userMessage) => ({
                 id: userMessage._id,
                 subject: userMessage.subject,
                 sender: userMessage.author,
@@ -39,6 +51,7 @@ export default eventHandler(async (event) => {
                 stared: userMessage.stared,
                 read: userMessage.read,
             }));
+            break;
         case "inbox":
             // eslint-disable-next-line no-case-declarations
             const [userMessagesInbox, userMessagesInboxListError] =
@@ -53,7 +66,7 @@ export default eventHandler(async (event) => {
             if (userMessagesInboxListError) {
                 throw createError({ statusCode: 500, message: "Failed" });
             }
-            return userMessagesInbox.map((userMessage) => ({
+            foundMessages = userMessagesInbox.map((userMessage) => ({
                 id: userMessage._id,
                 subject: userMessage.subject,
                 sender: userMessage.author,
@@ -61,6 +74,7 @@ export default eventHandler(async (event) => {
                 stared: userMessage.stared,
                 read: userMessage.read,
             }));
+            break;
 
         case "outbox":
             // eslint-disable-next-line no-case-declarations
@@ -71,7 +85,7 @@ export default eventHandler(async (event) => {
             if (messagesListError) {
                 throw createError({ statusCode: 500, message: "Failed" });
             }
-            return messages.map((message) => ({
+            foundMessages = messages.map((message) => ({
                 id: message._id,
                 subject: message._subject,
                 sender: message.sender,
@@ -80,6 +94,7 @@ export default eventHandler(async (event) => {
                 flag: "outgoing",
                 read: true,
             }));
+            break;
 
         case "stared":
             // eslint-disable-next-line no-case-declarations
@@ -95,7 +110,7 @@ export default eventHandler(async (event) => {
             if (userMessagesStaredListError) {
                 throw createError({ statusCode: 500, message: "Failed" });
             }
-            return userMessagesStared.map((userMessage) => ({
+            foundMessages = userMessagesStared.map((userMessage) => ({
                 id: userMessage._id,
                 subject: userMessage.subject,
                 sender: userMessage.author,
@@ -103,5 +118,25 @@ export default eventHandler(async (event) => {
                 stared: userMessage.stared,
                 read: userMessage.read,
             }));
+            break;
     }
+
+    await Promise.all(
+        foundMessages.map(async (msg, i) => {
+            // get user with id msg.sender
+            const [sender, senderFindError] = await User.getUserById(
+                new ObjectId(msg.sender),
+            );
+            if (senderFindError) {
+                throw createError({ statusCode: 500, message: "Failed" });
+            }
+            if (!sender) {
+                throw createError({ statusCode: 500, message: "Failed" });
+            }
+            // replace id with full name
+            foundMessages[i].sender = sender.fullName;
+        }),
+    );
+
+    return foundMessages;
 });

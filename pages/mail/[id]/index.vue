@@ -1,138 +1,65 @@
 <script lang="ts">
+import format from "date-fns/format";
 export default {
-    async beforeCreate() {
-        await checkAuth({
+    data(): {
+        email: {
+            subject: string;
+            timestamp: number;
+            sendBy: string;
+            sentTo: string;
+            content: string;
+        };
+    } {
+        return {
+            email: {
+                subject: "",
+                timestamp: 0,
+                sendBy: "",
+                sentTo: "",
+                content: "",
+            },
+        };
+    },
+    beforeCreate() {
+        checkAuth({
             redirectOnMfaRequired: true,
             throwErrorOnNotAuthenticated: true,
             redirectOnPwdChange: true,
         });
-    },
-    data() {
-        return {
-            email: {
-                id: "",
-                subject: "",
-                content: "",
-                sendBy: "",
-                sentTo: [],
-                read: false,
-                stared: false,
-                timestamp: 0,
-            } as {
-                id: string;
-                subject: string;
-                content: string;
-                sendBy: string;
-                sentTo: string[];
-                read?: boolean;
-                stared?: boolean;
-                timestamp: number;
-            },
-            absender: "Du",
-            empfaenger: [] as string[],
-            content: "",
-            subject: "",
-            rules: {
-                required: (value: string) => !!value || "Dieses Feld ist erforderlich",
-            },
-            error: {
-                shown: false,
-                message: "",
-            },
-        };
-    },
-    mounted() {
-        this.subject = `AW: ${this.email.subject}`;
-        // console.log(this.email.content);
-    },
-    async beforeMount() {
         const id = this.$route.params.id;
-        const res = await useFetch(`/api/mail/user/${id}`, {
-            method: "GET",
-        });
-
-        if (res.status.value == "success") {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-            this.email = res.data.value?.mail! as {
-                id: string;
-                subject: string;
-                content: string;
-                sendBy: string;
-                sentTo: string[];
-                read?: boolean;
-                stared?: boolean;
-                timestamp: number;
-            };
-        } else {
-            throw createError({
-                statusCode: 500,
-                statusMessage: "Fehler beim Laden der Mail.",
-                fatal: true,
+        useFetch(`/api/mail/messages/${id}`, { method: "get" })
+            .then((res) => {
+                if (res.status.value === "success" && res.data.value) {
+                    this.email = {
+                        content: res.data.value.content,
+                        timestamp: res.data.value.time,
+                        sendBy: res.data.value.sender,
+                        sentTo: res.data.value.receivers,
+                        subject: res.data.value.subject,
+                    };
+                }
+            })
+            .catch(() => {
+                // TODO: error handling
             });
-        }
     },
     methods: {
-        UTCToStr(time: number): string {
-            return new Date(time).toLocaleString();
-        },
-        async markAsRead() {
-            const res = await useFetch(`/api/mail/user/${this.email.id}`, {
-                method: "PATCH",
-                body: JSON.stringify({
-                    action: "read",
-                    value: !this.email.read,
-                }),
-            });
-
-            if (res.status.value === "success") {
-                this.email.read = !this.email.read;
-            }
-        },
-        async setStared() {
-            const res = await useFetch(`/api/mail/user/${this.email.id}`, {
-                method: "PATCH",
-                body: JSON.stringify({
-                    action: "star",
-                    value: !this.email.stared,
-                }),
-            });
-
-            if (res.status.value === "success") {
-                this.email.stared = !this.email.stared;
-            }
-        },
-        setEmpf(users: string[]) {
-            this.empfaenger = users;
-        },
-        setContent(content: string) {
-            this.content = content;
-        },
-        async sendMail() {
-            if (!this.empfaenger || !this.subject || !this.content) {
-                this.error = {
-                    shown: true,
-                    message: "Bitte füllen Sie alle Felder aus",
-                };
-                return;
-            }
-
-            const res = await useFetch("/api/mail", {
-                method: "POST",
-                body: JSON.stringify({
-                    sendTo: this.empfaenger,
-                    subject: this.subject,
-                    content: this.content,
-                }),
-            });
-
-            if (res.status.value != "success") {
-                console.log(res.error.value);
-                this.error = {
-                    shown: true,
-                    message: "Nachricht konnte nicht gesendet werden",
-                };
-            } else {
-                await navigateTo("/mail");
+        UTCToStr(timestamp: number): string {
+            // when it was today, show only the time (HH:MM)
+            if (format(timestamp, "dd.MM.yyyy") === format(new Date(), "dd.MM.yyyy")) {
+                return format(timestamp, "HH:mm");
+            } // when it was yesterday, show text "Gestern, HH:MM"
+            else if (
+                format(timestamp, "dd.MM.yyyy") ===
+                format(new Date(Date.now() - 86400000), "dd.MM.yyyy")
+            ) {
+                return `Gestern, ${format(timestamp, "HH:mm")}`;
+            } // when it was in the past 6 days, show day and time
+            else if (timestamp > Date.now() - 518400000) {
+                return format(timestamp, "EEEE, HH:mm");
+            } // else, show Date and time
+            else {
+                return format(timestamp, "yyyy-MM-hh, HH:mm");
             }
         },
     },
@@ -152,7 +79,7 @@ export default {
         </VCardSubtitle>
 
         <VCardSubtitle>
-            <span><b>An:</b> {{ email.sentTo.join(",") }}</span>
+            <span><b>An:</b> {{ email.sentTo }}</span>
         </VCardSubtitle>
 
         <VCardText>
@@ -160,50 +87,6 @@ export default {
             <Markdown :md="email.content" />
             <VDivider></VDivider>
         </VCardText>
-
-        <VCardActions>
-            <div class="read-unread">
-                <!-- if message is already read -->
-                <VBtn
-                    @click="markAsRead"
-                    density="comfortable"
-                    icon="mdi-email-open-outline"
-                    v-if="email.read"
-                >
-                </VBtn>
-                <!-- if message is not read yet -->
-                <VBtn
-                    density="comfortable"
-                    icon="mdi-email-alert-outline"
-                    v-if="!email.read"
-                    class="unread"
-                    @click="markAsRead"
-                >
-                </VBtn>
-            </div>
-            <div class="starMail mail-button">
-                <VBtn
-                    density="comfortable"
-                    variant="plain"
-                    elevation="0"
-                    class="delete"
-                    icon="mdi-star-outline"
-                    v-if="!email.stared"
-                    @click="setStared"
-                >
-                </VBtn>
-                <VBtn
-                    density="comfortable"
-                    variant="plain"
-                    elevation="0"
-                    class="delete"
-                    icon="mdi-star"
-                    v-if="email.stared"
-                    @click="setStared"
-                >
-                </VBtn>
-            </div>
-        </VCardActions>
     </VCard>
 </template>
 

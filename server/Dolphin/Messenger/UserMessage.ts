@@ -146,11 +146,12 @@ class UserMessage implements IUserMessage {
 
     static async getUserMessagesByMessageId(
         id: ObjectId,
+        owner?: ObjectId,
     ): Promise<MethodResult<UserMessage[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const dbResult = await dolphin.database
             .collection<IUserMessage>("userMessages")
-            .find({ message: id });
+            .find(!owner ? { message: id } : { message: id, owner: owner });
         return [
             (await dbResult.toArray()).map(
                 (v) =>
