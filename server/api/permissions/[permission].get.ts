@@ -1,3 +1,5 @@
+import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+
 export default eventHandler(async (event) => {
     const { success, statusCode, user } = await event.context.auth.checkAuth();
 
@@ -9,11 +11,15 @@ export default eventHandler(async (event) => {
 
     const permission = getRouterParam(event, "permission");
 
-    if (!permission || isNaN(parseInt(permission))) {
-        throw createError({ statusCode: 404, statusMessage: "Permission not found" });
+    if (!permission || !(permission in Permissions)) {
+        throw createError({
+            statusCode: 404,
+        });
     }
 
-    const requestedPermission = parseInt(permission);
+    const hasPermission = await user.hasPermission(
+        Permissions[permission as keyof typeof Permissions],
+    );
 
-    return user.hasPermission(requestedPermission);
+    return hasPermission;
 });
