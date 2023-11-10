@@ -66,7 +66,7 @@ export default eventHandler(async (event) => {
                 );
                 return;
             }
-            if (!userMessage) {
+            if (!userMessage || userMessage.length === 0) {
                 // now we know that the id points to a message, but the user has no access to it
                 reject(
                     createError({
@@ -75,6 +75,9 @@ export default eventHandler(async (event) => {
                 );
                 return;
             }
+            // since the user message was requested by the user, it is read now
+            userMessage[0].markAsRead(true);
+
             // now we know that the id points to a message and the user has access to it
             resolve(message);
         }),
@@ -101,6 +104,8 @@ export default eventHandler(async (event) => {
                 );
                 return;
             }
+            // since the user message was requested by the user, it is read now
+            userMessage.markAsRead(true);
             // now we know that the id points to a user message and the user has access to it
             // we need to turn the user message into a message
             const [message, messageFindError] = await Message.getMessageById(
