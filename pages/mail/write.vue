@@ -70,7 +70,7 @@ export default {
                 <VForm>
                     <VTextField label="Absender" readonly v-model="absender" />
 
-                    <ASMSQSearchField label="Empfänger" @user-ids="setEmpf" />
+                    <ASMSQSearchField label="Empfänger" v-model="empfaenger" />
 
                     <VTextField
                         :rules="[rules.required]"
