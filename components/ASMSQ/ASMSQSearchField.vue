@@ -9,7 +9,12 @@ export default {
             type: String,
             default: "Suche nach Benutzer, Klasse oder Kurs",
         },
+        modelValue: {
+            type: Array<string>,
+            default: () => [],
+        },
     },
+    emits: ["update:modelValue"],
     data(): {
         searchText: string;
         suggestions: {
@@ -73,7 +78,10 @@ export default {
             item-value="value"
             :label="label"
             @input="whenTyping"
-            @update:model-value="searchText = ''"
+            @update:model-value="
+                searchText = '';
+                $emit('update:modelValue', selected);
+            "
             no-data-text="Suche nach passenden Vorschlägen..."
         >
         </VAutocomplete>
