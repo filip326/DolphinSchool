@@ -89,6 +89,21 @@ class PushNotificationDevice implements WithId<IPrivatePushNotificationDevice> {
         else return [undefined, DolphinErrorTypes.DATABASE_ERROR];
     }
 
+    static async getDevice(
+        owner: ObjectId,
+    ): Promise<MethodResult<PushNotificationDevice>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const db = await dolphin.database;
+        const devices = db.collection<IPrivatePushNotificationDevice>(
+            "push_notification_devices",
+        );
+
+        const result = await devices.findOne({ owner: owner });
+
+        if (result) return [new PushNotificationDevice(result), null];
+        else return [undefined, DolphinErrorTypes.NOT_FOUND];
+    }
+
     // this represents a device that can receive push notifications
     _id: ObjectId;
     owner: ObjectId;
@@ -123,6 +138,11 @@ class PushNotificationDevice implements WithId<IPrivatePushNotificationDevice> {
         const result = await devices.deleteOne({ _id: this._id });
         if (result.acknowledged) return [true, null];
         else return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+    }
+
+    get expires(): Date {
+        // the time the device was registered + 60 days
+        return new Date(this._id.getTimestamp().getTime() + 60 * 24 * 60 * 60 * 1000);
     }
 }
 
