@@ -76,7 +76,9 @@ export default eventHandler(async (event) => {
                 return;
             }
             // since the user message was requested by the user, it is read now
-            userMessage[0].markAsRead(true);
+            for await (const msg of userMessage) {
+                await msg.markAsRead(true);
+            }
 
             // now we know that the id points to a message and the user has access to it
             resolve(message);
@@ -105,7 +107,8 @@ export default eventHandler(async (event) => {
                 return;
             }
             // since the user message was requested by the user, it is read now
-            userMessage.markAsRead(true);
+            await userMessage.markAsRead(true);
+            console.log("✅ marked message as read");
             // now we know that the id points to a user message and the user has access to it
             // we need to turn the user message into a message
             const [message, messageFindError] = await Message.getMessageById(

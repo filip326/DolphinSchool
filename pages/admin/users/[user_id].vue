@@ -44,6 +44,12 @@ export default {
             message: string;
         };
         passwordChangeAllowed: boolean | null;
+        passwordChange: {
+            show_confirm_dialog: boolean;
+            show_password: boolean;
+            password: string;
+            loading_new_password: boolean;
+        };
         user: IUser;
     } {
         return {
@@ -53,6 +59,12 @@ export default {
             },
             passwordChangeAllowed: null,
             user: {} as IUser,
+            passwordChange: {
+                show_confirm_dialog: false,
+                show_password: false,
+                password: "",
+                loading_new_password: false,
+            },
         };
     },
     methods: {
@@ -98,14 +110,39 @@ export default {
                 }
             }
         },
+        requestPasswordChange() {
+            // show the confirm dialog to the user, if he really want to change the password.
+            this.passwordChange.show_confirm_dialog = true;
+        },
+        cancelPasswordChange() {
+            // hide the confirm dialog
+            this.passwordChange.show_confirm_dialog = false;
+        },
         async changePassword() {
-            alert("not implemented");
-            // ask for confirmation
-            // request a new password
-            // GET /api/admin/users/:id/password
-            // show password
-
-            // TODO: #56 implement
+            // first, set loading to true
+            this.passwordChange.loading_new_password = true;
+            // now, request a new password
+            const response = await useFetch(`/api/admin/users/${this.user.id}/password`, {
+                method: "get",
+            });
+            if (response.status.value === "success" && response.data.value) {
+                // if the request was successful, show the password to the user
+                this.passwordChange.show_confirm_dialog = false;
+                this.passwordChange.show_password = true;
+                this.passwordChange.password = response.data.value.password;
+            } else {
+                // if the request was not successful, show an error
+                this.passwordChange.loading_new_password = false;
+                this.passwordChange.show_confirm_dialog = false;
+                this.error.show = true;
+                this.error.message = "Fehler beim Generieren des Passworts";
+            }
+        },
+        finishPasswordChange() {
+            // hide the password dialog
+            // reset the password
+            this.passwordChange.show_password = false;
+            this.passwordChange.password = "";
         },
     },
 };
@@ -155,7 +192,7 @@ export default {
                     <template #text>
                         <VBtn
                             color="primary"
-                            @click="changePassword"
+                            @click="requestPasswordChange"
                             prepend-icon="mdi-key"
                             >Passwort ändern
                         </VBtn>
@@ -179,6 +216,44 @@ export default {
             <VBtn variant="flat" color="error" @click="deleteUser">Benutzer löschen</VBtn>
         </VCardActions>
     </VCard>
+    <VDialog v-if="passwordChange.show_confirm_dialog">
+        <VCard>
+            <VCardTitle> Neues Passwort für {{ user.username }} </VCardTitle>
+            <VCardText>
+                Wollen Sie wirklich ein neues Passwort für {{ user.username }} generieren?
+                Das alte Passwort wird dadurch ungültig. Erstellen Sie nur dann ein neues
+                Passwort, wenn der Benutzer sein Passwort vergessen hat oder es
+                kompromittiert wurde.
+            </VCardText>
+            <VCardActions>
+                <VBtn
+                    color="primary"
+                    @click="changePassword"
+                    :loading="passwordChange.loading_new_password"
+                    >Passwort ändern</VBtn
+                >
+                <VBtn
+                    color="error"
+                    @click="cancelPasswordChange"
+                    :disabled="passwordChange.loading_new_password"
+                    >Abbrechen</VBtn
+                >
+            </VCardActions>
+        </VCard>
+    </VDialog>
+    <VDialog v-if="passwordChange.show_password">
+        <VCard>
+            <VCardTitle> Neues Passwort für {{ user.username }}: </VCardTitle>
+            <VCardText>
+                <VTextField label="Passwort" readonly v-model="passwordChange.password" />
+                Der Nutzer kann sich mit diesem Passwort anmelden. Nach der Anmeldung muss
+                der Nutzer das Passwort ändern.
+            </VCardText>
+            <VCardActions>
+                <VBtn color="primary" @click="finishPasswordChange">Schließen</VBtn>
+            </VCardActions>
+        </VCard>
+    </VDialog>
 </template>
 
 <style>

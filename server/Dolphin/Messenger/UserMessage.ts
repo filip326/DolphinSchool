@@ -47,12 +47,14 @@ class UserMessage implements IUserMessage {
         if (newsletter !== undefined) conditions.push({ newsletter });
         const dbResult = await dolphin.database
             .collection<IUserMessage>("userMessages")
-            .find(
-                {
-                    $and: [{ owner: user._id }, ...conditions],
-                },
-                { limit, skip },
-            );
+            .find({
+                $and: [{ owner: user._id }, ...conditions],
+            })
+            .sort({
+                _id: -1,
+            })
+            .limit(limit ?? 15)
+            .skip(skip ?? 0);
         return [
             (await dbResult.toArray()).map(
                 (userMessage) =>
@@ -260,8 +262,8 @@ class UserMessage implements IUserMessage {
         try {
             if (this.message && this.messageCollection) {
                 const dbResult = await this.messageCollection.updateOne(
-                    { _id: this.message },
-                    { $set: { read } },
+                    { _id: this._id },
+                    { $set: { read: read } },
                 );
                 if (!dbResult.acknowledged) {
                     return [undefined, DolphinErrorTypes.DATABASE_ERROR];

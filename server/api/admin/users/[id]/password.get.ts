@@ -37,6 +37,8 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 500, message: "Failed" });
     }
 
+    await target.setPasswordChangeRequired(true);
+
     return {
         password: randomPassword,
     };
