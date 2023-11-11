@@ -63,7 +63,10 @@ class Message implements IMessage {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const messageCollection = dolphin.database.collection<IMessage>("messages");
         const messages = await messageCollection
-            .find({ sender }, { limit: options.limit, skip: options.skip })
+            .find({ sender })
+            .sort({ _id: -1 })
+            .skip(options.skip ?? 0)
+            .limit(options.limit ?? 15)
             .toArray();
         return [
             messages.map(
