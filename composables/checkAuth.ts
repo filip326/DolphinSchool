@@ -68,6 +68,66 @@ export default async function checkAuth(options: {
                 };
             }
 
+            // check if there is a push notification subsription already
+            // if so, send the endpoint url to the server to prevent the subscription from expiring
+            // do the check each session, once per day if the session is longer than 1 day
+            if (
+                sessionStorage.getItem("pushNotificationsLastSynced") == undefined ||
+                Date.now() -
+                    parseInt(sessionStorage.getItem("pushNotificationsLastSynced")!) >
+                    24 * 60 * 60 * 1000
+            ) {
+                // 1 day
+                if ("serviceWorker" in navigator) {
+                    // check compatibility
+                    navigator.serviceWorker.ready
+                        .then((registration) => {
+                            if (!("pushManager" in registration)) return; // check if push manager is available
+                            registration.pushManager
+                                .getSubscription()
+                                .then(async (subscription) => {
+                                    if (!subscription) return; // check if there is a subscription
+                                    // get the subscription data
+                                    const p256dhArraybuffer =
+                                        subscription.getKey("p256dh");
+                                    const authArraybuffer = subscription.getKey("auth");
+                                    if (!p256dhArraybuffer || !authArraybuffer) return; // check if the subscription has the needed keys (p256dh and auth
+                                    const p256dhBytes = new Uint8Array(p256dhArraybuffer);
+                                    const authBytes = new Uint8Array(authArraybuffer);
+                                    let p256dhBinaryString = "";
+                                    let authBinaryString = "";
+                                    p256dhBytes.forEach((byte) => {
+                                        p256dhBinaryString += String.fromCharCode(byte);
+                                    });
+                                    authBytes.forEach((byte) => {
+                                        authBinaryString += String.fromCharCode(byte);
+                                    });
+                                    const p256dhString = btoa(p256dhBinaryString);
+                                    const authString = btoa(authBinaryString);
+
+                                    await useFetch("/api/api/pushservice/update", {
+                                        method: "POST",
+                                        body: {
+                                            endpoint: subscription.toJSON().endpoint,
+                                            keys: {
+                                                p256dh: p256dhString,
+                                                auth: authString,
+                                            },
+                                        },
+                                    });
+                                })
+                                .catch(() => {});
+                        })
+                        .catch(() => {});
+                    // ignore errors, since this is not critical, but just a update to the server that needs to be done only all 30 days.
+                }
+                // update the last synced time in the session storage
+                sessionStorage.setItem(
+                    "pushNotificationsLastSynced",
+                    Date.now().toString(),
+                );
+            }
+
             return {
                 authenticated: true,
                 user: {
