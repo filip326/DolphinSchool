@@ -123,6 +123,7 @@ export default {
                 this.passwordChange.password = response.data.value.password;
             } else {
                 // if the request was not successful, show an error
+                this.finishPasswordChange();
                 this.passwordChange.loading_new_password = false;
                 this.error.show = true;
                 this.error.message = "Fehler beim Generieren des Passworts";
@@ -132,6 +133,8 @@ export default {
             // hide the password dialog
             // reset the password
             this.passwordChange.show_password = false;
+            this.passwordChange.loading_new_password = false;
+            this.passwordChange.show_confirmation_dialog = false;
             this.passwordChange.password = "";
         },
     },
@@ -173,11 +176,6 @@ export default {
                         </div>
                     </template>
                 </VExpansionPanel>
-                <VExpansionPanel title="JSON">
-                    <template #text>
-                        <pre>{{ JSON.stringify(user, null, 4) }}</pre>
-                    </template>
-                </VExpansionPanel>
                 <VExpansionPanel title="Anmeldung" v-if="passwordChangeAllowed">
                     <template #text>
                         <VBtn color="primary" prepend-icon="mdi-key">
@@ -215,6 +213,11 @@ export default {
                             </VDialog>
                             Passwort ändern
                         </VBtn>
+                    </template>
+                </VExpansionPanel>
+                <VExpansionPanel title="JSON">
+                    <template #text>
+                        <pre>{{ JSON.stringify(user, null, 4) }}</pre>
                     </template>
                 </VExpansionPanel>
             </VExpansionPanels>
