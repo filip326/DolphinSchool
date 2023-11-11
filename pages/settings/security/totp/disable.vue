@@ -5,23 +5,28 @@
                 <h1>2FA</h1>
                 <ol>
                     <li>
-                        Ihr Konto hat 2-Faktor-Authentizierung (2FA), die die Sicherheit Ihres
-                        Kontos erheblich erhöht.
+                        Ihr Konto hat 2-Faktor-Authentizierung (2FA), die die Sicherheit
+                        Ihres Kontos erheblich erhöht.
                     </li>
                     <li>
-                        Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code von Ihrem
-                        Smartphone für den Zugriff.
+                        Dies schützt Ihr Konto vor Cyberangriffen und erfordert den Code
+                        von Ihrem Smartphone für den Zugriff.
                     </li>
                     <li>
-                        Falls Sie die 2-Faktor-Authentizierung deaktivieren möchten, müssen Sie Ihr
-                        Passwort und einen 2FA-Code eingeben.
+                        Falls Sie die 2-Faktor-Authentizierung deaktivieren möchten,
+                        müssen Sie Ihr Passwort und einen 2FA-Code eingeben.
                     </li>
                 </ol>
             </div>
         </section>
 
         <VForm @submit.prevent="submit2FA()">
-            <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
+            <VAlert
+                v-if="error.shown"
+                type="error"
+                variant="text"
+                :text="error.message"
+            />
 
             <VTextField
                 v-model="password"
@@ -97,4 +102,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.settings_form {
+    padding: 20px;
+}
+</style>

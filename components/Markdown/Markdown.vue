@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import markedLinkifyIt from "marked-linkify-it";
@@ -17,15 +16,12 @@ export default {
             required: true,
         },
     },
+    mounted() {
+        this.render();
+    },
     data() {
-        const rendered = "";
-
-        onMounted(() => {
-            this.render();
-        });
-
         return {
-            rendered_html: rendered,
+            rendered_html: "",
         };
     },
 
@@ -64,7 +60,7 @@ export default {
                     html: true,
                     svg: true,
                     mathMl: true,
-                    svgFilters: false,
+                    svgFilters: true,
                 },
             });
         },

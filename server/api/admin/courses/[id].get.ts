@@ -29,35 +29,15 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const [course, courseFindError] = await Course.getById(ObjectId.createFromHexString(id));
+    const [course, courseFindError] = await Course.getById(
+        ObjectId.createFromHexString(id),
+    );
     if (courseFindError) {
         throw createError({
             statusCode: 404,
             message: "Course not found",
         });
     }
-
-    // get subject name
-    const [subject, subjectFindError] = await Subject.getSubjectById(course.subject);
-    if (subjectFindError) {
-        throw createError({
-            statusCode: 404,
-            message: "Subject not found",
-        });
-    }
-
-    // get teacher name
-    const teachers = (
-        (
-            await Promise.all(
-                course.teacher.map(async (teacherId) => {
-                    return (await User.getUserById(teacherId))[0];
-                }),
-            )
-        ).filter((user) => user !== null) as User[]
-    )
-        .map((user) => user.fullName)
-        .join(", ");
 
     // get members
     const members = (
@@ -69,6 +49,28 @@ export default defineEventHandler(async (event) => {
     )
         .filter((user) => user !== null)
         .map((user) => user!.fullName);
+
+    // get teacher name
+    const teachers = (
+        (
+            await Promise.all(
+                course.teacher.map(async (teacherId) => {
+                    return (await User.getUserById(teacherId))[0];
+                }),
+            )
+        ).filter((user) => user !== undefined) as User[]
+    )
+        .map((user) => user.fullName)
+        .join(", ");
+
+    // get subject name
+    const [subject, subjectFindError] = await Subject.getSubjectById(course.subject);
+    if (subjectFindError) {
+        throw createError({
+            statusCode: 404,
+            message: "Subject not found",
+        });
+    }
 
     return {
         _id: course._id.toHexString(),

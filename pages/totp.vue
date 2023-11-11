@@ -11,7 +11,8 @@ export default {
                 // 6 digits
                 totpLength: (v) => v.length === 6 || "Der Code muss 6-stellig sein",
                 // only numbers
-                totpNumbers: (v) => /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen",
+                totpNumbers: (v) =>
+                    /^\d+$/.test(v) || "Der Code darf nur aus Zahlen bestehen",
             },
             error: {
                 shown: false,
@@ -66,12 +67,17 @@ export default {
 <template>
     <div class="loginform small">
         <VForm @submit.prevent="login">
-            <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
+            <VAlert
+                v-if="error.shown"
+                type="error"
+                variant="text"
+                :text="error.message"
+            />
 
             <h1>2-Faktor Authentizierung</h1>
             <p>
-                Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App (z.B. Authy) von
-                Ihrem Smartphone ein.
+                Geben Sie bitte den 6-stelligen Code aus Ihrer Authentizierungs-App (z.B.
+                Authy) von Ihrem Smartphone ein.
             </p>
             <!--
             TODO: #12 make text field a otp field when released in vuetify

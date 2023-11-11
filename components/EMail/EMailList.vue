@@ -13,64 +13,42 @@ export default {
     },
     data() {
         return {
-            emails: [
-                {
-                    id: "1",
-                    subject: "Bug",
-                    sendby: "1234567890123456789",
-                    timestamp: "2023-05-05",
-                    read: true,
-                    stared: false,
-                },
-                {
-                    id: "2",
-                    subject: "Testo Pestoq",
-                    sendby: "langer Name - wirklich sehr lang",
-                    timestamp: "2023-05-05",
-                    read: true,
-                    stared: false,
-                },
-                {
-                    id: "3",
-                    subject: "lorem100",
-                    sendby: "heeecker",
-                    timestamp: "2023-05-05",
-                    read: false,
-                    stared: false,
-                },
-                {
-                    id: "4",
-                    subject: "lorem100",
-                    sendby: "heeecker",
-                    timestamp: "2023-05-05",
-                    read: true,
-                    stared: false,
-                },
-                {
-                    id: "5",
-                    subject: "lorem100",
-                    sendby: "heeecker",
-                    timestamp: "2023-05-05",
-                    read: false,
-                    stared: false,
-                },
-                {
-                    id: "6",
-                    subject: "lorem100abcdefghijklmnopqrstuvw",
-                    sendby: "heeecker",
-                    timestamp: "2023-05-05",
-                    read: false,
-                    stared: false,
-                },
-            ],
+            emails: Array<{
+                id: string;
+                subject: string;
+                sender: string;
+                timestemp: number;
+                stared: boolean;
+                read: boolean;
+                flag?: string;
+            }>(),
         };
     },
+    async beforeMount() {
+        console.log(`loading emails from ${this.url}`);
+        const res = await useFetch(this.url, {
+            method: "GET",
+        });
+
+        if (res.status.value == "success") {
+            console.log(res.data.value);
+            this.emails = res.data.value as any as Array<{
+                id: string;
+                subject: string;
+                sender: string;
+                timestemp: number;
+                stared: boolean;
+                read: boolean;
+                flag?: string;
+            }>;
+        }
+    },
     methods: {
-        onEmailSelected(email: string) {
-            this.$emit("email_selected", email);
+        async onEmailSelected(email: string) {
+            await navigateTo("/mail/" + email);
         },
-        loadMore() {
-            // todo
+        UTCToStr(time: number): string {
+            return new Date(time).toLocaleString();
         },
     },
 };
@@ -91,12 +69,19 @@ export default {
                 <EMailPreview
                     @email_clicked="onEmailSelected"
                     :id="email.id"
-                    :sendby="email.sendby"
-                    :unread="email.read"
+                    :sendby="email.sender"
+                    :unread="!email.read"
                     :subject="email.subject"
-                    :timestamp="email.timestamp"
+                    :timestemp="email.timestemp"
                     :stared="email.stared"
+                    :flag="email.flag"
                 />
+            </VListItem>
+            <VListItem class="no_elements" v-if="emails.length === 0">
+                <div class="no_elements_text">
+                    <VIcon>mdi-magnify-scan</VIcon>
+                    Keine E-Mails vorhanden.
+                </div>
             </VListItem>
         </VList>
     </div>
@@ -148,5 +133,28 @@ export default {
 .list-title {
     font-weight: 600;
     font-size: 1.5em;
+}
+
+.no_elements {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 50px;
+    background-color: rgb(var(--v-theme-surface));
+}
+.no_elements_text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: rgb(var(--v-theme-text-primary));
+}
+.no_elements_text .v-icon {
+    font-size: 5em;
 }
 </style>

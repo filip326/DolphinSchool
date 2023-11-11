@@ -23,7 +23,9 @@ async function main() {
     const db = client.db(DB_NAME);
 
     // create a { blockedPwd: string } Array from the defaultBlockedPwds
-    const blockedPwdsObjArray = defaultBlockedPwdsStringArray.map((pwd) => ({ blockedPwd: pwd }));
+    const blockedPwdsObjArray = defaultBlockedPwdsStringArray.map((pwd) => ({
+        blockedPwd: pwd,
+    }));
 
     db.collection<{ blockedPwd: string }>("blockedPwds").insertMany(blockedPwdsObjArray);
 }

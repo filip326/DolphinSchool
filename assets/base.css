@@ -34,3 +34,8 @@ p.important {
 .v-main {
     min-height: calc(100svh);
 }
+
+.v-card-title,
+.v-card-subtitle {
+    white-space: normal !important;
+}

@@ -122,9 +122,13 @@ export default {
             if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {
                 return;
             }
-            const signed = await pwless.authenticate([data.credId], this.passwordless.challenge, {
-                userVerification: "required",
-            });
+            const signed = await pwless.authenticate(
+                [data.credId],
+                this.passwordless.challenge,
+                {
+                    userVerification: "required",
+                },
+            );
 
             await useFetch("/api/auth/passwordless/approve", {
                 method: "POST",
@@ -173,9 +177,17 @@ export default {
 <template>
     <div class="loginform">
         <VForm @submit.prevent="login">
-            <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
+            <VAlert
+                v-if="error.shown"
+                type="error"
+                variant="text"
+                :text="error.message"
+            />
             <h1>Login</h1>
-            <VBtn v-if="passwordless.localAvaible" variant="outlined" prepend-icon="mdi-key"
+            <VBtn
+                v-if="passwordless.localAvaible"
+                variant="outlined"
+                prepend-icon="mdi-key"
                 >Als {{ passwordless.localUser }} anmelden.</VBtn
             >
             <div v-if="passwordless.localAvaible" class="hr-sect">ODER</div>
@@ -204,10 +216,15 @@ export default {
                 variant="text"
                 text="passwordless funktioniert nur, wenn Sie es zuvor eingerichtet haben!"
             />
-            <VAler v-else type="error" variant="text" text="passwordless ist nicht verfügbar!" />
+            <VAler
+                v-else
+                type="error"
+                variant="text"
+                text="passwordless ist nicht verfügbar!"
+            />
             <p v-if="passwordless.avaible">
-                Scanne den QR Code mit der Kamera deines Smartphones und folge den Anweisungen auf
-                dem Bildschirm.
+                Scanne den QR Code mit der Kamera deines Smartphones und folge den
+                Anweisungen auf dem Bildschirm.
             </p>
             <!-- placeholder 128 x 128 px-->
             <VImg v-if="passwordless.avaible" :src="passwordless.qr_code" />

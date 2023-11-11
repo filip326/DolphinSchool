@@ -34,7 +34,11 @@ export default defineEventHandler(async (event) => {
     }
 
     // verify signed string
-    const [approveResult, approveError] = await PasswordlessQR.approve(user, tokenHash, signed);
+    const [approveResult, approveError] = await PasswordlessQR.approve(
+        user,
+        tokenHash,
+        signed,
+    );
     if (approveError) {
         return createError({
             statusCode: 500,

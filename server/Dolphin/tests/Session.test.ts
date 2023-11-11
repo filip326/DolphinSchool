@@ -64,7 +64,9 @@ describe("Session class", () => {
         expect(destroyedError).toBeNull();
         expect(destroyed).toBeTruthy();
 
-        const [sessionFound, sessionFoundError2] = await Session.findSession(session!.token);
+        const [sessionFound, sessionFoundError2] = await Session.findSession(
+            session!.token,
+        );
         expect(sessionFoundError2).not.toBeNull();
         expect(sessionFoundError2).toBe(DolphinErrorTypes.NOT_FOUND);
         expect(sessionFound).toBeUndefined();
@@ -82,7 +84,9 @@ describe("Session class", () => {
         expect(activatedError).toBeNull();
         expect(activated).toBeTruthy();
 
-        const [sessionFound, sessionFoundError2] = await Session.findSession(session.token);
+        const [sessionFound, sessionFoundError2] = await Session.findSession(
+            session.token,
+        );
         expect(sessionFoundError2).toBeNull();
         expect(sessionFound).toHaveProperty("state", SessionState.ACTIVE);
     });

@@ -4,6 +4,8 @@ import User from "../User/User";
 import Message, { IMessage } from "./Message";
 import { Collection, ObjectId, WithId } from "mongodb";
 
+type Postfaecher = "inbox" | "outbox" | "stared";
+
 interface IUserMessage {
     owner: ObjectId;
 
@@ -12,7 +14,6 @@ interface IUserMessage {
     message: ObjectId;
     read: boolean;
     stared: boolean;
-    newsletter: boolean;
 }
 
 interface MessageFilterOptions {
@@ -40,15 +41,20 @@ class UserMessage implements IUserMessage {
         }: { read?: boolean; stared?: boolean; newsletter?: boolean } = {},
     ): Promise<MethodResult<UserMessage[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-        const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").find(
-            {
-                owner: user._id,
-                read,
-                stared,
-                newsletter,
-            },
-            { limit, skip },
-        );
+        const conditions = [];
+        if (read !== undefined) conditions.push({ read });
+        if (stared !== undefined) conditions.push({ stared });
+        if (newsletter !== undefined) conditions.push({ newsletter });
+        const dbResult = await dolphin.database
+            .collection<IUserMessage>("userMessages")
+            .find({
+                $and: [{ owner: user._id }, ...conditions],
+            })
+            .sort({
+                _id: -1,
+            })
+            .limit(limit ?? 15)
+            .skip(skip ?? 0);
         return [
             (await dbResult.toArray()).map(
                 (userMessage) =>
@@ -67,10 +73,12 @@ class UserMessage implements IUserMessage {
         receiver: User,
     ): Promise<MethodResult<UserMessage>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
-        const dbResult = await dolphin.database.collection<IUserMessage>("userMessages").findOne({
-            owner: receiver._id,
-            author: author._id,
-        });
+        const dbResult = await dolphin.database
+            .collection<IUserMessage>("userMessages")
+            .findOne({
+                owner: receiver._id,
+                author: author._id,
+            });
         if (!dbResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
         return [
             new UserMessage(
@@ -104,7 +112,8 @@ class UserMessage implements IUserMessage {
     ): Promise<MethodResult<IUserMessage[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
-        const userMessageCollection = dolphin.database.collection<IUserMessage>("userMessages");
+        const userMessageCollection =
+            dolphin.database.collection<IUserMessage>("userMessages");
         const messageCollection = dolphin.database.collection<IMessage>("messages");
 
         if (!user) {
@@ -117,7 +126,6 @@ class UserMessage implements IUserMessage {
                     owner: user._id,
                     stared: filter.stared,
                     read: filter.read,
-                    newsletter: filter.newsletter,
                 },
                 { limit: filter.limit, skip: filter.skip },
             )
@@ -131,7 +139,30 @@ class UserMessage implements IUserMessage {
         }
 
         return [
-            dbResult.map((msg) => new UserMessage(messageCollection, userMessageCollection, msg)),
+            dbResult.map(
+                (msg) => new UserMessage(messageCollection, userMessageCollection, msg),
+            ),
+            null,
+        ];
+    }
+
+    static async getUserMessagesByMessageId(
+        id: ObjectId,
+        owner?: ObjectId,
+    ): Promise<MethodResult<UserMessage[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const dbResult = await dolphin.database
+            .collection<IUserMessage>("userMessages")
+            .find(!owner ? { message: id } : { message: id, owner: owner });
+        return [
+            (await dbResult.toArray()).map(
+                (v) =>
+                    new UserMessage(
+                        dolphin.database.collection<IMessage>("messages"),
+                        dolphin.database.collection<IUserMessage>("userMessages"),
+                        v,
+                    ),
+            ),
             null,
         ];
     }
@@ -144,21 +175,18 @@ class UserMessage implements IUserMessage {
      * @return true if the message was sent successfully
      */
     static async sendMessage(
-        receiver: User,
+        receiver: ObjectId,
         message: Message,
-        newsletter: boolean = false,
     ): Promise<MethodResult<boolean>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
         const userMessage: IUserMessage = {
-            owner: receiver._id,
-
+            owner: receiver,
             subject: message.subject,
             author: message.sender,
-            message: message.id,
+            message: message._id,
             read: false,
             stared: false,
-            newsletter,
         };
 
         const dbResult = await dolphin.database
@@ -180,7 +208,6 @@ class UserMessage implements IUserMessage {
     message: ObjectId;
     read: boolean;
     stared: boolean;
-    newsletter: boolean;
 
     private readonly messageCollection: Collection<IMessage>;
     private readonly userMessageCollection: Collection<IUserMessage>;
@@ -197,7 +224,6 @@ class UserMessage implements IUserMessage {
         this.message = userMessage.message;
         this.read = userMessage.read;
         this.stared = userMessage.stared;
-        this.newsletter = userMessage.newsletter;
         this.messageCollection = messageCollection;
         this.userMessageCollection = userMessageCollection;
     }
@@ -207,11 +233,16 @@ class UserMessage implements IUserMessage {
     }
 
     async star(stared = true): Promise<MethodResult<boolean>> {
-        this.stared = stared;
         try {
-            const dbResult = await this.messageCollection.updateOne(
-                { _id: this.message },
-                { $set: { stared } },
+            const dbResult = await this.userMessageCollection.updateOne(
+                {
+                    _id: this._id,
+                },
+                {
+                    $set: {
+                        stared,
+                    },
+                },
             );
             if (!dbResult.acknowledged) {
                 return [undefined, DolphinErrorTypes.DATABASE_ERROR];
@@ -231,8 +262,8 @@ class UserMessage implements IUserMessage {
         try {
             if (this.message && this.messageCollection) {
                 const dbResult = await this.messageCollection.updateOne(
-                    { _id: this.message },
-                    { $set: { read } },
+                    { _id: this._id },
+                    { $set: { read: read } },
                 );
                 if (!dbResult.acknowledged) {
                     return [undefined, DolphinErrorTypes.DATABASE_ERROR];
@@ -274,7 +305,11 @@ class UserMessage implements IUserMessage {
 
         return [undefined, DolphinErrorTypes.DATABASE_ERROR];
     }
+
+    get time() {
+        return this._id.getTimestamp();
+    }
 }
 
 export default UserMessage;
-export { IUserMessage };
+export { IUserMessage, Postfaecher };

@@ -49,7 +49,9 @@ type CreateSingleClassCourseOptions = CreateCourseOptions & {
     linkedTuts: [ObjectId];
 };
 
-function isCreateClassCourseOptions(options: any): options is CreateSingleClassCourseOptions {
+function isCreateClassCourseOptions(
+    options: any,
+): options is CreateSingleClassCourseOptions {
     if (options.type !== "single-class") return false;
     if (!options.linkedTuts) return false;
     if (!Array.isArray(options.linkedTuts)) return false;
@@ -100,8 +102,11 @@ class Course implements WithId<ICourse> {
         const courseName = `${className} ${subjectName}`;
 
         // check if the course already exists
-        const checkForAlreadyExistingCourse = await courses.countDocuments({ name: courseName });
-        if (checkForAlreadyExistingCourse > 0) return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
+        const checkForAlreadyExistingCourse = await courses.countDocuments({
+            name: courseName,
+        });
+        if (checkForAlreadyExistingCourse > 0)
+            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
 
         // create the course
         const courseToCreate: ICourse = {
@@ -117,10 +122,14 @@ class Course implements WithId<ICourse> {
         };
         // insert into database
         const insertResult = await courses.insertOne(courseToCreate);
-        if (!insertResult.acknowledged) return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+        if (!insertResult.acknowledged)
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
 
         // return the course
-        return [new Course({ _id: insertResult.insertedId, ...courseToCreate }, courses), null];
+        return [
+            new Course({ _id: insertResult.insertedId, ...courseToCreate }, courses),
+            null,
+        ];
     }
 
     public static async createOutOfClassCourse(
@@ -151,8 +160,11 @@ class Course implements WithId<ICourse> {
         const courseName = `${gradeLevel} ${subjectName} ${countResult + 1}`;
 
         // check if the course already exists
-        const checkForAlreadyExistingCourse = await courses.countDocuments({ name: courseName });
-        if (checkForAlreadyExistingCourse > 0) return [undefined, DolphinErrorTypes.FAILED]; // failed, since it should never happen
+        const checkForAlreadyExistingCourse = await courses.countDocuments({
+            name: courseName,
+        });
+        if (checkForAlreadyExistingCourse > 0)
+            return [undefined, DolphinErrorTypes.FAILED]; // failed, since it should never happen
 
         // create the course, insert and return it
         const courseToCreate: ICourse = {
@@ -169,7 +181,8 @@ class Course implements WithId<ICourse> {
 
         // insert into database
         const insertResult = await courses.insertOne(courseToCreate);
-        if (!insertResult.acknowledged) return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+        if (!insertResult.acknowledged)
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
 
         return [
             new Course(
@@ -199,7 +212,8 @@ class Course implements WithId<ICourse> {
         // get the grade-level
         if (options.grade < 11 || options.grade > 13)
             return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
-        const gradeLevel = options.grade === 11 ? "E" : options.grade === 12 ? "Q1/2" : "Q3/4";
+        const gradeLevel =
+            options.grade === 11 ? "E" : options.grade === 12 ? "Q1/2" : "Q3/4";
 
         // get the number
         if (!options.number) return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
@@ -209,8 +223,11 @@ class Course implements WithId<ICourse> {
         const courseName = `${gradeLevel} ${subjectName} ${options.type} ${number}`;
 
         // check if the course already exists
-        const checkForAlreadyExistingCourse = await courses.countDocuments({ name: courseName });
-        if (checkForAlreadyExistingCourse > 0) return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
+        const checkForAlreadyExistingCourse = await courses.countDocuments({
+            name: courseName,
+        });
+        if (checkForAlreadyExistingCourse > 0)
+            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
 
         // create the course
         const courseToCreate: ICourse = {
@@ -227,11 +244,18 @@ class Course implements WithId<ICourse> {
         };
         // insert into database
         const insertResult = await courses.insertOne(courseToCreate);
-        if (!insertResult.acknowledged) return [undefined, DolphinErrorTypes.DATABASE_ERROR];
-        return [new Course({ _id: insertResult.insertedId, ...courseToCreate }, courses), null];
+        if (!insertResult.acknowledged)
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+        return [
+            new Course({ _id: insertResult.insertedId, ...courseToCreate }, courses),
+            null,
+        ];
     }
 
-    static query(query: string, returnType: "map"): Promise<MethodResult<Map<string, ObjectId>>>;
+    static query(
+        query: string,
+        returnType: "map",
+    ): Promise<MethodResult<Map<string, ObjectId>>>;
     static query(query: string, returnType: "string"): Promise<MethodResult<string[]>>;
 
     static async query(
@@ -337,6 +361,23 @@ class Course implements WithId<ICourse> {
             .toArray();
 
         return [dbResult.map((c) => new Course(c, courses)), null];
+    }
+
+    static async searchCourseByName(
+        query: string,
+        skip: number = 0,
+        limit: number = 15,
+    ): Promise<MethodResult<Course[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const courses = dolphin.database.collection<ICourse>("courses");
+        const result = await courses
+            .find({
+                name: { $regex: query, $options: "i" },
+            })
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+        return [result.map((tutCourse) => new Course(tutCourse, courses)), null];
     }
 
     _id: ObjectId;
@@ -480,7 +521,10 @@ class Course implements WithId<ICourse> {
             return [false, null];
         }
 
-        const dbResult = await courses.updateOne({ _id: this._id }, { $push: { teacher } });
+        const dbResult = await courses.updateOne(
+            { _id: this._id },
+            { $push: { teacher } },
+        );
 
         if (!dbResult.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
 
@@ -496,7 +540,10 @@ class Course implements WithId<ICourse> {
             return [false, null];
         }
 
-        const dbResult = await courses.updateOne({ _id: this._id }, { $pull: { teacher } });
+        const dbResult = await courses.updateOne(
+            { _id: this._id },
+            { $pull: { teacher } },
+        );
 
         if (!dbResult.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
 
@@ -516,3 +563,4 @@ class Course implements WithId<ICourse> {
 
 export default Course;
 export { ICourse, CreateSingleClassCourseOptions, CreateCourseOptions };
+

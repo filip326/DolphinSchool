@@ -1,8 +1,6 @@
-<script setup>
+<script lang="ts">
 import { onMounted, ref } from "vue";
-</script>
-
-<script>
+import format from "date-fns/format";
 export default {
     name: "EMailPreview",
     props: {
@@ -18,12 +16,22 @@ export default {
             type: String,
             required: true,
         },
-        timestamp: {
-            type: String,
+        timestemp: {
+            type: Number,
             required: true,
         },
-        unread: Boolean,
-        stared: Boolean,
+        unread: {
+            type: Boolean,
+            default: false,
+        },
+        stared: {
+            type: Boolean,
+            default: false,
+        },
+        flag: {
+            type: String,
+            default: "",
+        },
     },
     data() {
         const width = ref(0);
@@ -36,17 +44,39 @@ export default {
         return {
             width,
             hover: false,
+            read: !this.unread,
+            star: this.stared,
         };
     },
     methods: {
-        markAsRead() {
-            return alert(this.id); // todo
+        async markAsRead() {
+            
         },
-        deleteMail() {
-            return alert(this.id); // todo
-        },
-        onEmailSelected(email) {
+        onEmailSelected(email: string) {
             this.$emit("email_clicked", email);
+        },
+        async setStared() {
+            
+        },
+        formatDate(date: number) {
+            console.log(date);
+            // when today, return time HH:mm
+            if (format(date, "dd.MM.yyyy") === format(new Date(), "dd.MM.yyyy")) {
+                return format(date, "HH:mm");
+            }
+            // when yesterday, return "Gestern"
+            if (
+                format(date, "dd.MM.yyyy") ===
+                format(new Date(Date.now() - 24 * 60 * 60 * 1000), "dd.MM.yyyy")
+            ) {
+                return "Gestern";
+            }
+            // when last 6 days, return day of week
+            if (date > Date.now() - 6 * 24 * 60 * 60 * 1000) {
+                return format(date, "EEEE");
+            }
+            // else return date
+            return format(date, "dd.MM.yyyy");
         },
     },
 };
@@ -56,9 +86,21 @@ export default {
     <VContainer class="email-preview" v-if="width >= 900">
         <div class="read-unread">
             <!-- if message is already read -->
-            <VBtn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </VBtn>
+            <VBtn
+                @click="markAsRead"
+                density="comfortable"
+                icon="mdi-email-open-outline"
+                v-if="read || flag === 'outgoing'"
+            >
+            </VBtn>
             <!-- if message is not read yet -->
-            <VBtn density="comfortable" icon="mdi-email-alert-outline" v-if="unread" class="unread">
+            <VBtn
+                density="comfortable"
+                icon="mdi-email-alert-outline"
+                v-else
+                class="unread"
+                @click="markAsRead"
+            >
             </VBtn>
         </div>
         <div class="sendby" @click="onEmailSelected(id)">
@@ -68,16 +110,17 @@ export default {
             {{ subject }}
         </div>
         <div class="time" @click="onEmailSelected(id)">
-            {{ timestamp }}
+            {{ formatDate(timestemp) }}
         </div>
-        <div class="starMail mail-button">
+        <div class="starMail mail-button" v-if="flag !== 'outgoing'">
             <VBtn
                 density="comfortable"
                 variant="plain"
                 elevation="0"
                 class="delete"
                 icon="mdi-star-outline"
-                v-if="!stared"
+                v-if="!star"
+                @click="setStared"
             >
             </VBtn>
             <VBtn
@@ -86,19 +129,8 @@ export default {
                 elevation="0"
                 class="delete"
                 icon="mdi-star"
-                v-if="stared"
-            >
-            </VBtn>
-        </div>
-        <div class="deleteMail mail-button">
-            <VBtn
-                @mouseover="hover = true"
-                @mouseleave="hover = false"
-                density="comfortable"
-                variant="plain"
-                elevation="0"
-                class="delete"
-                :icon="!hover ? 'mdi-delete' : 'mdi-delete-empty'"
+                v-else
+                @click="setStared"
             >
             </VBtn>
         </div>
@@ -107,12 +139,17 @@ export default {
         <div class="upper-line" @click="onEmailSelected(id)">
             <div class="read-unread">
                 <!-- if message is already read -->
-                <VBtn density="comfortable" icon="mdi-email-open-outline" v-if="!unread"> </VBtn>
+                <VBtn
+                    density="comfortable"
+                    icon="mdi-email-open-outline"
+                    v-if="!unread || flag === 'outgoing'"
+                >
+                </VBtn>
                 <!-- if message is not read yet -->
                 <VBtn
                     density="comfortable"
                     icon="mdi-email-alert-outline"
-                    v-if="unread"
+                    v-else
                     class="unread"
                 >
                 </VBtn>
@@ -126,9 +163,9 @@ export default {
         </div>
         <div class="lower-line">
             <div class="time">
-                {{ timestamp }}
+                {{ formatDate(timestemp) }}
             </div>
-            <div class="starMail mail-button">
+            <div class="starMail mail-button" v-if="flag !== 'outgoing'">
                 <VBtn
                     density="comfortable"
                     variant="plain"
@@ -148,7 +185,7 @@ export default {
                 >
                 </VBtn>
             </div>
-            <div class="deleteMail mail-button">
+            <div class="deleteMail mail-button" v-if="flag !== 'outgoing'">
                 <VBtn
                     @mouseover="hover = true"
                     @mouseleave="hover = false"

@@ -13,7 +13,7 @@ interface IMessage {
     attachments?: IMessageAttachement[];
     subject: string;
     content: string;
-    receivers: ObjectId[];
+    receivers: string; // a string with the receivers (names) seperated by a semicolon
     anonymous: boolean;
     edited?: number;
 }
@@ -35,13 +35,59 @@ class Message implements IMessage {
         ];
     }
 
-    id: ObjectId;
+    static async createMessage(
+        message: Omit<Omit<IMessage, "edited">, "anonymous">,
+    ): Promise<MethodResult<Message>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const messageCollection = dolphin.database.collection<IMessage>("messages");
+        const userMessageCollection =
+            dolphin.database.collection<IUserMessage>("userMessages");
+
+        const result = await messageCollection.insertOne({
+            ...message,
+            anonymous: false,
+        });
+        if (!result.acknowledged) return [undefined, DolphinErrorTypes.FAILED];
+        const messageResult = await messageCollection.findOne({ _id: result.insertedId });
+        if (!messageResult) return [undefined, DolphinErrorTypes.NOT_FOUND];
+        return [
+            new Message(messageCollection, userMessageCollection, messageResult),
+            null,
+        ];
+    }
+
+    static async listMessagesBySender(
+        sender: ObjectId,
+        options: { limit?: number; skip?: number },
+    ): Promise<MethodResult<Message[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const messageCollection = dolphin.database.collection<IMessage>("messages");
+        const messages = await messageCollection
+            .find({ sender })
+            .sort({ _id: -1 })
+            .skip(options.skip ?? 0)
+            .limit(options.limit ?? 15)
+            .toArray();
+        return [
+            messages.map(
+                (message) =>
+                    new Message(
+                        messageCollection,
+                        dolphin.database.collection<IUserMessage>("userMessages"),
+                        message,
+                    ),
+            ),
+            null,
+        ];
+    }
+
+    _id: ObjectId;
     sender: ObjectId;
     anonymous: boolean;
     attachments?: IMessageAttachement[];
     _subject: string;
     _content: string;
-    receivers: ObjectId[];
+    receivers: string;
     edited?: number;
     private readonly messageCollection: Collection<IMessage>;
     private readonly userMessageCollection: Collection<IUserMessage>;
@@ -51,7 +97,7 @@ class Message implements IMessage {
         userMessageCollection: Collection<IUserMessage>,
         message: WithId<IMessage>,
     ) {
-        this.id = message._id;
+        this._id = message._id;
         this.sender = message.sender;
         this.attachments = message.attachments;
         this._subject = message.subject;
@@ -63,26 +109,13 @@ class Message implements IMessage {
         this.edited = message.edited;
     }
 
-    // static async getMessageById(id: ObjectId): Promise<MethodResult<Message>> {
-    //     const dolphin = Dolphin.instance;
-    //     if (!dolphin || ! dolphin.database) {
-    //          return [ undefined, Error("Dolphin is not initialized.")]
-    //     }
-    //     const db = dolphin.database;
-    //     const collection = db.collection<IMessage>("messages");
-    //     const message = await collection.findOne({ _id: id });
-    //     if (!message)
-    //         return [ undefined, Error("Message not found.")];
-    //     return [ new Message(collection, db.collection<IUserMessage>("userMessages"), message), null ];
-    // }
-
     async deleteForAll(): Promise<MethodResult<boolean>> {
         try {
             const deleteResult = await this.messageCollection.deleteOne({
-                _id: this.id,
+                _id: this._id,
             });
             const deleteAllResult = await this.userMessageCollection.deleteMany({
-                message: { $eq: this.id },
+                message: { $eq: this._id },
             });
             return [deleteAllResult.acknowledged && deleteResult.acknowledged, null];
         } catch {
@@ -96,7 +129,7 @@ class Message implements IMessage {
 
         try {
             const updateResult = await this.messageCollection.updateOne(
-                { _id: this.id },
+                { _id: this._id },
                 {
                     $set: {
                         content: newContent,
@@ -110,15 +143,29 @@ class Message implements IMessage {
         }
     }
 
+    async delete(): Promise<MethodResult<boolean>> {
+        try {
+            const deleteResult = await this.userMessageCollection.deleteMany({
+                message: { $eq: this._id },
+            });
+            const deleteResult2 = await this.messageCollection.deleteOne({
+                _id: this._id,
+            });
+            return [deleteResult.acknowledged ?? deleteResult2.acknowledged, null];
+        } catch {
+            return [undefined, DolphinErrorTypes.DATABASE_ERROR];
+        }
+    }
+
     get time() {
-        return this.id.getTimestamp();
+        return this._id.getTimestamp();
     }
 
     get subject(): string {
-        return "not implemented";
+        return this._subject;
     }
     get content(): string {
-        return "not implemented";
+        return this._content;
     }
 }
 

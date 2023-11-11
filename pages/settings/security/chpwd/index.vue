@@ -6,9 +6,11 @@ export default {
             new_pwd: "",
             rules: {
                 required: (v) => !!v || "Dieses Feld ist erforderlich!",
-                wiederholen: (v) => v === this.new_pwd || "Die Passwörter stimmen nicht überein!",
+                wiederholen: (v) =>
+                    v === this.new_pwd || "Die Passwörter stimmen nicht überein!",
                 notsame: (v) =>
-                    v !== this.old_pwd || "Das neue Passwort muss sich vom alten unterscheiden!",
+                    v !== this.old_pwd ||
+                    "Das neue Passwort muss sich vom alten unterscheiden!",
                 password: (v) => {
                     if (v.length < 10) {
                         return "Das Passwort muss mindestens 10 Zeichen lang sein!";
@@ -80,21 +82,26 @@ export default {
                 <h1>Passwort ändern</h1>
                 <div>
                     <p>
-                        Beachten Sie die folgenden Regeln für Ihres Passwort. Sie können Ihr
-                        Passwort jederzeit in den Einstellungen ändern.
+                        Beachten Sie die folgenden Regeln für Ihres Passwort. Sie können
+                        Ihr Passwort jederzeit in den Einstellungen ändern.
                     </p>
                 </div>
                 <ul>
                     <li>Das Passwort muss mindestens 10 Zeichen lang sein.</li>
-                    <li>Das Passwort muss mindestens einen Kleinbuchstaben (a-z) enthalten.</li>
-                    <li>Das Passwort muss mindestens einen Großbuchstaben (A-Z) enthalten.</li>
+                    <li>
+                        Das Passwort muss mindestens einen Kleinbuchstaben (a-z)
+                        enthalten.
+                    </li>
+                    <li>
+                        Das Passwort muss mindestens einen Großbuchstaben (A-Z) enthalten.
+                    </li>
                     <li>Das Passwort muss mindestens eine Ziffer (0-9) enthalten.</li>
                 </ul>
                 <div>
                     <p>
                         Es wird empfohlen neben einem sicherem Passwort die
-                        Zwei-Faktor-Authentifizierung in den Einstellungen zu aktivieren. Weitere
-                        Informationen finden Sie beispielsweise auf der
+                        Zwei-Faktor-Authentifizierung in den Einstellungen zu aktivieren.
+                        Weitere Informationen finden Sie beispielsweise auf der
                         <a
                             href="https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Informationen-und-Empfehlungen/Cyber-Sicherheitsempfehlungen/Accountschutz/Sichere-Passwoerter-erstellen/sichere-passwoerter-erstellen_node.html"
                         >
@@ -106,11 +113,16 @@ export default {
         </section>
 
         <VForm @submit.prevent="changePassword()">
-            <VAlert v-if="error.shown" type="error" variant="text" :text="error.message" />
+            <VAlert
+                v-if="error.shown"
+                type="error"
+                variant="text"
+                :text="error.message"
+            />
 
             <p>
-                Geben Sie Ihr bisheriges Passwort ein. Wählen Sie anschließend ein neues Passwort
-                und wiederholen Sie dieses.
+                Geben Sie Ihr bisheriges Passwort ein. Wählen Sie anschließend ein neues
+                Passwort und wiederholen Sie dieses.
             </p>
 
             <VTextField
@@ -136,4 +148,8 @@ export default {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.settings_form {
+    padding: 20px;
+}
+</style>

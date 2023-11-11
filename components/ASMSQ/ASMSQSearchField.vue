@@ -5,31 +5,61 @@ export default {
             type: Boolean,
             default: true,
         },
-        onlyUsers: {
-            type: Boolean,
-            default: false,
+        label: {
+            type: String,
+            default: "Suche nach Benutzer, Klasse oder Kurs",
+        },
+        modelValue: {
+            type: Array<string>,
+            default: () => [],
         },
     },
-    data() {
+    emits: ["update:modelValue"],
+    data(): {
+        searchText: string;
+        suggestions: {
+            label: string;
+            value: string;
+        }[];
+        selected: string[];
+        timeout: NodeJS.Timeout | null;
+    } {
         return {
-            rules: {
-                required: (value: any) => !!value || "Eingabe erforderlich",
-                onlyUsers: (value: any) =>
-                    !this.onlyUsers || (value && value.type === "user") || "Nur Benutzer erlaubt",
-            },
             searchText: "",
-            asmsqSuggestions: [],
-            isUpdating: false,
+            suggestions: [],
+            selected: [],
+            timeout: null,
         };
     },
     methods: {
-        updatSuggestions() {},
-        parseSelect(item: any) {
-            return {
-                avatar: item.avatar,
-                name: item.name,
-                subtitle: item.subtitle,
-            };
+        async getSuggestions() {
+            const response = await useFetch("/api/asmsq/suggest", {
+                method: "get",
+                query: {
+                    s: this.searchText,
+                },
+            });
+            if (response.status.value === "success")
+                response.data.value?.forEach((v) => {
+                    // check if suggestion with same value already exists
+                    // if not, add it
+                    if (!this.suggestions.find((s) => s.value === v.value))
+                        this.suggestions.push(v);
+                });
+
+            // remove suggestions that are not selected (anymore) nor match the search text
+            this.suggestions = this.suggestions.filter(
+                (s) =>
+                    this.selected.includes(s.value) ||
+                    s.label.toLowerCase().includes(this.searchText.toLowerCase()) ||
+                    s.value.toLowerCase().includes(this.searchText.toLowerCase()),
+            );
+        },
+        whenTyping() {
+            if (this.timeout) clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+                this.getSuggestions();
+            }, 700);
         },
     },
 };
@@ -37,32 +67,24 @@ export default {
 
 <template>
     <div>
-        <VAutoComplete
-            v-model="searchText"
-            :disabled="isUpdating"
-            :items="asmsqSuggestions"
+        <VAutocomplete
+            v-model="selected"
+            v-model:search="searchText"
             chips
             closable-chips
-            label="Suche"
-            :multiple="multi"
+            multiple
+            :items="suggestions"
+            item-title="label"
+            item-value="value"
+            :label="label"
+            @input="whenTyping"
+            @update:model-value="
+                searchText = '';
+                $emit('update:modelValue', selected);
+            "
+            no-data-text="Suche nach passenden Vorschlägen..."
         >
-            <template v-slot:chip="{ props, item }">
-                <v-chip
-                    v-bind="props"
-                    :prepend-avatar="parseSelect(item).avatar"
-                    :text="parseSelect(item).name"
-                ></v-chip>
-            </template>
-
-            <template v-slot:item="{ props, item }">
-                <v-list-item
-                    v-bind="props"
-                    :prepend-avatar="parseSelect(item).avatar"
-                    :title="parseSelect(item).name"
-                    :subtitle="parseSelect(item).subtitle"
-                ></v-list-item>
-            </template>
-        </VAutoComplete>
+        </VAutocomplete>
     </div>
 </template>
 

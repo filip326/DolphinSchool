@@ -22,7 +22,9 @@ export default {
         <VCardTitle>
             {{ title }}
         </VCardTitle>
-        <VCardActions style="display: flex; flex-direction: column; gap: 10px; align-items: center">
+        <VCardActions
+            style="display: flex; flex-direction: column; gap: 10px; align-items: center"
+        >
             <VBtn
                 width="100%"
                 v-for="link in links"

@@ -1,10 +1,55 @@
 <script lang="ts">
 export default {
-    data(): { absender: string; empfaenger: string } {
+    data() {
         return {
-            absender: "Du",
-            empfaenger: "",
+            // absender: "Du",
+            empfaenger: [] as string[],
+            content: "",
+            subject: "",
+            rules: {
+                required: (value: string) => !!value || "Dieses Feld ist erforderlich",
+            },
+            error: {
+                shown: false,
+                message: "",
+            },
         };
+    },
+    methods: {
+        setEmpf(users: string[]) {
+            this.empfaenger = users;
+        },
+        setContent(content: string) {
+            this.content = content;
+        },
+        async sendMail() {
+            if (!this.empfaenger || !this.subject || !this.content) {
+                this.error = {
+                    shown: true,
+                    message: "Bitte füllen Sie alle Felder aus",
+                };
+                return;
+            }
+
+            const res = await useFetch("/api/mail", {
+                method: "POST",
+                body: JSON.stringify({
+                    sendTo: this.empfaenger.map((e) => `${e}`),
+                    subject: this.subject,
+                    content: this.content,
+                }),
+            });
+
+            if (res.status.value != "success") {
+                console.log(res.error.value);
+                this.error = {
+                    shown: true,
+                    message: "Nachricht konnte nicht gesendet werden",
+                };
+            } else {
+                await navigateTo("/mail");
+            }
+        },
     },
     async beforeCreate() {
         await checkAuth({
@@ -17,30 +62,49 @@ export default {
 </script>
 
 <template>
-    <VCard>
-        <VCardTitle> Nachricht schreiben </VCardTitle>
+    <VForm @submit.prevent="sendMail">
+        <VCard>
+            <VCardTitle> Nachricht schreiben </VCardTitle>
 
-        <VCardText>
-            <VForm>
-                <VTextField label="Absender" readonly v-model="absender" />
+            <VCardText>
+                <VForm>
+                    <!-- <VTextField label="Absender" readonly v-model="absender" /> -->
 
-                <VTextField label="Empfänger" v-model="empfaenger" />
+                    <ASMSQSearchField label="Empfänger" v-model="empfaenger" />
 
-                <VTextField label="Betreff" />
+                    <VTextField
+                        :rules="[rules.required]"
+                        label="Betreff"
+                        v-model="subject"
+                    />
 
-                <MarkdownEditor />
+                    <MarkdownEditor @md-model="setContent" />
 
-                <VFileInput label="Anhang (max 5 MB)" />
-            </VForm>
-        </VCardText>
+                    <!-- <VFileInput label="Anhang (max 5 MB)" /> -->
+                </VForm>
+            </VCardText>
 
-        <VCardActions>
-            <VBtn prepend-icon="mdi-trash-can" variant="outlined"> Verwerfen </VBtn>
-            <VSpacer />
-            <VBtn prepend-icon="mdi-content-save" variant="outlined"> Speichern </VBtn>
-            <VBtn prepend-icon="mdi-send" variant="outlined"> Senden </VBtn>
-        </VCardActions>
-    </VCard>
+            <VAlert
+                v-if="error.shown"
+                type="error"
+                title="Fehler"
+                :text="error.message"
+            />
+
+            <VCardActions>
+                <VBtn to="/mail" prepend-icon="mdi-trash-can" variant="outlined">
+                    Verwerfen
+                </VBtn>
+                <VSpacer />
+                <!-- <VBtn prepend-icon="mdi-content-save" variant="outlined">
+                    Speichern
+                </VBtn> -->
+                <VBtn type="submit" prepend-icon="mdi-send" variant="outlined">
+                    Senden
+                </VBtn>
+            </VCardActions>
+        </VCard>
+    </VForm>
 </template>
 
 <style scoped>

@@ -26,9 +26,12 @@ class Session implements WithId<ISession> {
     // static methods
     private static generateToken(): string {
         let returnString = "";
-        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const characters =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         for (let i = 0; i < 32; i++) {
-            returnString += characters.charAt(Math.floor(Math.random() * characters.length));
+            returnString += characters.charAt(
+                Math.floor(Math.random() * characters.length),
+            );
         }
         return returnString;
     }

@@ -1,14 +1,18 @@
 <script lang="ts">
 export default {
     props: {
-        user_id: {
+        label: {
             type: String,
-            required: true,
+            required: false,
+        },
+        limit: {
+            type: Number,
+            required: false,
         },
     },
     data(): {
         searchQuery: string;
-        modelValue: string;
+        modelValue: string[];
         autocompleteItems: {
             label: string;
             id: string;
@@ -17,14 +21,21 @@ export default {
         autocomplete_loading: boolean;
     } {
         return {
-            modelValue: "",
+            modelValue: [],
             searchQuery: "",
             autocompleteItems: [],
             timeout: null,
             autocomplete_loading: false,
         };
     },
+    async beforeMount() {
+    },
     methods: {
+        clearSearchOptionsAfterSelect() {
+            this.autocompleteItems = [
+                ...this.autocompleteItems.filter((i) => this.modelValue.includes(i.id)),
+            ];
+        },
         async search() {
             const searchTerm = this.searchQuery.split("(")[0].trim();
             if (searchTerm.length < 3) {
@@ -42,11 +53,11 @@ export default {
             }
 
             this.autocompleteItems = [
-                ...this.autocompleteItems.filter((i) => i.id === this.modelValue),
                 ...response.data.value!.map((user) => ({
                     label: user.label,
                     id: user.id,
                 })),
+                ...this.autocompleteItems.filter((i) => this.modelValue.includes(i.id)),
             ];
 
             // filter out duplicates
@@ -56,9 +67,14 @@ export default {
         },
 
         searchTimer() {
+            if (this.limit && this.modelValue.length >= this.limit) {
+                // if limit is reached, do not search
+                // also display warning message
+                return;
+            }
             const searchTerm = this.searchQuery.split("(")[0].trim();
             if (searchTerm.length < 3) {
-                if (this.modelValue === "") this.autocompleteItems = [];
+                if (this.modelValue.length === 0) this.autocompleteItems = [];
                 return;
             }
             // calls search after 1500 ms, except if another key is pressed. if another key is pressed, the timer is reset
@@ -72,15 +88,25 @@ export default {
             }, 1000);
         },
         customFilter(itemTitle: string, queryText: string) {
+            if (this.limit && this.modelValue.length >= this.limit) {
+                return false;
+            }
             const searchTerm = queryText.split("(")[0].trim();
             return itemTitle.toLowerCase().includes(searchTerm.toLowerCase());
+        },
+    },
+    watch: {
+        modelValue(newVal: string[]) {
+            if (this.limit && newVal.length > this.limit) {
+                this.modelValue = newVal.slice(0, this.limit);
+            }
+            this.$emit("user-ids", this.modelValue);
         },
     },
 };
 </script>
 
 <template>
-    User-Id: {{ modelValue }}
     <VAutocomplete
         v-model="modelValue"
         v-model:search="searchQuery"
@@ -88,13 +114,23 @@ export default {
         item-title="label"
         item-value="id"
         :custom-filter="() => true"
-        label="Suche nach Benutzer"
+        :label="label ?? 'Suche nach Benutzer'"
         outlined
         dense
         @update:search="searchTimer"
+        @update:model-value="
+            searchQuery = '';
+            clearSearchOptionsAfterSelect();
+        "
+        :counter="limit"
+        :multiple="true"
+        :chips="true"
+        closable-chips
         :loading="autocomplete_loading"
         :no-data-text="
-            searchQuery.split('(')[0].trim().length < 3
+            limit && modelValue.length >= limit
+                ? 'Maximale Anzahl an Benutzern erreicht'
+                : searchQuery.split('(')[0].trim().length < 3
                 ? 'Es müssen mindestens 3 Buchstaben eingegeben werden.'
                 : 'Es wurde kein passender Benutzer gefunden'
         "

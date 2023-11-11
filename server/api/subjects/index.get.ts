@@ -1,28 +1,23 @@
 import Subject from "~/server/Dolphin/Course/Subject";
 
 export default defineEventHandler(async (event) => {
-    const { success, statusCode } = await event.context.auth.checkAuth();
+    // check for permission
+    const { success, statusCode } = await event.context.auth.checkAuth({});
+
     if (!success) {
-        throw createError({
-            statusCode: statusCode,
-        });
+        throw createError({ statusCode });
     }
 
-    // check if there is a string query param "search"
-    const { search } = getQuery(event);
+    // get the subjects
+    const [subjects, subjectError] = await Subject.list();
 
-    if (typeof search === "string") {
-        const [subjects, error] = await Subject.search(search);
-        if (error) {
-            throw createError({
-                statusCode: 500,
-                message: "Internal server error",
-            });
-        }
-        return subjects.map((subject) => ({
-            _id: subject._id.toHexString(),
-            longName: subject.longName,
-            short: subject.short,
-        }));
+    if (subjectError) {
+        throw createError({ statusCode: 500 });
     }
+
+    // return the subjects
+    return subjects.map((subject) => ({
+        id: subject._id.toHexString(),
+        name: subject.longName,
+    }));
 });

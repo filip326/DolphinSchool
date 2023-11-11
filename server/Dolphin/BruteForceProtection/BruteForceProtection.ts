@@ -14,7 +14,9 @@ class BruteForceProtection {
 
     private constructor(database: Db) {
         this.bruteForceProtection = database.collection("bruteForceProtection");
-        this.bruteForceProtectionBypass = database.collection("bruteForceProtectionBypass");
+        this.bruteForceProtectionBypass = database.collection(
+            "bruteForceProtectionBypass",
+        );
     }
 
     static async isLoginAllowed(
@@ -23,7 +25,9 @@ class BruteForceProtection {
     ): Promise<MethodResult<boolean>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const bruteForceProtection =
-            dolphin.database.collection<BruteForceProtectionEntry>("bruteForceProtection");
+            dolphin.database.collection<BruteForceProtectionEntry>(
+                "bruteForceProtection",
+            );
         const bruteForceProtectionBypass =
             dolphin.database.collection<BruteForceProtectionBypassEntry>(
                 "bruteForceProtectionBypass",
@@ -91,7 +95,9 @@ class BruteForceProtection {
     ): Promise<MethodResult<boolean>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const bruteForceProtection =
-            dolphin.database.collection<BruteForceProtectionEntry>("bruteForceProtection");
+            dolphin.database.collection<BruteForceProtectionEntry>(
+                "bruteForceProtection",
+            );
         const bruteForceProtectionBypass =
             dolphin.database.collection<BruteForceProtectionBypassEntry>(
                 "bruteForceProtectionBypass",
@@ -106,7 +112,8 @@ class BruteForceProtection {
                         $gt: Date.now(),
                     },
                 });
-                if (!dbResult) return BruteForceProtection.reportFailedLoginAttempt(username);
+                if (!dbResult)
+                    return BruteForceProtection.reportFailedLoginAttempt(username);
 
                 // if device token is valid, check if there already is a BruteForceProtectionEntry
                 const dbResult2 = await bruteForceProtection.findOne({
@@ -269,7 +276,9 @@ class BruteForceProtection {
     static async cleanUp() {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const bruteForceProtection =
-            dolphin.database.collection<BruteForceProtectionEntry>("bruteForceProtection");
+            dolphin.database.collection<BruteForceProtectionEntry>(
+                "bruteForceProtection",
+            );
         const bruteForceProtectionBypass =
             dolphin.database.collection<BruteForceProtectionBypassEntry>(
                 "bruteForceProtectionBypass",
