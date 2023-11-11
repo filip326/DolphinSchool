@@ -67,6 +67,19 @@ export default {
 </script>
 
 <template>
+    <VBtn prepend-icon="mdi-mailbox" style="margin: 10px 0 10px 10px" to="/mail/inbox">
+        <span>Posteingang</span>
+    </VBtn>
+    <VBtn
+        prepend-icon="mdi-location-exit"
+        style="margin: 10px 0 10px 10px"
+        to="/mail/outbox"
+    >
+        <span>Postausgang</span>
+    </VBtn>
+    <VBtn prepend-icon="mdi-star" style="margin: 10px 0 10px 10px" to="/mail/stared">
+        <span>Markierte Nachrichten</span>
+    </VBtn>
     <VCard>
         <VCardTitle> {{ email.subject }}</VCardTitle>
 
