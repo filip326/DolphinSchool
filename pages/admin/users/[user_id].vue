@@ -45,8 +45,8 @@ export default {
         };
         passwordChangeAllowed: boolean | null;
         passwordChange: {
-            show_confirm_dialog: boolean;
             show_password: boolean;
+            show_confirmation_dialog: boolean;
             password: string;
             loading_new_password: boolean;
         };
@@ -60,10 +60,10 @@ export default {
             passwordChangeAllowed: null,
             user: {} as IUser,
             passwordChange: {
-                show_confirm_dialog: false,
                 show_password: false,
                 password: "",
                 loading_new_password: false,
+                show_confirmation_dialog: false,
             },
         };
     },
@@ -110,14 +110,6 @@ export default {
                 }
             }
         },
-        requestPasswordChange() {
-            // show the confirm dialog to the user, if he really want to change the password.
-            this.passwordChange.show_confirm_dialog = true;
-        },
-        cancelPasswordChange() {
-            // hide the confirm dialog
-            this.passwordChange.show_confirm_dialog = false;
-        },
         async changePassword() {
             // first, set loading to true
             this.passwordChange.loading_new_password = true;
@@ -127,13 +119,11 @@ export default {
             });
             if (response.status.value === "success" && response.data.value) {
                 // if the request was successful, show the password to the user
-                this.passwordChange.show_confirm_dialog = false;
                 this.passwordChange.show_password = true;
                 this.passwordChange.password = response.data.value.password;
             } else {
                 // if the request was not successful, show an error
                 this.passwordChange.loading_new_password = false;
-                this.passwordChange.show_confirm_dialog = false;
                 this.error.show = true;
                 this.error.message = "Fehler beim Generieren des Passworts";
             }
@@ -190,11 +180,40 @@ export default {
                 </VExpansionPanel>
                 <VExpansionPanel title="Anmeldung" v-if="passwordChangeAllowed">
                     <template #text>
-                        <VBtn
-                            color="primary"
-                            @click="requestPasswordChange"
-                            prepend-icon="mdi-key"
-                            >Passwort ändern
+                        <VBtn color="primary" prepend-icon="mdi-key">
+                            <VDialog
+                                activator="parent"
+                                v-model="passwordChange.show_confirmation_dialog"
+                            >
+                                <VCard>
+                                    <VCardTitle>
+                                        Neues Passwort für {{ user.username }}
+                                    </VCardTitle>
+                                    <VCardText>
+                                        Wollen Sie wirklich ein neues Passwort für
+                                        {{ user.username }} generieren? Das alte Passwort
+                                        wird dadurch ungültig. Erstellen Sie nur dann ein
+                                        neues Passwort, wenn der Benutzer sein Passwort
+                                        vergessen hat oder es kompromittiert wurde.
+                                    </VCardText>
+                                    <VCardActions>
+                                        <VBtn
+                                            color="primary"
+                                            @click="changePassword"
+                                            :loading="passwordChange.loading_new_password"
+                                            >Passwort ändern</VBtn
+                                        >
+                                        <VBtn
+                                            color="error"
+                                            :disabled="
+                                                passwordChange.loading_new_password
+                                            "
+                                            >Abbrechen</VBtn
+                                        >
+                                    </VCardActions>
+                                </VCard>
+                            </VDialog>
+                            Passwort ändern
                         </VBtn>
                     </template>
                 </VExpansionPanel>
@@ -216,32 +235,7 @@ export default {
             <VBtn variant="flat" color="error" @click="deleteUser">Benutzer löschen</VBtn>
         </VCardActions>
     </VCard>
-    <VDialog v-if="passwordChange.show_confirm_dialog">
-        <VCard>
-            <VCardTitle> Neues Passwort für {{ user.username }} </VCardTitle>
-            <VCardText>
-                Wollen Sie wirklich ein neues Passwort für {{ user.username }} generieren?
-                Das alte Passwort wird dadurch ungültig. Erstellen Sie nur dann ein neues
-                Passwort, wenn der Benutzer sein Passwort vergessen hat oder es
-                kompromittiert wurde.
-            </VCardText>
-            <VCardActions>
-                <VBtn
-                    color="primary"
-                    @click="changePassword"
-                    :loading="passwordChange.loading_new_password"
-                    >Passwort ändern</VBtn
-                >
-                <VBtn
-                    color="error"
-                    @click="cancelPasswordChange"
-                    :disabled="passwordChange.loading_new_password"
-                    >Abbrechen</VBtn
-                >
-            </VCardActions>
-        </VCard>
-    </VDialog>
-    <VDialog v-if="passwordChange.show_password">
+    <VDialog v-model="passwordChange.show_password">
         <VCard>
             <VCardTitle> Neues Passwort für {{ user.username }}: </VCardTitle>
             <VCardText>
