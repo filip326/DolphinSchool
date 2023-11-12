@@ -17,6 +17,7 @@ async function manyDummyUsers(amount: number): Promise<IUser[]> {
             type: i % 3 === 0 ? "student" : i % 3 === 1 ? "teacher" : "parent",
             password: await hash("testPassword", 10),
             permissions: 0,
+            changePasswordRequired: false,
         });
     }
     return users;
