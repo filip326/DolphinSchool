@@ -1,6 +1,13 @@
 <script lang="ts">
 import formatDate from "date-fns/format";
 export default {
+    async beforeCreate() {
+        await checkAuth({
+            redirectOnMfaRequired: true,
+            redirectOnPwdChange: true,
+            throwErrorOnNotAuthenticated: true,
+        });
+    },
     data(): {
         pushNotificationsPermission:
             | "granted" // we have permission to subscribe, if we are not subscribed yet
@@ -458,13 +465,17 @@ export default {
     <VCard v-if="debugMode">
         <VCardTitle>Debug-Buttons</VCardTitle>
         <VCardText>
-            <VBtn @click="debug(0)" color="primary">nicht unterstützt</VBtn><br />
-            <VBtn @click="debug(1)" color="primary">deaktiviert</VBtn><br />
-            <VBtn @click="debug(2)" color="primary">aktiviert</VBtn><br />
-            <VBtn @click="debug(3)" color="primary">nicht aktiviert</VBtn><br />
-            <VBtn @click="debug(4)" color="primary">auf anderem Gerät aktiviert</VBtn
-            ><br />
-            <VBtn @click="debug(5)" color="primary">Fehler beim Überprüfen</VBtn><br />
+            <VBtn @click="debug(0)" color="primary">nicht unterstützt</VBtn>
+            <br />
+            <VBtn @click="debug(1)" color="primary">deaktiviert</VBtn>
+            <br />
+            <VBtn @click="debug(2)" color="primary">aktiviert</VBtn>
+            <br />
+            <VBtn @click="debug(3)" color="primary">nicht aktiviert</VBtn>
+            <br />
+            <VBtn @click="debug(4)" color="primary">auf anderem Gerät aktiviert</VBtn>
+            <br />
+            <VBtn @click="debug(5)" color="primary">Fehler beim Überprüfen</VBtn>
         </VCardText>
     </VCard>
 </template>
