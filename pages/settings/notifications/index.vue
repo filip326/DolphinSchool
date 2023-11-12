@@ -158,11 +158,12 @@ export default {
             }
 
             // unsubscribe server-side
-            const response = await useFetch("/api/pushservice/subscribe", {
+            const response = await useFetch("/api/pushservice/subscription", {
                 method: "delete",
             });
             if (response.status.value === "success") {
                 this.pushNotificationSubscibtion = false;
+                this.dialogs.activation.show = false;
             }
         },
         async subscribe() {
@@ -413,7 +414,13 @@ export default {
                         </VCardText>
                         <VCardActions>
                             <VSpacer />
-                            <VBtn color="primary">
+                            <VBtn
+                                color="primary"
+                                @click="
+                                    dialogs.activation.state = 'enter_name';
+                                    dialogs.activation.show = false;
+                                "
+                            >
                                 <VIcon>mdi-check</VIcon>
                                 Schließen
                             </VBtn>
