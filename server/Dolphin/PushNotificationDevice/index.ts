@@ -9,18 +9,6 @@ import Setting from "../Settings";
 // }
 // webpush.setGCMAPIKey(process.env.GCM_API_KEY);
 
-let vapidKeys = await Setting.get<webpush.VapidKeys>("vapidKeys");
-if (!vapidKeys) {
-    vapidKeys = webpush.generateVAPIDKeys();
-    await Setting.set("vapidKeys", vapidKeys);
-}
-
-webpush.setVapidDetails(
-    useRuntimeConfig().public.DOMAIN,
-    vapidKeys.publicKey,
-    vapidKeys.privateKey,
-);
-
 type PushNotificationData = {
     endpoint: string;
     keys: {
@@ -39,6 +27,27 @@ interface IPrivatePushNotificationDevice {
 }
 
 class PushNotificationDevice implements WithId<IPrivatePushNotificationDevice> {
+    private static _ready: boolean = false;
+    static get ready(): boolean {
+        return PushNotificationDevice._ready;
+    }
+
+    static async initService() {
+        let vapidKeys = await Setting.get<webpush.VapidKeys>("vapidKeys");
+        if (!vapidKeys) {
+            vapidKeys = webpush.generateVAPIDKeys();
+            await Setting.set("vapidKeys", vapidKeys);
+        }
+
+        webpush.setVapidDetails(
+            "mailto:filip.paidar@grb-online.net",
+            vapidKeys.publicKey,
+            vapidKeys.privateKey,
+        );
+
+        PushNotificationDevice._ready = true;
+    }
+
     static async registerDevice(
         owner: ObjectId,
         pushData: PushNotificationData,
@@ -145,5 +154,7 @@ class PushNotificationDevice implements WithId<IPrivatePushNotificationDevice> {
         return new Date(this._id.getTimestamp().getTime() + 60 * 24 * 60 * 60 * 1000);
     }
 }
+
+PushNotificationDevice.initService();
 
 export default PushNotificationDevice;
