@@ -127,9 +127,15 @@ class PushNotificationDevice implements WithId<IPrivatePushNotificationDevice> {
         this.deviceName = options.deviceName;
     }
 
-    async sendPush(content: string): Promise<MethodResult<boolean>> {
+    async sendPush(content: {
+        title: string;
+        body: string;
+        icon?: string;
+        image?: string;
+        url?: string;
+    }): Promise<MethodResult<boolean>> {
         try {
-            await webpush.sendNotification(this.pushData, content, {
+            await webpush.sendNotification(this.pushData, JSON.stringify(content), {
                 TTL: 30, // 30 seconds
             });
             return [true, null];

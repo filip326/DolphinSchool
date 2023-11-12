@@ -1,6 +1,7 @@
 import PushNotificationDevice from "~/server/Dolphin/PushNotificationDevice";
 
 export default defineEventHandler(async (event) => {
+    console.log("request to register push device received");
     const { success, statusCode, user } = await event.context.auth.checkAuth();
     if (!success) {
         throw createError({
@@ -64,9 +65,10 @@ export default defineEventHandler(async (event) => {
                 fatal: true,
             });
         }
-        const [success] = await result.sendPush(
-            "Das ist ein Test. Falls dich diese Nachricht erreicht, wirst du in Zukunft über neue Nachrichten informiert.",
-        );
+        const [success] = await result.sendPush({
+            title: "Push-Benachrichtigungen aktiviert",
+            body: "Ab sofort erhälst du Push-Benachrichtigungen von DolphinSchool!",
+        });
         return {
             success: success ?? false,
         };
