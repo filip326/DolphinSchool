@@ -342,7 +342,7 @@ class EmailNotification implements WithId<IEMailNotification> {
         const lengthInBytes = lengthInBits / 8;
         const randomCodeBytes = randomBytes(Math.ceil(lengthInBytes));
         // convert to decimal string
-        const randomCodeString = randomCodeBytes.toString("hex");
+        const randomCodeString = randomCodeBytes.toString("hex").toUpperCase();
         return randomCodeString;
     }
 }
