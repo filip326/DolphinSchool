@@ -277,7 +277,8 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
         children: [
             { label: "Profil", location: "/settings/profile" },
             { label: "Passwort", location: "/settings/password" },
-            { label: "Benachrichtigungen", location: "/settings/notifications" },
+            { label: "E-Mails", location: "/settings/notifications/mail" },
+            { label: "Benachrichtigungen", location: "/settings/notifications/pushservice" },
         ],
     });
 
