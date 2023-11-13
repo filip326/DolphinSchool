@@ -105,9 +105,9 @@ class EmailNotification implements WithId<IEMailNotification> {
         this._id = data._id;
         this.owner = data.owner;
         this.email = data.email;
-        this.unsubscribeCode = data.verificationCode;
         this.verified = data.verified;
-        this.verificationCode = data.unsubscribeCode;
+        this.unsubscribeCode = data.unsubscribeCode;
+        this.verificationCode = data.verificationCode;
         this.verificationAttempts = data.verificationAttempts;
     }
 
@@ -267,7 +267,9 @@ class EmailNotification implements WithId<IEMailNotification> {
         const dolphin = Dolphin.instance || (await Dolphin.init(useRuntimeConfig()));
         const collection =
             dolphin.database.collection<IEMailNotification>("email_notifications");
+        console.log("verifying email address", code, this.verificationCode);
         if (code === this.verificationCode) {
+            console.log("✅ successfully verified email address");
             // code is correct
             const result = await collection.findOneAndUpdate(
                 { _id: this._id },
@@ -346,6 +348,8 @@ class EmailNotification implements WithId<IEMailNotification> {
         return randomCodeString;
     }
 }
+
+EmailNotification.initService();
 
 export default EmailNotification;
 export { IEMailNotification };

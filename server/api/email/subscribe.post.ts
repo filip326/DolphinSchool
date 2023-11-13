@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // check email against regex
-    const emailRegex = /^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         throw createError({
             statusMessage: "Bad request",

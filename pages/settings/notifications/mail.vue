@@ -108,8 +108,6 @@ export default {
                 this.error.show = true;
                 this.error.message = "Fehler beim Abonnieren der E-Mails";
             }
-
-            this.mailingAdress = "";
         },
         async unsubscribe() {
             const response = await useFetch("/api/email/subscribtion", {
@@ -118,6 +116,8 @@ export default {
 
             if (response.status.value === "success") {
                 this.status = "not-subscribed";
+                this.mailingAdress = "";
+                this.repeatMailingAdress = "";
             } else {
                 this.error.show = true;
                 this.error.message = "Fehler beim Abbestellen der E-Mails";
@@ -139,9 +139,9 @@ export default {
                 this.status = "subscribed";
             } else {
                 this.error.show = true;
-                this.error.message = "Fehler beim Verifizieren der E-Mail Adresse";
+                this.error.message = "Fehler beim Verifizieren der E-Mail Adresse.";
                 if (response.data.value?.newCodeCreated) {
-                    this.error.message += `\nSie haben die maximale Anzahl an Versuchen erreicht. Es wurde ein neuer Code erstellt und Ihnen per E-Mail an ${this.mailingAdress}zugesandt.`;
+                    this.error.message += ` Sie haben die maximale Anzahl an Versuchen erreicht. Es wurde ein neuer Code erstellt und Ihnen per E-Mail an ${this.mailingAdress}zugesandt.`;
                 }
             }
 
@@ -181,16 +181,24 @@ export default {
             <VTextField readonly label="E-Mail Adresse" v-model="mailingAdress" />
             <VBtn color="primary" @click="unsubscribe">Abbestellen</VBtn>
         </VCardText>
-        <VCardText v-else-if="status === 'verification-pending'">
+        <VCardText v-else-if="status === 'verification-pending'" class="check-result">
             <VIcon color="success">mdi-check</VIcon>
             <span>
                 Wir haben Ihnen eine E-Mail an {{ mailingAdress }} gesendet. Bitte geben
                 Sie den 6-stelligen Code aus der E-Mail ein.
             </span>
             <VTextField
+                label="Ihre E-Mail Adresse"
+                v-model="mailingAdress"
+                readonly
+                class="full-width"
+            />
+            <VTextField
                 label="Code"
                 v-model="verificationCode"
                 @input="verificationCode = verificationCode.toUpperCase()"
+                class="full-width"
+                :rules="[rules.haxadecimal, rules.sixDigits]"
             />
             <VBtn
                 color="primary"
@@ -198,6 +206,7 @@ export default {
                     verificationCode.length !== 6 ||
                     !verificationCode.match(/^[0-9A-F]+$/)
                 "
+                @click="verify"
             >
                 Bestätigen
             </VBtn>
@@ -252,5 +261,9 @@ export default {
     gap: 10px;
     padding: 20px;
     text-align: center;
+}
+
+.full-width {
+    width: 100%;
 }
 </style>
