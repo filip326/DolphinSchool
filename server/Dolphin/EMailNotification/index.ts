@@ -111,7 +111,10 @@ class EmailNotification implements WithId<IEMailNotification> {
         this.verificationAttempts = data.verificationAttempts;
     }
 
-    static async subscribe(user: ObjectId, email: string) {
+    static async subscribe(
+        user: ObjectId,
+        email: string,
+    ): Promise<MethodResult<EmailNotification>> {
         if (!EmailNotification.ready) {
             await EmailNotification.initService();
         }
@@ -122,6 +125,44 @@ class EmailNotification implements WithId<IEMailNotification> {
         if (existing) {
             return existing.changeEmail(email);
         }
+
+        // check email against regex
+        if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+        }
+
+        // generate verification code
+        const verificationCode = EmailNotification.generateVerificationCode(6);
+        const unsubscribeCode = EmailNotification.generateVerificationCode(25);
+        const dolphin = Dolphin.instance || (await Dolphin.init(useRuntimeConfig()));
+        const collection =
+            dolphin.database.collection<IEMailNotification>("email_notifications");
+        const result = await collection.insertOne({
+            owner: user,
+            email,
+            verified: false,
+            verificationCode,
+            unsubscribeCode,
+            verificationAttempts: 0,
+        });
+        if (!result.insertedId) {
+            return [undefined, DolphinErrorTypes.FAILED];
+        }
+
+        // TODO: send verification email
+
+        return [
+            new EmailNotification({
+                _id: result.insertedId,
+                owner: user,
+                email,
+                verified: false,
+                verificationCode,
+                unsubscribeCode,
+                verificationAttempts: 0,
+            }),
+            null,
+        ];
     }
 
     static async getByUser(owner: ObjectId): Promise<MethodResult<EmailNotification>> {
