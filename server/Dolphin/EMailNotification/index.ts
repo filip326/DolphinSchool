@@ -9,6 +9,7 @@ import {
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import Dolphin from "../Dolphin";
+import { randomBytes } from "crypto";
 
 const transporterOptions = {
     host: "smtp.ethereal.email",
@@ -39,7 +40,10 @@ interface IEMailNotification {
     verified: boolean; // whether the email address has been verified
     verificationCode: string; // the verification code sent to the email address
     unsubscribeCode: string; // the code to unsubscribe from the notification ://domain/notifications/unsubscribe?code=code
-    // used so users can unsubscribe from notifications easily
+    // used so users can unsubscribe from notifications
+
+    verificationAttempts: number; // the number of times the user has tried to verify the email address
+    // after 3 attempts, the code is reset and a new one is generated
 }
 
 class EmailNotification implements WithId<IEMailNotification> {
@@ -95,6 +99,7 @@ class EmailNotification implements WithId<IEMailNotification> {
     verified: boolean = false;
     verificationCode: string;
     unsubscribeCode: string = "";
+    verificationAttempts: number = 0;
 
     private constructor(data: WithId<IEMailNotification>) {
         this._id = data._id;
@@ -103,6 +108,7 @@ class EmailNotification implements WithId<IEMailNotification> {
         this.unsubscribeCode = data.verificationCode;
         this.verified = data.verified;
         this.verificationCode = data.unsubscribeCode;
+        this.verificationAttempts = data.verificationAttempts;
     }
 
     static async subscribe(user: ObjectId, email: string) {
@@ -112,9 +118,9 @@ class EmailNotification implements WithId<IEMailNotification> {
 
         // check if the user is already subscribed
         // if so, overwrite the last email
-        const [ existing ] = await EmailNotification.getByUser(user);
+        const [existing] = await EmailNotification.getByUser(user);
         if (existing) {
-
+            return existing.changeEmail(email);
         }
     }
 
@@ -147,14 +153,14 @@ class EmailNotification implements WithId<IEMailNotification> {
             return [undefined, DolphinErrorTypes.FAILED];
         }
         try {
-            const result = await EmailNotification.transporter.sendMail(mail);
+            await EmailNotification.transporter.sendMail(mail);
             return [true, null];
         } catch (err) {
             return [undefined, DolphinErrorTypes.FAILED];
         }
     }
 
-    async changeEmail(email: string) {
+    async changeEmail(email: string): Promise<MethodResult<EmailNotification>> {
         if (!EmailNotification.ready) {
             await EmailNotification.initService();
         }
@@ -172,10 +178,109 @@ class EmailNotification implements WithId<IEMailNotification> {
             return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
         }
 
-        // now 
+        // now we can change the email
+        // it is important to change the verification status to false
+        // also, we need to generate a new verification code
+        const verificationCode = EmailNotification.generateVerificationCode(6);
+        const unsubscribeCode = EmailNotification.generateVerificationCode(25);
+        const dolphin = Dolphin.instance || (await Dolphin.init(useRuntimeConfig()));
+        const collection =
+            dolphin.database.collection<IEMailNotification>("email_notifications");
+        const result = await collection.findOneAndUpdate(
+            { _id: this._id },
+            {
+                $set: {
+                    email,
+                    verified: false,
+                    verificationCode,
+                    unsubscribeCode,
+                },
+            },
+        );
+        if (!result.value) {
+            return [undefined, DolphinErrorTypes.FAILED];
+        }
+        this.email = email;
+        this.verified = false;
+        this.verificationCode = verificationCode;
+        this.unsubscribeCode = unsubscribeCode;
+
+        // TODO: send verification email
+
+        return [this, null];
+    }
+
+    async verifiy(code: string): Promise<MethodResult<boolean>> {
+        const dolphin = Dolphin.instance || (await Dolphin.init(useRuntimeConfig()));
+        const collection =
+            dolphin.database.collection<IEMailNotification>("email_notifications");
+        if (code === this.verificationCode) {
+            // code is correct
+            const result = await collection.findOneAndUpdate(
+                { _id: this._id },
+                {
+                    $set: {
+                        verified: true,
+                    },
+                },
+            );
+            if (!result.value) {
+                return [undefined, DolphinErrorTypes.FAILED];
+            }
+            this.verified = true;
+            return [true, null];
+        }
+        // code is incorrect
+        // increment the number of verification attempts
+        const result = await collection.findOneAndUpdate(
+            { _id: this._id },
+            {
+                $inc: {
+                    verificationAttempts: 1,
+                },
+            },
+        );
+        if (!result.value) {
+            return [undefined, DolphinErrorTypes.FAILED];
+        }
+        this.verificationAttempts++;
+        if (this.verificationAttempts >= 3) {
+            // reset the verification code
+            const verificationCode = EmailNotification.generateVerificationCode(6);
+            const result = await collection.findOneAndUpdate(
+                { _id: this._id },
+                {
+                    $set: {
+                        verificationCode,
+                        verificationAttempts: 0,
+                    },
+                },
+            );
+            if (!result.value) {
+                return [undefined, DolphinErrorTypes.FAILED];
+            }
+            this.verificationCode = verificationCode;
+            this.verificationAttempts = 0;
+            // TODO: send new verification email
+        }
+
+        return [false, null];
+    }
+
+    private static generateVerificationCode(length: number = 6): string {
+        // cryptographically secure random string
+        // code should be 6 characters long and be hexadecimal
+        // one hexadecimal character is 4 bits
+        // 6 * 4 = 24 bits
+        // 24 bits / 8 bits = 3 bytes
+        const lengthInBits = length * 4;
+        const lengthInBytes = lengthInBits / 8;
+        const randomCodeBytes = randomBytes(Math.ceil(lengthInBytes));
+        // convert to decimal string
+        const randomCodeString = randomCodeBytes.toString("hex");
+        return randomCodeString;
     }
 }
 
 export default EmailNotification;
 export { IEMailNotification };
-
