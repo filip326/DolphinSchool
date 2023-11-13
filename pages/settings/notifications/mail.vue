@@ -184,7 +184,7 @@ export default {
         <VCardText v-else-if="status === 'verification-pending'" class="check-result">
             <VIcon color="success">mdi-check</VIcon>
             <span>
-                Wir haben Ihnen eine E-Mail an {{ mailingAdress }} gesendet. Bitte geben
+                Wir haben Ihnen eine E-Mail an {{ mailingAdress ?? "Ihre E-Mail Adresse" }} gesendet. Bitte geben
                 Sie den 6-stelligen Code aus der E-Mail ein.
             </span>
             <VTextField
