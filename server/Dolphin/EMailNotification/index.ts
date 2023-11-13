@@ -180,6 +180,18 @@ class EmailNotification implements WithId<IEMailNotification> {
         return [new EmailNotification(result), null];
     }
 
+    static async unsubscribe(code: string): Promise<MethodResult<boolean>> {
+        const dolphin = Dolphin.instance || (await Dolphin.init(useRuntimeConfig()));
+        const collection =
+            dolphin.database.collection<IEMailNotification>("email_notifications");
+
+        const result = await collection.deleteOne({ unsubscribeCode: code });
+        if (result.deletedCount === 0) {
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
+        }
+        return [true, null];
+    }
+
     async sendMail(
         mail: SendMailOptions,
         ignoreVerification: boolean = false,
@@ -306,6 +318,18 @@ class EmailNotification implements WithId<IEMailNotification> {
         }
 
         return [false, null];
+    }
+
+    async unsubscribe(): Promise<MethodResult<boolean>> {
+        const dolphin = Dolphin.instance || (await Dolphin.init(useRuntimeConfig()));
+        const collection =
+            dolphin.database.collection<IEMailNotification>("email_notifications");
+        // TODO: send email to confirm unsubscribe
+        const result = await collection.deleteOne({ _id: this._id });
+        if (result.deletedCount === 0) {
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
+        }
+        return [true, null];
     }
 
     private static generateVerificationCode(length: number = 6): string {
