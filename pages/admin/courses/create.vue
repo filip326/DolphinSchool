@@ -26,6 +26,9 @@ export default {
             error: "",
         };
     },
+    async beforeMount() {
+        await this.fetchSubjects();
+    },
     methods: {
         async createCourse() {
             const response = await useFetch("/api/admin/courses", {
@@ -47,8 +50,8 @@ export default {
             }
 
             this.options.subjects = response.data.value!.map((subject) => ({
-                name: subject.longName,
-                id: subject._id,
+                name: subject.name,
+                id: subject.id,
             }));
         },
     },
@@ -71,7 +74,6 @@ export default {
                     item-title="name"
                     item-value="id"
                     label="Fach"
-                    :hint="`${course.subject}`"
                     required
                 ></VSelect>
                 <!-- todo: teacher form-->

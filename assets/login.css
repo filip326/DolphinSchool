@@ -51,11 +51,23 @@ button[type="submit"] {
 }
 
 @media screen and (max-width: 800px) {
+    .login-wrapper {
+        display: block;
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        user-select: none;
+        top: 0;
+        left: 0;
+        position: relative;
+        z-index: 1;
+    }
+
     .loginform {
         position: relative;
         right: 0;
         top: 0;
-        translate: 0 50%;
 
         transform: none;
         display: flex;

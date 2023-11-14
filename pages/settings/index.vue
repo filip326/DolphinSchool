@@ -9,10 +9,16 @@ export default {
     },
     data() {
         return {
-            settings: Array<{ name: string; link: string }>({
-                name: "Sicherheit",
-                link: "/settings/security",
-            }),
+            settings: Array<{ name: string; link: string }>(
+                {
+                    name: "Sicherheit",
+                    link: "/settings/security",
+                },
+                {
+                    name: "Benachrichtigungen",
+                    link: "/settings/notifications",
+                },
+            ),
         };
     },
 };

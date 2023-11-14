@@ -268,5 +268,19 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
         });
     }
 
+    // add a settings navbar
+
+    navbar.push({
+        icon: "mdi-cog",
+        label: "Einstellungen",
+        location: "/settings",
+        children: [
+            { label: "Profil", location: "/settings/profile" },
+            { label: "Passwort", location: "/settings/password" },
+            { label: "E-Mails", location: "/settings/notifications/mail" },
+            { label: "Benachrichtigungen", location: "/settings/notifications/push" },
+        ],
+    });
+
     return navbar;
 });
