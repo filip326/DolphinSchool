@@ -43,9 +43,6 @@ export default {
             console.log(val);
             this.teacherId = val;
         },
-        setUserIds(val: string[]) {
-            this.userIds = val;
-        },
         validateClassNameSek1(v: string): boolean | string {
             if (!v.startsWith(this.year.toString())) {
                 return "Klassennamen in der Sekundarstufe 1 müssen mit Jahrgangsstufe beginnen";
@@ -118,9 +115,8 @@ export default {
             <VCardText>
                 Hier können Schüler:innen hinzugefügt werden. Dies können Sie auch später
                 tun.
-                <SearchUser label="Schüler:innen" @user-ids="setUserIds" />
+                <SearchUser label="Schüler:innen" v-model="userIds" />
             </VCardText>
-            <VAlert v-if="error.shown" type="error" title="Error" :text="error.msg" />
             <VCardActions>
                 <VBtn type="submit" color="primary">
                     <template v-if="typeof year === 'number'">Klasse erstellen</template>
@@ -129,4 +125,16 @@ export default {
             </VCardActions>
         </VCard>
     </VForm>
+    <VDialog
+        v-model="error.shown"
+        @click:outside="error.shown = false"
+        @keydown.esc="error.shown = false"
+    >
+        <VCard>
+            <VCardTitle> Fehler </VCardTitle>
+            <VCardText> {{ error.msg }} </VCardText>
+        </VCard>
+
+        <VBtn color="primary" @click="error.shown = false"> Schließen </VBtn>
+    </VDialog>
 </template>
