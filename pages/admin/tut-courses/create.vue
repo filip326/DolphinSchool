@@ -103,7 +103,7 @@ export default {
                     :rules="[rules.required]"
                     @update:model-value="sek1.className = year.toString()"
                 ></VSelect>
-                <SearchUser label="Lehrkraft" :limit="1" @modelValue="setTeacherId" />
+                <SearchUser label="Lehrkraft" :limit="1" @user-ids="setTeacherId" />
                 <template v-if="typeof year === 'number' && year < 11">
                     <VTextField
                         label="Klassenname"
