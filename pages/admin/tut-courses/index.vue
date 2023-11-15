@@ -78,7 +78,7 @@ export default {
             <VBtn
                 title="create user"
                 link
-                href="/admin/tut-courses/create"
+                to="/admin/tut-courses/create"
                 prepend-icon="mdi-plus"
                 color="primary"
             >
