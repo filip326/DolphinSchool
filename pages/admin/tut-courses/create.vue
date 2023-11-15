@@ -122,7 +122,10 @@ export default {
             </VCardText>
             <VAlert v-if="error.shown" type="error" title="Error" :text="error.msg" />
             <VCardActions>
-                <VBtn type="submit" color="primary"> Klasse erstellen </VBtn>
+                <VBtn type="submit" color="primary">
+                    <template v-if="typeof year === 'number'">Klasse erstellen</template>
+                    <template v-else>Tutorkurs erstellen</template>
+                </VBtn>
             </VCardActions>
         </VCard>
     </VForm>
