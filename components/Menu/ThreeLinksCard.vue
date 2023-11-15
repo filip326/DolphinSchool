@@ -29,7 +29,7 @@ export default {
                 width="100%"
                 v-for="link in links"
                 :key="link.href"
-                :href="link.href"
+                :to="link.href"
                 variant="outlined"
                 >{{ link.text }}</VBtn
             >
