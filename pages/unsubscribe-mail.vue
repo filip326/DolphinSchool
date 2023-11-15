@@ -1,1 +1,2 @@
 <!-- TODO -->
+<template>Hi!</template>

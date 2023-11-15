@@ -10,6 +10,8 @@ import SMTPTransport from "nodemailer/lib/smtp-transport";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import Dolphin from "../Dolphin";
 import { randomBytes } from "crypto";
+import VerificationCodeEmail from "./templates/VerificationCodeEmail";
+import User from "../User/User";
 
 const transporterOptions = {
     host: "smtp.ethereal.email",
@@ -76,6 +78,8 @@ class EmailNotification implements WithId<IEMailNotification> {
                     pass: testAccount.pass,
                 },
             };
+            console.info("Test account credentials: ");
+            console.table([{ user: testAccount.user, pass: testAccount.pass }]);
         } else {
             EmailNotification.tranportOptions = {
                 host: process.env.HOST,
@@ -149,20 +153,36 @@ class EmailNotification implements WithId<IEMailNotification> {
             return [undefined, DolphinErrorTypes.FAILED];
         }
 
-        // TODO: send verification email
+        const [userObj, err] = await User.getUserById(user);
+        if (err) {
+            return [undefined, err];
+        }
+        const verificationCodeEmail = new VerificationCodeEmail(
+            userObj,
+            verificationCode,
+            unsubscribeCode,
+        );
 
-        return [
-            new EmailNotification({
-                _id: result.insertedId,
-                owner: user,
-                email,
-                verified: false,
-                verificationCode,
-                unsubscribeCode,
-                verificationAttempts: 0,
-            }),
-            null,
-        ];
+        const emailNotificationService = new EmailNotification({
+            _id: result.insertedId,
+            owner: user,
+            email,
+            verified: false,
+            verificationCode,
+            unsubscribeCode,
+            verificationAttempts: 0,
+        });
+
+        emailNotificationService.sendMail(
+            {
+                subject: "Verifiziere deine E-Mail Adresse",
+                text: verificationCodeEmail.toText(),
+                html: verificationCodeEmail.toHtml(),
+            },
+            true,
+        );
+
+        return [emailNotificationService, null];
     }
 
     static async getByUser(owner: ObjectId): Promise<MethodResult<EmailNotification>> {
@@ -193,7 +213,7 @@ class EmailNotification implements WithId<IEMailNotification> {
     }
 
     async sendMail(
-        mail: SendMailOptions,
+        mail: Omit<SendMailOptions, "to">,
         ignoreVerification: boolean = false,
     ): Promise<MethodResult<boolean>> {
         if (!EmailNotification.ready) {
@@ -206,9 +226,19 @@ class EmailNotification implements WithId<IEMailNotification> {
             return [undefined, DolphinErrorTypes.FAILED];
         }
         try {
-            await EmailNotification.transporter.sendMail(mail);
+            console.log("Sending mail to " + this.email);
+            console.log(mail);
+            const data = await EmailNotification.transporter.sendMail({
+                text: mail.text,
+                html: mail.html,
+                subject: mail.subject,
+                to: this.email,
+            });
+            console.log("send mail", data.response);
+            console.log(data);
             return [true, null];
         } catch (err) {
+            console.log("Failed to send mail to " + this.email);
             return [undefined, DolphinErrorTypes.FAILED];
         }
     }
@@ -258,7 +288,24 @@ class EmailNotification implements WithId<IEMailNotification> {
         this.verificationCode = verificationCode;
         this.unsubscribeCode = unsubscribeCode;
 
-        // TODO: send verification email
+        const [userObj, err] = await User.getUserById(this.owner);
+        if (err) {
+            return [undefined, err];
+        }
+        const verificationCodeEmail = new VerificationCodeEmail(
+            userObj,
+            verificationCode,
+            unsubscribeCode,
+        );
+
+        this.sendMail(
+            {
+                subject: "Verifiziere deine E-Mail Adresse",
+                text: verificationCodeEmail.toText(),
+                html: verificationCodeEmail.toHtml(),
+            },
+            true,
+        );
 
         return [this, null];
     }
@@ -315,6 +362,24 @@ class EmailNotification implements WithId<IEMailNotification> {
             this.verificationCode = verificationCode;
             this.verificationAttempts = 0;
             // TODO: send new verification email
+            const [userObj, err] = await User.getUserById(this.owner);
+            if (err) {
+                return [undefined, err];
+            }
+            const verificationCodeEmail = new VerificationCodeEmail(
+                userObj,
+                verificationCode,
+                this.unsubscribeCode,
+            );
+
+            this.sendMail(
+                {
+                    subject: "Verifiziere deine E-Mail Adresse",
+                    text: verificationCodeEmail.toText(),
+                    html: verificationCodeEmail.toHtml(),
+                },
+                true,
+            );
         }
 
         return [false, null];
