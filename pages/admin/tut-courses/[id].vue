@@ -51,8 +51,21 @@ export default {
     <VCard v-if="course">
         <VCardTitle>Tut-Kurs/ Klasse {{ course.name }}</VCardTitle>
         <VCardText>
-            <!-- todo -->
-            <SearchUser label="Schüler:innen" :preUsersId="course.students" />
+            <h3>Lehrkraft</h3>
+            <VTextField
+                label="Klassenlehrkraft / Tutor"
+                v-model="course.teacher"
+                readonly
+                appendInnerIcon="mdi-pencil"
+            />
+            <VTextField
+                label="Stellvertretende Lehrkraft"
+                v-model="course.viceTeacher"
+                readonly
+                appendInnerIcon="mdi-pencil"
+            />
+
+            <VDivider />
         </VCardText>
         <VCardActions>
             <VBtn variant="flat" link to="/admin/tut-courses" color="primary">
