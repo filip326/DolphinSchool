@@ -1,5 +1,7 @@
+import { ObjectId } from "mongodb";
 import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
+import User from "~/server/Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {
     const { success, statusCode } = await event.context.auth.checkAuth({
@@ -67,10 +69,34 @@ export default defineEventHandler(async (event) => {
     // teacher: string;
     // student_count: number; }[]
 
-    return courses.map((course) => ({
+    const returnableArray = courses.map((course) => ({
         name: course.name,
         id: course._id.toHexString(),
-        teacher: course.teacher,
+        teacher: course.teacher as ObjectId | string,
         student_count: course.students.length,
     }));
+
+    // now replace all teacher ids with their names
+    await Promise.all(
+        returnableArray.map(
+            (v) =>
+                new Promise<void>(async (resolve) => {
+                    const [teacher, teacherFindError] = await User.getUserById(
+                        v.teacher as ObjectId,
+                    );
+                    if (teacherFindError) {
+                        resolve();
+                        // we don't want to throw an error here
+                        // because we want to return the courses
+                        // even if the teacher is not found
+                        // in worst case, there will be no teacher name for that course
+                        return;
+                    }
+                    v.teacher = teacher.fullName ?? "No Teacher";
+                    return resolve();
+                }),
+        ),
+    );
+
+    return returnableArray;
 });
