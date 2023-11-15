@@ -52,6 +52,7 @@ export default {
         <VCardTitle>Tut-Kurs/ Klasse {{ course.name }}</VCardTitle>
         <VCardText>
             <!-- todo -->
+            <SearchUser label="Schüler:innen" :preUsersId="course.students" />
         </VCardText>
         <VCardActions>
             <VBtn variant="flat" link to="/admin/tut-courses" color="primary">

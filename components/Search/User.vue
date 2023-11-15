@@ -9,6 +9,10 @@ export default {
             type: Number,
             required: false,
         },
+        preUsersId: {
+            type: Array<string>,
+            required: false,
+        },
     },
     data(): {
         searchQuery: string;
@@ -29,6 +33,29 @@ export default {
         };
     },
     async beforeMount() {
+        if (!this.preUsersId) return;
+
+        this.preUsersId.forEach(async (id) => {
+            const response = await useFetch("/api/search/byid", {
+                method: "GET",
+                params: {
+                    search: id,
+                },
+            });
+            if (response.status.value !== "success") {
+                return;
+            }
+
+            this.autocompleteItems.push({
+                label: response.data.value.label,
+                id: response.data.value.id,
+            });
+        });
+
+        // filter out duplicates
+        this.autocompleteItems = this.autocompleteItems.filter(
+            (item, index, self) => index === self.findIndex((t) => t.id === item.id),
+        );
     },
     methods: {
         clearSearchOptionsAfterSelect() {
