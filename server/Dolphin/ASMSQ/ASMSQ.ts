@@ -122,8 +122,8 @@ class ASMSQ {
         }
         const [courses, coursesFindError] = await TutCourse.searchTutCourseByName(
             courseQuery,
-            5,
             0,
+            5,
         );
         if (coursesFindError) {
             return [undefined, coursesFindError];
@@ -178,4 +178,4 @@ class ASMSQ {
 }
 
 export default ASMSQ;
-export { ASMSQResponseTypes, ParsedASMSQResult };
+export { ParsedASMSQResult };
