@@ -46,4 +46,17 @@ export default {
 };
 </script>
 
-<template>Test</template>
+<template>
+    <VAlert v-if="error.show" title="Fehler" type="error" :text="error.message" />
+    <VCard v-if="course">
+        <VCardTitle>Tut-Kurs/ Klasse {{ course.name }}</VCardTitle>
+        <VCardText>
+            <!-- todo -->
+        </VCardText>
+        <VCardActions>
+            <VBtn variant="flat" link to="/admin/tut-courses" color="primary">
+                Zurück
+            </VBtn>
+        </VCardActions>
+    </VCard>
+</template>
