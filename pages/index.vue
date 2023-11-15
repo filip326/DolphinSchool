@@ -69,6 +69,9 @@ export default {
                 default:
                     this.error.shown = true;
                     this.error.message = "Login fehlgeschlagen";
+
+                    this.username = "";
+                    this.pwd = "";
                     break;
             }
         },
@@ -175,14 +178,21 @@ export default {
 </script>
 
 <template>
+    <VDialog
+        v-model="error.shown"
+        @click:outside="error.shown = false"
+        @key.down.esc="error.shown = false"
+    >
+        <VCard>
+            <VCardTitle class="headline">Fehler</VCardTitle>
+            <VCardText>{{ error.message }}</VCardText>
+            <VCardActions>
+                <VBtn color="primary" @click="error.shown = false">Schließen</VBtn>
+            </VCardActions>
+        </VCard>
+    </VDialog>
     <div class="loginform">
         <VForm @submit.prevent="login">
-            <VAlert
-                v-if="error.shown"
-                type="error"
-                variant="text"
-                :text="error.message"
-            />
             <h1>Login</h1>
             <VBtn
                 v-if="passwordless.localAvaible"
