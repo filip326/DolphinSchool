@@ -2,12 +2,12 @@ import User from "../../User/User";
 import ITemplate from "./ITemplate";
 
 class VerificationCodeEmail implements ITemplate {
-    usersFullName: string;
+    userFullName: string;
     verificationCode: string;
     unsubscribeCode: string;
 
     constructor(user: User, verificationCode: string, unsubscribeCode: string) {
-        this.usersFullName = user.fullName;
+        this.userFullName = user.fullName;
         this.verificationCode = verificationCode;
         this.unsubscribeCode = unsubscribeCode;
     }

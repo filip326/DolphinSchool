@@ -1,6 +1,6 @@
 const domain = useRuntimeConfig().public.DOMAIN;
 
-function surround(content: string, unsubscribeLink: string) {
+function surroundHtml(content: string, unsubscribeLink: string) {
     return `<!DOCTYPE html>
 <html lang="de">
     <head>
@@ -55,4 +55,12 @@ function surround(content: string, unsubscribeLink: string) {
 `;
 }
 
-export default surround;
+function surroundText(content: string, unsubscribeLink: string) {
+    return `${content}
+---
+DolphinSchool
+Diese E-Mail wurde automatisch generiert. Du möchtest keine weiteren E-Mails von uns erhalten? Hier abmelden: https://${domain}/ubsubscribe-mail?code=${unsubscribeLink}
+`;
+}
+
+export { surroundHtml, surroundText };
