@@ -1,4 +1,5 @@
 import ASMSQ from "~/server/Dolphin/ASMSQ/ASMSQ";
+import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 
 export default eventHandler(async (event) => {
     const checkAuthResult = await event.context.auth.checkAuth();
@@ -12,7 +13,10 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 400, message: "Bad Request" });
     }
 
-    const [result, error] = await ASMSQ.suggest(query.toString());
+    const [result, error] = await ASMSQ.suggest(
+        query.toString(),
+        checkAuthResult.user.hasPermission(Permissions.ASMSQ_HERO),
+    );
 
     if (error) {
         throw createError({ statusCode: 404, message: "Not Found" });
@@ -20,4 +24,3 @@ export default eventHandler(async (event) => {
 
     return result;
 });
-
