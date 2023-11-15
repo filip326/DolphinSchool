@@ -149,8 +149,8 @@ class ASMSQ {
         // next, check if query could be a course (not tut course) name
         const [courses2, coursesFindError2] = await Course.searchCourseByName(
             courseQuery,
-            5,
             0,
+            5,
         );
         if (coursesFindError2) {
             return [undefined, coursesFindError2];
