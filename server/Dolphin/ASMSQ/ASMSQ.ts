@@ -86,23 +86,24 @@ class ASMSQ {
                                 return;
                             }
                             result.push({
-                                label: `${user.fullName} (${tutCourse.name})`,
-                                value: `user:${user._id}`,
+                                label: `${user.fullName} (Schüler:in, ${tutCourse.name})`,
+                                value: `user:${user._id.toHexString()}`,
                             });
+                            resolve();
                         } else if (user.isTeacher() && user.kuerzel) {
                             result.push({
                                 label: `${user.fullName} (Lehrkraft, ${user.kuerzel})`,
-                                value: `user:${user._id}`,
+                                value: `user:${user._id.toHexString()}`,
                             });
                         } else if (user.isTeacher()) {
                             result.push({
                                 label: `${user.fullName} (Lehrkraft)`,
-                                value: `user:${user._id}`,
+                                value: `user:${user._id.toHexString()}`,
                             });
                         } else {
                             result.push({
                                 label: `${user.fullName}`,
-                                value: `user:${user._id}`,
+                                value: `user:${user._id.toHexString()}`,
                             });
                         }
                     }),
