@@ -8,8 +8,8 @@ definePageMeta({
 export default {
     data() {
         return {
-            username: "" as string,
-            pwd: "" as string,
+            username: "",
+            pwd: "",
             error: {
                 shown: false,
                 message: "",
@@ -42,15 +42,34 @@ export default {
     },
     methods: {
         async login() {
-            const response = await useFetch("/api/auth/login", {
+            console.log("login method called", this.username, this.pwd);
+            console.log(
+                new Uint8Array(
+                    await crypto.subtle.digest(
+                        "sha-256",
+                        new TextEncoder().encode(`${this.username}:${this.pwd}`),
+                    ),
+                ).toString(),
+            );
+            let response = await useFetch("/api/auth/login", {
                 method: "POST",
-                body: JSON.stringify({
+                body: {
                     username: this.username,
                     password: this.pwd,
-                }),
+                },
+                cache: "no-cache",
+                lazy: false,
+                key: new Uint8Array(
+                    await crypto.subtle.digest(
+                        "sha-256",
+                        new TextEncoder().encode(`${this.username}:${this.pwd}`),
+                    ),
+                ).toString(),
             });
 
             if (response.status.value === "error") {
+                this.username = "";
+                this.pwd = "";
                 this.error.shown = true;
                 this.error.message = "Login fehlgeschlagen";
                 return;
@@ -67,11 +86,10 @@ export default {
                     navigateTo("/setup/totp");
                     break;
                 default:
-                    this.error.shown = true;
-                    this.error.message = "Login fehlgeschlagen";
-
                     this.username = "";
                     this.pwd = "";
+                    this.error.shown = true;
+                    this.error.message = "Login fehlgeschlagen";
                     break;
             }
         },
@@ -192,7 +210,7 @@ export default {
         </VCard>
     </VDialog>
     <div class="loginform">
-        <VForm @submit.prevent="login">
+        <VForm>
             <h1>Login</h1>
             <VBtn
                 v-if="passwordless.localAvaible"
@@ -215,7 +233,13 @@ export default {
                 placeholder="P@55w0rt"
                 hint="Geben Sie hier Ihr Passwort ein."
             ></VTextField>
-            <VBtn type="submit" size="large" variant="outlined">Einloggen</VBtn>
+            <VBtn
+                @click="login"
+                :disabled="!username || !pwd"
+                size="large"
+                variant="outlined"
+                >Einloggen</VBtn
+            >
             <NuxtLink to="/support">Ich kann mich nicht einloggen</NuxtLink>
         </VForm>
         <div class="only-on-pc">
@@ -226,7 +250,7 @@ export default {
                 variant="text"
                 text="passwordless funktioniert nur, wenn Sie es zuvor eingerichtet haben!"
             />
-            <VAler
+            <VAlert
                 v-else
                 type="error"
                 variant="text"
