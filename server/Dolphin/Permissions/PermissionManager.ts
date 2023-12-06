@@ -14,6 +14,7 @@ enum Permissions {
     SEND_MAIL = 1 << 12,
     CHANGE_USER_PASSWORD = 1 << 13,
     ASMSQ_HERO = 1 << 14,
+    VIEW_ALL_WIKIS = 1 << 15,
 }
 
 function isAdminLevelPermission(permission: Permissions) {
