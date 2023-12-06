@@ -62,14 +62,14 @@ class WikiSpace implements WithId<IWikiSpace> {
                 .replace(/[^A-Za-z0-9-]/g, "")
                 .substring(0, 20)}-${randomString(6)}`; // add a random string of 6 characters to avoid conflicts
             const existsCheck = collection.findOne({ url });
-            if (existsCheck !== undefined) {
+            if (!existsCheck) {
                 exists = true;
             } else {
                 exists = false;
             }
         } while (exists && tries < 10);
         if (exists) {
-            return [undefined, DolphinErrorTypes.FAILED];
+            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
         }
 
         const space: IWikiSpace = {
@@ -156,7 +156,7 @@ class WikiSpace implements WithId<IWikiSpace> {
         const collection = dolphin.database.collection<IWikiSpace>("wiki.spaces");
 
         if (!usersAndClasses) {
-            const spaces = await collection.find({}).toArray();
+            const spaces = await collection.find({}).sort({ name: 1 }).toArray();
             return [spaces.map((space) => new WikiSpace(space)), null];
         }
 
@@ -168,6 +168,7 @@ class WikiSpace implements WithId<IWikiSpace> {
                     },
                 })),
             })
+            .sort({ name: 1 })
             .toArray();
 
         return [spaces.map((space) => new WikiSpace(space)), null];
