@@ -233,6 +233,12 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
         }
     }
 
+    navbar.push({
+        icon: "mdi-book-open-page-variant",
+        label: "Wiki",
+        location: "/wiki",
+    });
+
     const adminNavbar: NavBarSubelement[] = [];
 
     // check for different permissions and add the corresponding links
