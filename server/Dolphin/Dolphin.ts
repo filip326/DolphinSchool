@@ -24,6 +24,16 @@ class Dolphin {
 
         Dolphin._instance = this;
 
+        client.on("close", () => {
+            Dolphin.init(useRuntimeConfig());
+        });
+        client.on("error", () => {
+            Dolphin.init(useRuntimeConfig());
+        });
+        client.on("commandFailed", () => {
+            Dolphin.init(useRuntimeConfig());
+        });
+
         cb(this);
     }
 
@@ -82,3 +92,4 @@ class Dolphin {
 }
 
 export default Dolphin;
+
