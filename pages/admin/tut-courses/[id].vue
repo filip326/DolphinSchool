@@ -1,11 +1,10 @@
 <script lang="ts">
 interface ITutCourse {
+    id: string;
     grade: number; // 5-13; 11 = E, 12 = Q1/2, 13 = Q3/4
     name: string; // grade + letter in grades 5-10, grade + teacher's name in grades 11-13
-
     teacher: string;
     viceTeacher?: string;
-
     students: string[];
 }
 
@@ -33,7 +32,7 @@ export default {
         });
 
         if (res.status.value == "success") {
-            this.course = res.data.value;
+            this.course = res.data.value as ITutCourse | null;
         } else {
             this.course = null;
             throw createError({
