@@ -421,7 +421,7 @@ class ASMSQ {
         return [Array.from(new Set(result)), null];
     }
 
-    public static async toText(asmsq: string[]): Promise<MethodResult<string[]>> {
+    public static async toText(asmsq: string[]): Promise<MethodResult<string>> {
         const result: string[] = [];
         await Promise.all(
             asmsq.map(async (query: string) => {
@@ -608,7 +608,7 @@ class ASMSQ {
         );
 
         // remove duplicates
-        return [Array.from(new Set(result)), null];
+        return [Array.from(new Set(result)).join(", "), null];
     }
 
     public static isValid(query: string): query is ASMSQQuery | SpecialASMSQQuery {
