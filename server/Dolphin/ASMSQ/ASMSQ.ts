@@ -417,7 +417,198 @@ class ASMSQ {
             }),
         );
 
-        return [result, null];
+        // remove duplicates
+        return [Array.from(new Set(result)), null];
+    }
+
+    public static async toText(asmsq: string[]) {
+        const result: string[] = [];
+        await Promise.all(
+            asmsq.map(async (query: string) => {
+                // check if query matches pattern
+                if (!ASMSQ.isValid(query)) return; // ignore invalid queries
+
+                // check if query is SpecialASMSQQuery
+                if (
+                    ["all_students", "all_teachers", "all_parents", "everyone"].includes(
+                        query,
+                    )
+                ) {
+                    switch (query) {
+                        case "all_students":
+                            result.push("Alle Schüler");
+                            break;
+                        case "all_teachers":
+                            result.push("Alle Lehrer");
+                            break;
+                        case "all_parents":
+                            result.push("Alle Eltern");
+                            break;
+                        case "everyone":
+                            result.push("Alle");
+                            break;
+                    }
+                    return;
+                }
+
+                switch (query.split(":")[0]) {
+                    case "user":
+                        if (!ObjectId.isValid(query.split(":")[1])) return;
+                        // eslint-disable-next-line no-case-declarations
+                        const [sendToUser, userFindError] = await User.getUserById(
+                            new ObjectId(query.split(":")[1]),
+                        );
+                        if (userFindError) {
+                            return;
+                        }
+                        if (sendToUser.isStudent()) {
+                            const [usersTut] = await TutCourse.getTutCourseByUser(
+                                sendToUser._id,
+                            );
+                            if (usersTut)
+                                result.push(
+                                    `${sendToUser.fullName} (Schüler:in, ${usersTut.name})`,
+                                );
+                            else result.push(`${sendToUser.fullName} (Schüler:in)`);
+                            return;
+                        }
+
+                        if (sendToUser.isTeacher()) {
+                            if (sendToUser.kuerzel)
+                                result.push(
+                                    `${sendToUser.fullName} (Lehrkraft, ${sendToUser.kuerzel})`,
+                                );
+                            else result.push(`${sendToUser.fullName} (Lehrkraft)`);
+                            return;
+                        }
+
+                        if (sendToUser.isParent()) {
+                            result.push(`${sendToUser.fullName} (Elternteil)`);
+                            return;
+                        }
+
+                        break;
+                    case "students_in_course":
+                        if (!ObjectId.isValid(query.split(":")[1])) return;
+                        // eslint-disable-next-line no-case-declarations
+                        const [course2, courseFindError2] = await Course.getById(
+                            new ObjectId(query.split(":")[1]),
+                        );
+                        if (courseFindError2) {
+                            return;
+                        }
+                        result.push(`Schüler in ${course2.name}`);
+                        break;
+
+                    case "students_in_tut":
+                        if (!ObjectId.isValid(query.split(":")[1])) return;
+                        // eslint-disable-next-line no-case-declarations
+                        const [tut, tutFindError] = await TutCourse.getTutCourseById(
+                            new ObjectId(query.split(":")[1]),
+                        );
+                        if (tutFindError) {
+                            return;
+                        }
+                        result.push("Schüler in " + tut.name);
+                        break;
+
+                    case "students_in_grade":
+                        // eslint-disable-next-line no-case-declarations
+                        const [, tutCoursesError] =
+                            await TutCourse.getTutCoursesByGradeLevel(
+                                parseInt(query.split(":")[1]),
+                            );
+                        if (tutCoursesError) {
+                            return;
+                        }
+                        result.push("Schüler der Jahrgangsstufe " + query.split(":")[1]);
+                        break;
+
+                    case "teachers_in_course":
+                        if (!ObjectId.isValid(query.split(":")[1])) return;
+                        // eslint-disable-next-line no-case-declarations
+                        const [course, courseFindError] = await Course.getById(
+                            new ObjectId(query.split(":")[1]),
+                        );
+                        if (courseFindError) {
+                            return;
+                        }
+                        result.push(`Lehrkräfte in ${course.name}`);
+                        break;
+                    case "teachers_in_tut":
+                        if (!ObjectId.isValid(query.split(":")[1])) return;
+                        // eslint-disable-next-line no-case-declarations
+                        const [tut2, tutFindError2] = await TutCourse.getTutCourseById(
+                            new ObjectId(query.split(":")[1]),
+                        );
+                        if (tutFindError2) {
+                            return;
+                        }
+                        result.push(`Lehrkräfte in ${tut2.name}`);
+                        // check for duplicates
+                        break;
+
+                    case "parents_of":
+                        if (!ObjectId.isValid(query.split(":")[1])) return;
+                        // eslint-disable-next-line no-case-declarations
+                        const [student, studentFindError] = await User.getUserById(
+                            new ObjectId(query.split(":")[1]),
+                        );
+                        if (studentFindError) {
+                            return;
+                        }
+                        const [, parentsError] = await student.getParents();
+                        if (parentsError) {
+                            return;
+                        }
+                        result.push(`Eltern von ${student.fullName}`);
+                        break;
+
+                    case "parents_of_course":
+                        if (!ObjectId.isValid(query.split(":")[1])) return;
+                        // eslint-disable-next-line no-case-declarations
+                        const [course3, courseFindError3] = await Course.getById(
+                            new ObjectId(query.split(":")[1]),
+                        );
+                        if (courseFindError3) {
+                            return;
+                        }
+                        result.push(`Eltern von ${course3.name}`);
+                        break;
+
+                    case "parents_of_tut":
+                        if (!ObjectId.isValid(query.split(":")[1])) return;
+                        // eslint-disable-next-line no-case-declarations
+                        const [tut3, tutFindError3] = await TutCourse.getTutCourseById(
+                            new ObjectId(query.split(":")[1]),
+                        );
+                        if (tutFindError3) {
+                            return;
+                        }
+                        result.push(
+                            `Eltern von ${tut3.name}`, // exclamation mark because we filtered out undefined values two lines above already.
+                        );
+                        break;
+
+                    case "parents_of_grade":
+                        // eslint-disable-next-line no-case-declarations
+                        const [, tutFindError4] =
+                            await TutCourse.getTutCoursesByGradeLevel(
+                                parseInt(query.split(":")[1]),
+                            );
+                        if (tutFindError4) {
+                            return;
+                        }
+                        result.push(
+                            `Eltern in Jahrgangsstufe ${query.split(":")[1]}`, // exclamation mark because we filtered out undefined values two lines above already.
+                        );
+                        break;
+                }
+            }),
+        );
+
+        // remove duplicates
+        return [Array.from(new Set(result)), null];
     }
 
     public static isValid(query: string): query is ASMSQQuery | SpecialASMSQQuery {
