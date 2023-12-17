@@ -421,7 +421,7 @@ class ASMSQ {
         return [Array.from(new Set(result)), null];
     }
 
-    public static async toText(asmsq: string[]) {
+    public static async toText(asmsq: string[]): Promise<MethodResult<string[]>> {
         const result: string[] = [];
         await Promise.all(
             asmsq.map(async (query: string) => {
