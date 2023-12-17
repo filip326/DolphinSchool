@@ -416,6 +416,8 @@ class ASMSQ {
                 }
             }),
         );
+
+        return [result, null];
     }
 
     public static isValid(query: string): query is ASMSQQuery | SpecialASMSQQuery {
