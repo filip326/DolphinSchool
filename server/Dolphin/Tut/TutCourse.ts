@@ -100,6 +100,15 @@ class TutCourse implements WithId<ITutCourse> {
         return [undefined, DolphinErrorTypes.NOT_FOUND];
     }
 
+    static async getTutCoursesByGradeLevel(
+        grade: number,
+    ): Promise<MethodResult<TutCourse[]>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const tutCourses = dolphin.database.collection<ITutCourse>("tutCourses");
+        const result = await tutCourses.find({ grade }).toArray();
+        return [result.map((tutCourse) => new TutCourse(tutCourse, tutCourses)), null];
+    }
+
     static async getAutoCompleteTutCourses(
         name: string,
     ): Promise<MethodResult<{ name: string; value: ObjectId }[]>> {
