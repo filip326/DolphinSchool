@@ -13,7 +13,8 @@ enum Permissions {
     MANAGE_SUBJECTS = 1 << 11,
     SEND_MAIL = 1 << 12,
     CHANGE_USER_PASSWORD = 1 << 13,
-    ASMSQ_HERO = 1 << 14,
+    MANAGE_PROWO_MODULE = 1 << 14,
+    ASMSQ_HERO = 1 << 15,
 }
 
 function isAdminLevelPermission(permission: Permissions) {

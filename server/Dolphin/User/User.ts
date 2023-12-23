@@ -1,5 +1,5 @@
 import Dolphin from "../Dolphin";
-import { Collection, ObjectId, WithId } from "mongodb";
+import { Collection, Filter, ObjectId, WithId } from "mongodb";
 import { UserType } from "./UserTypes";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
 import PermissionManager, { Permissions } from "../Permissions/PermissionManager";
@@ -154,10 +154,14 @@ class User implements WithId<IUser> {
     static async listUsers(options: {
         limit?: number;
         skip?: number;
+        type?: UserType; // Optional filter for user's type
     }): Promise<MethodResult<User[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const userCollection = dolphin.database.collection<IUser>("users");
-        const users = await userCollection.find({}, { ...options }).toArray();
+
+        const filter: Filter<IUser> = options.type ? { type: options.type } : {}; // Apply filter if type is provided
+
+        const users = await userCollection.find(filter, { ...options }).toArray();
         return [users.map((user) => new User(userCollection, user)), null];
     }
 
