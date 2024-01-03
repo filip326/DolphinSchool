@@ -17,7 +17,7 @@ export default {
             shown: boolean;
             msg: string;
         };
-        rules: Record<string, any>;
+        rules: Record<string, (v: unknown) => boolean | string>;
     } {
         return {
             year: 5,
