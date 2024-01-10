@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 
-interface SearchUserOptions {
+interface ISearchUserOptions {
     nameQuery?: string;
     cources?: string;
     class?: string;
@@ -10,4 +10,4 @@ interface SearchUserOptions {
     skip?: number;
 }
 
-export default SearchUserOptions;
+export default ISearchUserOptions;

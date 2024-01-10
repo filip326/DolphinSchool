@@ -1,7 +1,7 @@
 import User from "../Dolphin/User/User";
 import { Permissions } from "../Dolphin/Permissions/PermissionManager";
 
-interface CheckAuthOptions {
+interface ICheckAuthOptions {
     PermissionLevel?: Permissions;
 }
 
@@ -15,13 +15,13 @@ type CheckAuthResult =
       }
     | { user: User; success: true; statusCode: CheckAuthStatusCode };
 
-interface Auth {
+interface IAuth {
     authenticated: boolean | false;
     mfa_required?: boolean;
     change_password_required?: boolean;
     user?: User;
-    checkAuth: (options?: CheckAuthOptions) => Promise<CheckAuthResult>;
+    checkAuth: (options?: ICheckAuthOptions) => Promise<CheckAuthResult>;
 }
 
-export default Auth;
-export { CheckAuthOptions, CheckAuthResult, CheckAuthStatusCode };
+export default IAuth;
+export { ICheckAuthOptions as CheckAuthOptions, CheckAuthResult, CheckAuthStatusCode };

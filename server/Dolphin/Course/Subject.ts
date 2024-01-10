@@ -8,7 +8,7 @@ interface ISubject {
     color: { r: number; g: number; b: number };
 }
 
-interface SubjectSearchOptions {
+interface ISubjectSearchOptions {
     id?: ObjectId;
     long?: string;
     short?: string;
@@ -124,4 +124,4 @@ class Subject implements ISubject {
 }
 
 export default Subject;
-export { ISubject, SubjectSearchOptions };
+export { ISubject, ISubjectSearchOptions as SubjectSearchOptions };

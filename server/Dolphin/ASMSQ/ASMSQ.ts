@@ -23,7 +23,7 @@ type SpecialASMSQQuery =
     | "all_parents" // all parents
     | "everyone"; // all users
 
-interface ParsedASMSQResult {
+interface IParsedASMSQResult {
     label: string;
     value: `${ASMSQQueryType}:${string}` | SpecialASMSQQuery;
 }
@@ -32,8 +32,8 @@ class ASMSQ {
     public static async suggest(
         query: string,
         specialPermissions: boolean = false, // needed for SpecialASMSQQuery queries
-    ): Promise<MethodResult<ParsedASMSQResult[]>> {
-        const result: ParsedASMSQResult[] = [];
+    ): Promise<MethodResult<IParsedASMSQResult[]>> {
+        const result: IParsedASMSQResult[] = [];
         query = query.toLowerCase();
 
         if (specialPermissions) {
@@ -178,4 +178,4 @@ class ASMSQ {
 }
 
 export default ASMSQ;
-export { ASMSQResponseTypes, ParsedASMSQResult };
+export { ASMSQResponseTypes, IParsedASMSQResult as ParsedASMSQResult };

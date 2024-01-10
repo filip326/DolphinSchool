@@ -26,7 +26,7 @@ const pattern6 =
 // [Name]
 const pattern7 = /^(?<name>[a-zA-Z]+)$/;
 
-interface ASMSQResult {
+interface IASMSQResult {
     type?: "teacher" | "student" | "parent" | "all";
     subtype?: "class" | "course" | "tut-course" | "userOf" | "grade" | "user";
 
@@ -46,13 +46,13 @@ interface ASMSQResult {
 }
 
 class ASMSQInterpreter {
-    result: ASMSQResult[] = [];
+    result: IASMSQResult[] = [];
 
     constructor(asmsq: string) {
         // split by ,
         const parts = asmsq.split(",");
         for (const part of parts) {
-            let subresult: ASMSQResult = new Object();
+            let subresult: IASMSQResult = new Object();
 
             // trim
             const trimmed = part.trim();
@@ -220,4 +220,4 @@ class ASMSQInterpreter {
 }
 
 export default ASMSQInterpreter;
-export type { ASMSQResult };
+export type { IASMSQResult as ASMSQResult };
