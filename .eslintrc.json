@@ -43,7 +43,8 @@
             },
             {
                 "selector": "interface",
-                "format": ["PascalCase"]
+                "format": ["PascalCase"],
+                "prefix": ["I"]
             },
             {
                 "selector": "typeAlias",
