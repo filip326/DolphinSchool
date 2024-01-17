@@ -61,6 +61,109 @@ function isCreateClassCourseOptions(
 }
 
 class Course implements WithId<ICourse> {
+    static namingUtils = {
+        async singleClassCourseName(
+            course: CreateSingleClassCourseOptions,
+            courses: Collection<ICourse>,
+        ): Promise<MethodResult<string>> {
+            // create a name for the course
+            // since it is a single-class course, the name is just the class name + subject
+            // get the class name
+            const [linkedTutCourse, linkedTutFindError] =
+                await TutCourse.getTutCourseById(course.linkedTuts[0]);
+            if (linkedTutFindError) return [undefined, linkedTutFindError];
+            const { name: className } = linkedTutCourse;
+
+            // get the short subject name
+            const [subject, subjectFindError] = await Subject.getSubjectById(
+                course.subject,
+            );
+            if (subjectFindError) return [undefined, subjectFindError];
+            const { short: subjectName } = subject;
+
+            // smush them together
+            const courseName = `${className} ${subjectName}`;
+
+            // check if the course already exists
+            const checkForAlreadyExistingCourse = await courses.countDocuments({
+                name: courseName,
+            });
+            if (checkForAlreadyExistingCourse > 0)
+                return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
+            return [courseName, null];
+        },
+        async outOfClassCourseName(
+            course: CreateCourseOptions,
+            courses: Collection<ICourse>,
+        ): Promise<MethodResult<string>> {
+            // create a name for the course
+            // since it is a out-of-class course, the name is the grade-level + subject + number
+            // get the short subject name
+            const [subject, subjectFindError] = await Subject.getSubjectById(
+                course.subject,
+            );
+            if (subjectFindError) return [undefined, subjectFindError];
+            const { short: subjectName } = subject;
+
+            // get the grade-level
+            const gradeLevel = course.grade;
+
+            // get the number
+            // to get the number, we need to count all subjects with the same start of the name
+            const countResult = await courses.countDocuments({
+                name: {
+                    $regex: `^${gradeLevel} ${subjectName}`,
+                },
+            });
+
+            // create the name
+            const courseName = `${gradeLevel} ${subjectName} ${countResult + 1}`;
+
+            // check if the course already exists
+            const checkForAlreadyExistingCourse = await courses.countDocuments({
+                name: courseName,
+            });
+            if (checkForAlreadyExistingCourse > 0)
+                return [undefined, DolphinErrorTypes.FAILED]; // failed, since it should never happen
+
+            return [courseName, null];
+        },
+        async lkOrGkCourseName(
+            course: CreateCourseOptions,
+            courses: Collection<ICourse>,
+        ): Promise<MethodResult<string>> {
+            // create a name for the course
+            // since it is a LK/GK course, the name is the grade-level (E, Q1/2, Q3/4) + subject + LK/GK + number
+            // get the short subject name
+            const [subject, subjectFindError] = await Subject.getSubjectById(
+                course.subject,
+            );
+            if (subjectFindError) return [undefined, subjectFindError];
+            const { short: subjectName } = subject;
+
+            // get the grade-level
+            if (course.grade < 11 || course.grade > 13)
+                return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+            const gradeLevel =
+                course.grade === 11 ? "E" : course.grade === 12 ? "Q1/2" : "Q3/4";
+
+            // get the number
+            if (!course.number) return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+            const number = course.number;
+
+            // smush them together
+            const courseName = `${gradeLevel} ${subjectName} ${course.type} ${number}`;
+
+            // check if the course already exists
+            const checkForAlreadyExistingCourse = await courses.countDocuments({
+                name: courseName,
+            });
+            if (checkForAlreadyExistingCourse > 0)
+                return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
+            return [courseName, null];
+        },
+    };
+
     static async create(course: CreateCourseOptions): Promise<MethodResult<Course>> {
         switch (course.type) {
             case "single-class":
@@ -84,29 +187,10 @@ class Course implements WithId<ICourse> {
         if (!isCreateClassCourseOptions(course))
             return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
 
-        // create a name for the course
-        // since it is a single-class course, the name is just the class name + subject
-        // get the class name
-        const [linkedTutCourse, linkedTutFindError] = await TutCourse.getTutCourseById(
-            course.linkedTuts[0],
-        );
-        if (linkedTutFindError) return [undefined, linkedTutFindError];
-        const { name: className } = linkedTutCourse;
+        const [courseName, courseNameError] =
+            await this.namingUtils.singleClassCourseName(course, courses);
 
-        // get the short subject name
-        const [subject, subjectFindError] = await Subject.getSubjectById(course.subject);
-        if (subjectFindError) return [undefined, subjectFindError];
-        const { short: subjectName } = subject;
-
-        // smush them together
-        const courseName = `${className} ${subjectName}`;
-
-        // check if the course already exists
-        const checkForAlreadyExistingCourse = await courses.countDocuments({
-            name: courseName,
-        });
-        if (checkForAlreadyExistingCourse > 0)
-            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
+        if (courseNameError) return [undefined, courseNameError];
 
         // create the course
         const courseToCreate: ICourse = {
@@ -138,33 +222,11 @@ class Course implements WithId<ICourse> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const courses = dolphin.database.collection<ICourse>("courses");
 
-        // create a name for the course
-        // since it is a out-of-class course, the name is the grade-level + subject + number
-        // get the short subject name
-        const [subject, subjectFindError] = await Subject.getSubjectById(options.subject);
-        if (subjectFindError) return [undefined, subjectFindError];
-        const { short: subjectName } = subject;
-
-        // get the grade-level
-        const gradeLevel = options.grade;
-
-        // get the number
-        // to get the number, we need to count all subjects with the same start of the name
-        const countResult = await courses.countDocuments({
-            name: {
-                $regex: `^${gradeLevel} ${subjectName}`,
-            },
-        });
-
-        // create the name
-        const courseName = `${gradeLevel} ${subjectName} ${countResult + 1}`;
-
-        // check if the course already exists
-        const checkForAlreadyExistingCourse = await courses.countDocuments({
-            name: courseName,
-        });
-        if (checkForAlreadyExistingCourse > 0)
-            return [undefined, DolphinErrorTypes.FAILED]; // failed, since it should never happen
+        const [courseName, courseNameError] = await this.namingUtils.outOfClassCourseName(
+            options,
+            courses,
+        );
+        if (courseNameError) return [undefined, courseNameError];
 
         // create the course, insert and return it
         const courseToCreate: ICourse = {
@@ -202,32 +264,14 @@ class Course implements WithId<ICourse> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const courses = dolphin.database.collection<ICourse>("courses");
 
-        // create a name for the course
-        // since it is a LK/GK course, the name is the grade-level (E, Q1/2, Q3/4) + subject + LK/GK + number
-        // get the short subject name
-        const [subject, subjectFindError] = await Subject.getSubjectById(options.subject);
-        if (subjectFindError) return [undefined, subjectFindError];
-        const { short: subjectName } = subject;
-
-        // get the grade-level
-        if (options.grade < 11 || options.grade > 13)
-            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
-        const gradeLevel =
-            options.grade === 11 ? "E" : options.grade === 12 ? "Q1/2" : "Q3/4";
-
-        // get the number
         if (!options.number) return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
-        const number = options.number;
 
-        // smush them together
-        const courseName = `${gradeLevel} ${subjectName} ${options.type} ${number}`;
+        const [courseName, courseNameError] = await this.namingUtils.lkOrGkCourseName(
+            options,
+            courses,
+        );
 
-        // check if the course already exists
-        const checkForAlreadyExistingCourse = await courses.countDocuments({
-            name: courseName,
-        });
-        if (checkForAlreadyExistingCourse > 0)
-            return [undefined, DolphinErrorTypes.ALREADY_EXISTS];
+        if (courseNameError) return [undefined, courseNameError];
 
         // create the course
         const courseToCreate: ICourse = {
@@ -236,7 +280,7 @@ class Course implements WithId<ICourse> {
             type: options.type,
             grade: options.grade,
             name: courseName,
-            number,
+            number: options.number,
             students: [],
             linkedTuts: [],
             schoolYear: options.schoolYear,
@@ -563,4 +607,3 @@ class Course implements WithId<ICourse> {
 
 export default Course;
 export { ICourse, CreateSingleClassCourseOptions, CreateCourseOptions };
-
