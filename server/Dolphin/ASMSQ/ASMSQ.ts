@@ -178,4 +178,4 @@ class ASMSQ {
 }
 
 export default ASMSQ;
-export { ASMSQResponseTypes, IParsedASMSQResult as ParsedASMSQResult };
+export { IParsedASMSQResult as ParsedASMSQResult, ASMSQQueryType, SpecialASMSQQuery };
