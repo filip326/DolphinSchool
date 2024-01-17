@@ -63,7 +63,7 @@ function isCreateClassCourseOptions(
 class Course implements WithId<ICourse> {
     static namingUtils = {
         async singleClassCourseName(
-            course: CreateSingleClassCourseOptions,
+            course: { linkedTuts: [ObjectId]; subject: ObjectId },
             courses: Collection<ICourse>,
         ): Promise<MethodResult<string>> {
             // create a name for the course
@@ -93,7 +93,7 @@ class Course implements WithId<ICourse> {
             return [courseName, null];
         },
         async outOfClassCourseName(
-            course: CreateCourseOptions,
+            course: { grade: number; subject: ObjectId },
             courses: Collection<ICourse>,
         ): Promise<MethodResult<string>> {
             // create a name for the course
@@ -129,7 +129,12 @@ class Course implements WithId<ICourse> {
             return [courseName, null];
         },
         async lkOrGkCourseName(
-            course: CreateCourseOptions,
+            course: {
+                grade: number;
+                number: number;
+                subject: ObjectId;
+                type: "LK" | "GK";
+            },
             courses: Collection<ICourse>,
         ): Promise<MethodResult<string>> {
             // create a name for the course
@@ -172,7 +177,23 @@ class Course implements WithId<ICourse> {
                 return await this.createOutOfClassCourse(course);
             case "LK":
             case "GK":
-                return await this.createLkOrGkCourse(course);
+                if (
+                    course.number !== 5 &&
+                    course.number !== 6 &&
+                    course.number !== 7 &&
+                    course.number !== 8 &&
+                    course.number !== 9 &&
+                    course.number !== 10 &&
+                    course.number !== 11 &&
+                    course.number !== 12 &&
+                    course.number !== 13
+                )
+                    return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+                if (course.type !== "LK" && course.type !== "GK")
+                    return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+                return await this.createLkOrGkCourse(
+                    course as CreateCourseOptions & { number: number; type: "LK" | "GK" },
+                );
             default:
                 return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
         }
@@ -259,12 +280,14 @@ class Course implements WithId<ICourse> {
     }
 
     private static async createLkOrGkCourse(
-        options: CreateCourseOptions,
+        options: CreateCourseOptions & { number: number; type: "LK" | "GK" },
     ): Promise<MethodResult<Course>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const courses = dolphin.database.collection<ICourse>("courses");
 
-        if (!options.number) return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+        if (options.number == undefined) {
+            return [undefined, DolphinErrorTypes.INVALID_ARGUMENT];
+        }
 
         const [courseName, courseNameError] = await this.namingUtils.lkOrGkCourseName(
             options,
