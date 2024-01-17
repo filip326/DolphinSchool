@@ -1,10 +1,10 @@
-interface RGBColor {
+interface IRGBColor {
     r: number;
     g: number;
     b: number;
 }
 
-function getTextColorForBackgroundColor(backgroundColor: RGBColor): string {
+function getTextColorForBackgroundColor(backgroundColor: IRGBColor): string {
     // Calculate the relative luminance of the background color
     const luminance =
         (0.299 * backgroundColor.r +

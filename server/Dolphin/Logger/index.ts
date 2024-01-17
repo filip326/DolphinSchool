@@ -33,7 +33,7 @@ enum Action {
     DOLPHIN_UNDEFINED = 0,
 }
 
-interface LogData {
+interface ILogData {
     // the data that is passed to the logger
     level: LogLevel;
 
@@ -44,7 +44,7 @@ interface LogData {
     causedBy: string; // the name of the user that caused the log
 }
 
-interface Log {
+interface ILog {
     // the data that is stored in the database
     timestamp: number;
 
@@ -83,7 +83,7 @@ class Logger {
         const db = dolphin.database;
 
         // get the collection
-        const collection = db.collection<Log>("logs");
+        const collection = db.collection<ILog>("logs");
 
         // drop all logs, where deleteBy is smaller than now
         await collection.deleteMany({
@@ -111,7 +111,7 @@ class Logger {
         const db = dolphin.database;
 
         // get the collection
-        const collection = db.collection<Log>("logs");
+        const collection = db.collection<ILog>("logs");
 
         this.deleteLogs();
 
@@ -128,7 +128,7 @@ class Logger {
         return logs;
     }
 
-    static async log(data: LogData): Promise<void> {
+    static async log(data: ILogData): Promise<void> {
         // get Dolphin class
         const dolphin = Dolphin.instance;
         if (!dolphin) {
@@ -140,7 +140,7 @@ class Logger {
         const db = dolphin.database;
 
         // get the collection
-        const collection = db.collection<Log>("logs");
+        const collection = db.collection<ILog>("logs");
 
         let deleteBy: number;
 
@@ -175,7 +175,7 @@ class Logger {
         }
 
         // create the log
-        const log: Log = {
+        const log: ILog = {
             timestamp: Date.now(),
             level: data.level,
             action: data.action,
@@ -197,7 +197,7 @@ class Logger {
         return;
     }
 
-    private static async logToFS(data: LogData): Promise<void> {
+    private static async logToFS(data: ILogData): Promise<void> {
         // logs to the file system instead of the database
         // in case the database is not available
         // or the dolphin instance is not initialized
@@ -252,7 +252,7 @@ class Logger {
                 const decodedFields = fields.map((field) => decodeURIComponent(field));
 
                 // create the log data
-                const logData: LogData = {
+                const logData: ILogData = {
                     level: decodedFields[0] as LogLevel,
                     action: decodedFields[1] as unknown as Action,
                     shortMessage: decodedFields[2],
@@ -277,7 +277,7 @@ class Logger {
         appendFileSync(path, toLog, { encoding: "utf-8" });
     }
 
-    private static buildLogStr(data: LogData): string {
+    private static buildLogStr(data: ILogData): string {
         // return level;action;shortMessage;longMessage;causedBy;
         return (
             encodeURIComponent(

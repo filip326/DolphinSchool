@@ -1,6 +1,6 @@
 import { UserType } from "./UserTypes";
 
-interface CreateUserOptions {
+interface ICreateUserOptions {
     fullName: string;
     username: string;
     type: UserType;
@@ -8,4 +8,4 @@ interface CreateUserOptions {
     permissions?: number;
 }
 
-export default CreateUserOptions;
+export default ICreateUserOptions;

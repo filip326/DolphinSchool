@@ -1,7 +1,7 @@
 import { IUser } from "./User";
 
-interface UserCreated extends IUser {
+interface IUserCreated extends IUser {
     clearPassword: string;
 }
 
-export default UserCreated;
+export default IUserCreated;

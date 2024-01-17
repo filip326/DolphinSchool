@@ -9,8 +9,8 @@ import { ISubject } from "../Course/Subject";
 import { randomBytes } from "node:crypto";
 
 import * as OTPAuth from "otpauth";
-import CreateUserOptions from "./CreateUserOptions";
-import SearchUserOptions from "./SearchUserOptions";
+import ICreateUserOptions from "./CreateUserOptions";
+import ISearchUserOptions from "./SearchUserOptions";
 import { RegistrationEncoded } from "@passwordless-id/webauthn/dist/esm/types";
 
 interface IUser {
@@ -69,7 +69,7 @@ class User implements WithId<IUser> {
     /**
      * @deprecated use searchUsersByName instead
      */
-    static async searchUsers(options: SearchUserOptions): Promise<MethodResult<User[]>> {
+    static async searchUsers(options: ISearchUserOptions): Promise<MethodResult<User[]>> {
         if (
             options.nameQuery ||
             options.cources ||
@@ -162,7 +162,7 @@ class User implements WithId<IUser> {
     }
 
     static async createUser(
-        options: CreateUserOptions,
+        options: ICreateUserOptions,
     ): Promise<MethodResult<{ id: ObjectId; username: string; password: string }>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const userCollection = dolphin.database.collection<IUser>("users");

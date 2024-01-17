@@ -7,8 +7,8 @@ import Dolphin from "../Dolphin";
 const failedAttemtsAllowed = 5;
 
 class BruteForceProtection {
-    private bruteForceProtection: Collection<BruteForceProtectionEntry>;
-    private bruteForceProtectionBypass: Collection<BruteForceProtectionBypassEntry>;
+    private bruteForceProtection: Collection<IBruteForceProtectionEntry>;
+    private bruteForceProtectionBypass: Collection<IBruteForceProtectionBypassEntry>;
 
     private static instance: BruteForceProtection;
 
@@ -25,11 +25,11 @@ class BruteForceProtection {
     ): Promise<MethodResult<boolean>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const bruteForceProtection =
-            dolphin.database.collection<BruteForceProtectionEntry>(
+            dolphin.database.collection<IBruteForceProtectionEntry>(
                 "bruteForceProtection",
             );
         const bruteForceProtectionBypass =
-            dolphin.database.collection<BruteForceProtectionBypassEntry>(
+            dolphin.database.collection<IBruteForceProtectionBypassEntry>(
                 "bruteForceProtectionBypass",
             );
         if (!bypassToken) {
@@ -95,11 +95,11 @@ class BruteForceProtection {
     ): Promise<MethodResult<boolean>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const bruteForceProtection =
-            dolphin.database.collection<BruteForceProtectionEntry>(
+            dolphin.database.collection<IBruteForceProtectionEntry>(
                 "bruteForceProtection",
             );
         const bruteForceProtectionBypass =
-            dolphin.database.collection<BruteForceProtectionBypassEntry>(
+            dolphin.database.collection<IBruteForceProtectionBypassEntry>(
                 "bruteForceProtectionBypass",
             );
         if (bypassToken) {
@@ -214,7 +214,7 @@ class BruteForceProtection {
 
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const bruteForceProtectionBypass =
-            dolphin.database.collection<BruteForceProtectionBypassEntry>(
+            dolphin.database.collection<IBruteForceProtectionBypassEntry>(
                 "bruteForceProtectionBypass",
             );
 
@@ -240,7 +240,7 @@ class BruteForceProtection {
     ): Promise<MethodResult<boolean>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const bruteForceProtectionBypass =
-            dolphin.database.collection<BruteForceProtectionBypassEntry>(
+            dolphin.database.collection<IBruteForceProtectionBypassEntry>(
                 "bruteForceProtectionBypass",
             );
         // check if token exists
@@ -276,11 +276,11 @@ class BruteForceProtection {
     static async cleanUp() {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
         const bruteForceProtection =
-            dolphin.database.collection<BruteForceProtectionEntry>(
+            dolphin.database.collection<IBruteForceProtectionEntry>(
                 "bruteForceProtection",
             );
         const bruteForceProtectionBypass =
-            dolphin.database.collection<BruteForceProtectionBypassEntry>(
+            dolphin.database.collection<IBruteForceProtectionBypassEntry>(
                 "bruteForceProtectionBypass",
             );
         try {
@@ -298,14 +298,14 @@ class BruteForceProtection {
     }
 }
 
-interface BruteForceProtectionEntry {
+interface IBruteForceProtectionEntry {
     username: string;
     token?: string;
     failedAttemts: number;
     expires: number;
 }
 
-interface BruteForceProtectionBypassEntry {
+interface IBruteForceProtectionBypassEntry {
     username: string;
     expires: number;
     token: string;

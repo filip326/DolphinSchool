@@ -16,7 +16,7 @@ interface IUserMessage {
     stared: boolean;
 }
 
-interface MessageFilterOptions {
+interface IMessageFilterOptions {
     subject?: string;
     read?: boolean;
     stared?: boolean;
@@ -108,7 +108,7 @@ class UserMessage implements IUserMessage {
 
     static async getMessages(
         user: User,
-        filter: MessageFilterOptions,
+        filter: IMessageFilterOptions,
     ): Promise<MethodResult<IUserMessage[]>> {
         const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
 
