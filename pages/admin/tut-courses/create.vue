@@ -126,7 +126,7 @@ export default {
             <VCardText>
                 Hier können Schüler:innen hinzugefügt werden. Dies können Sie auch später
                 tun.
-                <SearchUser label="Schüler:innen" @user-ids="setUserIds" />
+                <SearchUser label="Schüler:innen" v-model="userIds" />
             </VCardText>
             <VAlert v-if="error.shown" type="error" title="Error" :text="error.msg" />
             <VCardActions>

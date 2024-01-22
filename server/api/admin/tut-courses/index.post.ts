@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const { year, teacherId, userIds, sek1 } = await readBody(event);
+    const { year, teacherId, sek1, userIds } = await readBody(event);
 
     if (!year || !teacherId || !sek1 || !sek1.className) {
         throw createError({
@@ -23,14 +23,27 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    if (typeof year !== "number" || typeof teacherId !== "object") {
+    let yearNum: number | "E1/2" | "Q1/2" | "Q3/4" = year as
+        | number
+        | "E1/2"
+        | "Q1/2"
+        | "Q3/4";
+    if (year === "E1/2") {
+        yearNum = 11;
+    } else if (year === "Q1/2") {
+        yearNum = 12;
+    } else if (year === "Q3/4") {
+        yearNum = 13;
+    }
+
+    if (typeof yearNum !== "number" || typeof teacherId !== "object") {
         throw createError({
             statusCode: 400,
             message: "Year must be a number",
         });
     }
 
-    if (userIds && typeof userIds !== "object") {
+    if (userIds && !Array.isArray(userIds)) {
         throw createError({
             statusCode: 400,
             message: "Bad Request",
@@ -40,20 +53,21 @@ export default defineEventHandler(async (event) => {
     let tutCourse: TutCourse | undefined;
     let tutCourseError: DolphinErrorTypes | null;
 
-    if (year < 11) {
+    if (yearNum < 11) {
         const letters = sek1.className.match(/[a-zA-Z]+/g);
         const letter = letters.join("");
 
         [tutCourse, tutCourseError] = await TutCourse.create({
-            grade: year,
+            grade: yearNum,
             teacher: new ObjectId(teacherId[0]),
             letter: letter,
         });
-    } else if (year >= 11) {
+    } else if (yearNum >= 11) {
         [tutCourse, tutCourseError] = await TutCourse.create({
-            grade: year,
+            grade: yearNum,
             teacher: new ObjectId(teacherId[0]),
         });
+        console.log(tutCourseError);
     } else {
         throw createError({
             statusCode: 400,
