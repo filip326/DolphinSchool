@@ -1,11 +1,18 @@
 <script lang="ts">
+type CreateCourseOptions = {
+    type: "LK" | "GK" | "single-class" | "out-of-class";
+    teacher: string[];
+    subject: string;
+    schoolYear: number;
+    semester: 0 | 2 | 1;
+    grade: number;
+    number?: number;
+    linkedTuts?: [string];
+};
+
 export default {
     data(): {
-        course: {
-            teachers: string[];
-            subject: string;
-            students: Array<string>;
-        };
+        course: CreateCourseOptions;
         error: string;
         options: {
             subjects: {
@@ -19,9 +26,14 @@ export default {
     } {
         return {
             course: {
-                teachers: Array<string>(),
+                teacher: Array<string>(),
                 subject: "",
-                students: Array<string>(),
+                schoolYear: 0,
+                semester: 0,
+                grade: 5,
+                type: "LK",
+                linkedTuts: undefined as [string] | undefined,
+                number: undefined as number | undefined,
             },
             options: {
                 subjects: [],
@@ -70,6 +82,50 @@ export default {
     <h1>Kurs erstellen</h1>
     <VForm @submit.prevent="createCourse">
         <VCard>
+            <VCardTitle> Generelles </VCardTitle>
+            <VCardText>
+                <VSelect
+                    v-model="course.type"
+                    :items="['LK', 'GK', 'single-class', 'out-of-class']"
+                    label="Kurstyp"
+                    :rules="[rules.required]"
+                />
+                <VSelect
+                    v-model="course.schoolYear"
+                    :items="[...Array(13).keys()].map((i) => i + 5)"
+                    label="Jahrgang"
+                    :rules="[rules.required]"
+                />
+                <VSelect
+                    v-model="course.semester"
+                    :items="[0, 1, 2]"
+                    label="Semester"
+                    :rules="[rules.required]"
+                />
+                <VSelect
+                    v-model="course.grade"
+                    :items="[...Array(13).keys()].map((i) => i + 1)"
+                    label="Kursstufe"
+                    :rules="[rules.required]"
+                />
+                <VTextField
+                    v-if="course.type === 'single-class'"
+                    v-model="course.number"
+                    label="Kursnummer"
+                    :rules="[rules.required]"
+                />
+                <VSelect
+                    v-if="course.type === 'out-of-class'"
+                    v-model="course.linkedTuts"
+                    :items="['5', '6', '7', '8', '9', '10', '11', '12', '13']"
+                    label="Verknüpfte Tutorenkurse"
+                    :rules="[rules.required]"
+                    multiple
+                />
+            </VCardText>
+        </VCard>
+        <br />
+        <VCard>
             <VCardTitle> Fach und Lehrkraft </VCardTitle>
             <VCardText>
                 <VSelect
@@ -83,18 +139,7 @@ export default {
                 <ASMSQSearchField
                     label="Lehrkraft"
                     :multi="true"
-                    v-model="course.teachers"
-                />
-            </VCardText>
-        </VCard>
-        <br />
-        <VCard>
-            <VCardTitle> Schüler*innen </VCardTitle>
-            <VCardText>
-                <ASMSQSearchField
-                    v-model="course.students"
-                    label="Schüler*innen"
-                    :multi="true"
+                    v-model="course.teacher"
                 />
             </VCardText>
         </VCard>
