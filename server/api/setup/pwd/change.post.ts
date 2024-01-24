@@ -8,7 +8,12 @@ export default eventHandler(async (event) => {
 
     const { oldPassword, newPassword } = await readBody(event);
 
-    if (!oldPassword || !newPassword) {
+    if (
+        !oldPassword ||
+        typeof oldPassword !== "string" ||
+        !newPassword ||
+        typeof newPassword !== "string"
+    ) {
         throw createError({ statusCode: 400, message: "Bad Request" });
     }
 

@@ -34,6 +34,22 @@ export default {
         };
     },
     methods: {
+        passwordMeetsRequirement(password: string): boolean {
+            // check some password requirements
+            if (password.length < 10) {
+                return false;
+            }
+            if (!/[a-z]/.test(password)) {
+                return false;
+            }
+            if (!/[A-Z]/.test(password)) {
+                return false;
+            }
+            if (!/[0-9]/.test(password)) {
+                return false;
+            }
+            return true;
+        },
         async checkOldPassword() {
             if (!this.old_pwd) {
                 return;
@@ -185,7 +201,7 @@ export default {
                     <VBtn
                         color="primary"
                         @click="formState = 'confirm_password'"
-                        :disabled="!new_pwd"
+                        :disabled="!new_pwd || !passwordMeetsRequirement(new_pwd)"
                     >
                         Weiter
                     </VBtn>
