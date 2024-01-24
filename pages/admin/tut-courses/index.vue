@@ -44,7 +44,7 @@ export default {
                 },
             });
             if (response.status.value !== "success") {
-                // todo Handle error with error page
+                // <!-- TODO Handle error with error page
                 return;
             }
 
