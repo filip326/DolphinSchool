@@ -114,14 +114,15 @@ export default {
                     label="Kursnummer"
                     :rules="[rules.required]"
                 />
-                <VSelect
+                <!-- todo -->
+                <!-- <VSelect
                     v-if="course.type === 'out-of-class'"
                     v-model="course.linkedTuts"
                     :items="['5', '6', '7', '8', '9', '10', '11', '12', '13']"
                     label="Verknüpfte Tutorenkurse"
                     :rules="[rules.required]"
                     multiple
-                />
+                /> -->
             </VCardText>
         </VCard>
         <br />
