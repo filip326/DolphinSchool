@@ -2,9 +2,9 @@
 export default {
     data(): {
         course: {
-            name: string;
-            teacher: string;
+            teachers: string[];
             subject: string;
+            students: Array<string>;
         };
         error: string;
         options: {
@@ -13,17 +13,25 @@ export default {
                 id: string;
             }[];
         };
+        rules: {
+            required: (value: string) => boolean | string;
+        };
     } {
         return {
             course: {
-                name: "",
-                teacher: "",
+                teachers: Array<string>(),
                 subject: "",
+                students: Array<string>(),
             },
             options: {
                 subjects: [],
             },
             error: "",
+            rules: {
+                required: (value: string | string[]) => {
+                    return !!value || "Dieses Feld ist erforderlich.";
+                },
+            },
         };
     },
     async beforeMount() {
@@ -60,25 +68,45 @@ export default {
 
 <template>
     <h1>Kurs erstellen</h1>
-
-    <!--
-        step 1 - grade level, subject, teacher
-    -->
-    <VCard>
-        <VCardTitle> Fach und Lehrkraft </VCardTitle>
-        <VCardText>
-            <VForm>
+    <VForm @submit.prevent="createCourse">
+        <VCard>
+            <VCardTitle> Fach und Lehrkraft </VCardTitle>
+            <VCardText>
                 <VSelect
                     v-model="course.subject"
                     :items="options.subjects"
                     item-title="name"
                     item-value="id"
                     label="Fach"
-                    required
-                ></VSelect>
-                <!-- todo: teacher form-->
-            </VForm>
-        </VCardText>
-        <!-- todo: other things -->
-    </VCard>
+                    :rules="[rules.required]"
+                />
+                <ASMSQSearchField
+                    label="Lehrkraft"
+                    :multi="true"
+                    v-model="course.teachers"
+                />
+            </VCardText>
+        </VCard>
+        <br />
+        <VCard>
+            <VCardTitle> Schüler*innen </VCardTitle>
+            <VCardText>
+                <ASMSQSearchField
+                    v-model="course.students"
+                    label="Schüler*innen"
+                    :multi="true"
+                />
+            </VCardText>
+        </VCard>
+        <br />
+        <VCard>
+            <VCardTitle> Kurs erstellen </VCardTitle>
+            <VCardActions>
+                <VBtn variant="flat" type="submit" color="primary"> Erstellen </VBtn>
+                <VBtn to="/admin/courses" variant="flat" type="button" color="error">
+                    Abbrechen
+                </VBtn>
+            </VCardActions>
+        </VCard>
+    </VForm>
 </template>
