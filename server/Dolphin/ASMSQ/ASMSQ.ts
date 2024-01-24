@@ -332,7 +332,6 @@ class ASMSQ {
                         },
                     },
                 );
-
             default:
                 return [undefined, DolphinErrorTypes.FAILED];
         }
