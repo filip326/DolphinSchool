@@ -35,7 +35,9 @@
                 type="password"
                 :rules="[rules.required]"
             />
-            <VTextField
+            <VOtpInput
+                length="6"
+                focus-all
                 v-model="code"
                 label="Code"
                 name="code"

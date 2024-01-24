@@ -151,11 +151,13 @@ export default {
                 <VProgressCircular v-else indeterminate color="primary" />
             </div>
 
-            <VTextField
+            <VOtpInput
                 v-model="code"
+                focus-all
                 label="Code"
                 name="code"
                 type="text"
+                length="6"
                 :rules="[rules.required, rules.totpLength, rules.totpNumbers]"
             />
 
