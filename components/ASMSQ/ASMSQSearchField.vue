@@ -94,8 +94,7 @@ export default {
             "
             no-data-text="Suche nach passenden Vorschlägen..."
             :rules="[rules.required]"
-        >
-        </VAutocomplete>
+        />
     </div>
 </template>
 

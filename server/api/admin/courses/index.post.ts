@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
 import Course, {
-    CreateCourseOptions,
-    CreateSingleClassCourseOptions,
+    // CreateCourseOptions,
+    // CreateSingleClassCourseOptions,
+    ICourse,
 } from "~/server/Dolphin/Course/Course";
 import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
@@ -21,7 +22,7 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
 
     // check if body contains everything from the CourseCreateOptions
-    /* type CreateCourseOptions = {
+    type CreateCourseOptions = {
         type: "LK" | "GK" | "single-class" | "out-of-class";
         teacher: ObjectId[];
         subject: ObjectId;
@@ -30,11 +31,11 @@ export default defineEventHandler(async (event) => {
         grade: ICourse["grade"];
         number?: ICourse["number"];
     };
-    
+
     type CreateSingleClassCourseOptions = CreateCourseOptions & {
         type: "single-class";
         linkedTuts: [ObjectId];
-    }; */
+    };
 
     // first check for a valid type
     if (
