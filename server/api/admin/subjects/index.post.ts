@@ -1,5 +1,5 @@
 import Subject from "~/server/Dolphin/Course/Subject";
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
 
 export default defineEventHandler(async (event) => {
     // check for permission
@@ -59,3 +59,4 @@ export default defineEventHandler(async (event) => {
         shortName: subject.short,
     };
 });
+

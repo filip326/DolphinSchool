@@ -1,5 +1,5 @@
 import Course from "~/server/Dolphin/Course/Course";
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
 
 export default defineEventHandler(async (event) => {
     const { success, statusCode } = await event.context.auth.checkAuth({
@@ -23,3 +23,4 @@ export default defineEventHandler(async (event) => {
 
     return courseCount;
 });
+

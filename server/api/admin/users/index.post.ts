@@ -1,4 +1,4 @@
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
 import User from "~/server/Dolphin/User/User";
 
 export default eventHandler(async (event) => {
@@ -47,3 +47,4 @@ export default eventHandler(async (event) => {
         throw createError({ statusCode: 500, message: "Failed to create user" });
     }
 });
+

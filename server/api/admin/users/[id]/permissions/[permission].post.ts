@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import {
     Permissions,
     isAdminLevelPermission,
-} from "~/server/Dolphin/Permissions/PermissionManager";
+} from "~/server/Dolphin/PermissionsAndRoles/Manager";
 import User from "~/server/Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {
@@ -73,3 +73,4 @@ export default defineEventHandler(async (event) => {
         success: result,
     };
 });
+

@@ -1,4 +1,4 @@
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
 import Dolphin from "~/server/Dolphin/Dolphin";
 
 export default eventHandler(async (event) => {
@@ -11,3 +11,4 @@ export default eventHandler(async (event) => {
 
     return await Dolphin.getBlockedPwds();
 });
+

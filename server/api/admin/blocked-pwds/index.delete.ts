@@ -1,5 +1,5 @@
 import Dolphin from "~/server/Dolphin/Dolphin";
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
 
 export default eventHandler(async (event) => {
     const checkAuthResult = await event.context.auth.checkAuth({
@@ -15,3 +15,4 @@ export default eventHandler(async (event) => {
 
     return await Dolphin.removeBlockedPwd(pwd);
 });
+

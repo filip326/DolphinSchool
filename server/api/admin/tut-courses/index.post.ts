@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { DolphinErrorTypes } from "~/server/Dolphin/MethodResult";
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
 
 export default defineEventHandler(async (event) => {
@@ -98,3 +98,4 @@ export default defineEventHandler(async (event) => {
         statusCode: 200,
     };
 });
+

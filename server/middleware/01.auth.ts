@@ -1,7 +1,7 @@
 import Session, { SessionState } from "../Dolphin/Session/Session";
 import User from "@/server/Dolphin/User/User";
 import { CheckAuthOptions, CheckAuthResult } from "../types/auth";
-import { Permissions } from "../Dolphin/Permissions/PermissionManager";
+import { Permissions } from "../Dolphin/PermissionsAndRoles/Manager";
 
 export default defineEventHandler(async (event) => {
     event.context.auth = {
@@ -127,3 +127,4 @@ export default defineEventHandler(async (event) => {
 
     return;
 });
+

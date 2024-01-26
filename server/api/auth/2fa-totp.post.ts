@@ -1,4 +1,4 @@
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
 import { SessionState } from "../../Dolphin/Session/Session";
 import Session from "../../Dolphin/Session/Session";
 
@@ -56,3 +56,4 @@ export default defineEventHandler(async (event) => {
         statusMessage: "OK",
     };
 });
+

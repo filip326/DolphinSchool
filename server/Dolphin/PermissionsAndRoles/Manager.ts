@@ -22,15 +22,39 @@ function isAdminLevelPermission(permission: Permissions) {
     ].includes(permission);
 }
 
+type Roles = "Admin" | "Teacher" | "Student" | "Parent";
+
 class PermissionManager {
     private _permission: number;
+    private _roles: Roles[];
 
     /**
      * The Permission manager
      * @param permission The permissions the user this manager is for has
      */
-    constructor(permission: number | Permissions = 0) {
+    constructor(permission: number | Permissions = 0, roles: Roles[]) {
         this._permission = permission;
+        this._roles = roles;
+    }
+
+    getRoles(): Roles[] {
+        return this._roles;
+    }
+
+    giveRole(role: Roles) {
+        this._roles.push(role);
+    }
+
+    removeRole(role: Roles) {
+        this._roles = this._roles.filter((r) => r !== role);
+    }
+
+    toggleRole(role: Roles) {
+        if (this._roles.includes(role)) {
+            this.removeRole(role);
+        } else {
+            this.giveRole(role);
+        }
     }
 
     /**
@@ -62,4 +86,5 @@ class PermissionManager {
 }
 
 export default PermissionManager;
-export { Permissions, isAdminLevelPermission };
+export { Permissions, isAdminLevelPermission, Roles };
+

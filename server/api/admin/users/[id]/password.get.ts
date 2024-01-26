@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
 import User from "~/server/Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {
@@ -71,3 +71,4 @@ function createRandomPassword(length: number = 10): string {
 
     return password;
 }
+
