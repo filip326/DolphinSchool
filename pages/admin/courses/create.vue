@@ -53,7 +53,7 @@ export default {
         async createCourse() {
             const response = await useFetch("/api/admin/courses", {
                 method: "post",
-                body: {},
+                body: this.course,
             });
             if (response.status.value !== "success") {
                 this.error = "Das Erstellen des Kurses ist fehlgeschlagen.";
@@ -81,6 +81,9 @@ export default {
 <template>
     <h1>Kurs erstellen</h1>
     <VForm @submit.prevent="createCourse">
+        <VAlert v-if="error" type="error">
+            {{ error }}
+        </VAlert>
         <VCard>
             <VCardTitle> Generelles </VCardTitle>
             <VCardText>
@@ -156,3 +159,4 @@ export default {
         </VCard>
     </VForm>
 </template>
+
