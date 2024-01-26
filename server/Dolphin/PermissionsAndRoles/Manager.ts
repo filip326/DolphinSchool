@@ -57,6 +57,8 @@ class PermissionManager {
         }
     }
 
+    // todo function to calculate permissions from roles
+
     /**
      * Allows a user a permission and adds it to the permission manager
      * @param permission
