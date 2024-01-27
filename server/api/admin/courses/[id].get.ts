@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import Course from "~/server/Dolphin/Course/Course";
 import Subject from "~/server/Dolphin/Course/Subject";
-import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import User from "~/server/Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {
@@ -80,4 +80,3 @@ export default defineEventHandler(async (event) => {
         members,
     };
 });
-

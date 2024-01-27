@@ -1,4 +1,4 @@
-import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
 import User from "../../../Dolphin/User/User";
 
@@ -55,4 +55,3 @@ export default defineEventHandler(async (event) => {
 
     return "Ok";
 });
-

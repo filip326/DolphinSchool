@@ -1,4 +1,4 @@
-import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import Course from "~/server/Dolphin/Course/Course";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
 
@@ -283,4 +283,3 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
 
     return navbar;
 });
-

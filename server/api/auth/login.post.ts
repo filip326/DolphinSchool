@@ -1,7 +1,7 @@
 import User from "../../Dolphin/User/User";
 import Session from "../../Dolphin/Session/Session";
 import BruteForceProtection from "../../Dolphin/BruteForceProtection/BruteForceProtection";
-import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 
 export default eventHandler(async (event) => {
     const { username, password } = await readBody(event);
@@ -119,4 +119,3 @@ export default eventHandler(async (event) => {
     // send response with username
     return "Login successful";
 });
-

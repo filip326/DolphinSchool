@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import User from "~/server/Dolphin/User/User";
 
 export default eventHandler(async (event) => {
@@ -23,4 +23,3 @@ export default eventHandler(async (event) => {
         statusCode: 200,
     };
 });
-

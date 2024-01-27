@@ -89,4 +89,3 @@ class PermissionManager {
 
 export default PermissionManager;
 export { Permissions, isAdminLevelPermission, Roles };
-

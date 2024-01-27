@@ -2,7 +2,7 @@ import Dolphin from "../Dolphin";
 import { Collection, Filter, ObjectId, WithId } from "mongodb";
 import { UserType } from "./UserTypes";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
-import PermissionManager, { Permissions } from "../PermissionsAndRoles/Manager";
+import PermissionManager, { Permissions } from "../PermissionsAndRoles/PermissionManager";
 import { compare, hash } from "bcrypt";
 import { ISubject } from "../Course/Subject";
 
@@ -769,4 +769,3 @@ class User implements WithId<IUser> {
 
 export default User;
 export { IUser };
-

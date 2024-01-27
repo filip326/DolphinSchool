@@ -4,7 +4,7 @@ import Course, {
     // CreateSingleClassCourseOptions,
     ICourse,
 } from "~/server/Dolphin/Course/Course";
-import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
 import User from "~/server/Dolphin/User/User";
 
@@ -259,4 +259,3 @@ export default defineEventHandler(async (event) => {
         id: courseCreate._id.toHexString(),
     };
 });
-

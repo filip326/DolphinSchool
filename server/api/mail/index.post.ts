@@ -3,7 +3,7 @@ import { ASMSQResponseTypes } from "~/server/Dolphin/ASMSQ/ASMSQ";
 import Course from "~/server/Dolphin/Course/Course";
 import Message from "~/server/Dolphin/Messenger/Message";
 import UserMessage from "~/server/Dolphin/Messenger/UserMessage";
-import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
 import User from "~/server/Dolphin/User/User";
 
@@ -311,4 +311,3 @@ export default eventHandler(async (event) => {
         },
     };
 });
-

@@ -1,5 +1,5 @@
 import Subject from "~/server/Dolphin/Course/Subject";
-import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/Manager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 
 export default defineEventHandler(async (event) => {
     // check for permission
@@ -26,4 +26,3 @@ export default defineEventHandler(async (event) => {
         color: { r: subject.color.r, g: subject.color.g, b: subject.color.b },
     }));
 });
-
