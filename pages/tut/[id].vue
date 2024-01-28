@@ -3,13 +3,20 @@ definePageMeta({
     layout: "default",
 });
 
+type Student = {
+    name: string;
+    id: string;
+};
+
 export default {
     data(): {
-        openTab: "main";
+        openTab: "main" | "students";
         loadingState: "loading" | "done" | "error";
         courseName: string;
         courseTeacher: string;
         courseViceTeacher?: string;
+
+        students?: Student[];
     } {
         return {
             openTab: "main",
@@ -17,6 +24,7 @@ export default {
             courseName: "",
             courseTeacher: "",
             courseViceTeacher: undefined,
+            students: undefined,
         };
     },
 
@@ -24,11 +32,8 @@ export default {
         const courseId = this.$route.params.id;
 
         try {
-            const response = await useFetch("/api/tut/:id", {
+            const response = await useFetch(`/api/tut/${courseId}`, {
                 method: "GET",
-                params: {
-                    id: courseId,
-                },
             });
             if (response.status.value === "success") {
                 const data = await response.data.value;
@@ -43,23 +48,71 @@ export default {
             this.loadingState = "error";
         }
     },
+    methods: {
+        async loadStudentsList() {
+            if (this.students !== undefined) {
+                return;
+            }
+            const courseId = this.$route.params.id;
+
+            try {
+                const response = await useFetch(`/api/tut/${courseId}/students`, {
+                    method: "GET",
+                });
+                if (response.status.value === "success") {
+                    const data = await response.data.value;
+                    this.students = data ?? [];
+                }
+            } catch {
+                this.loadingState = "error";
+            }
+        },
+    },
 };
 </script>
 
 <template>
     <VCard v-if="loadingState === 'done'">
-        <VCardTitle> {{ courseName }} </VCardTitle>
+        <VCardTitle> Klasse/Tut-Kurs {{ courseName }} </VCardTitle>
         <VCardText>
             <VTabs v-model="openTab">
-                <VTab value="main"> Main </VTab>
+                <VTab value="main"> Infos </VTab>
+                <VTab value="students" @click="loadStudentsList"> Schüler*innen </VTab>
             </VTabs>
             <VWindow v-model="openTab">
                 <VWindowItem value="main">
-                    <p><VIcon>mdi-teacher</VIcon> {{ courseTeacher }}</p>
-
-                    <p v-if="courseViceTeacher">
-                        <VIcon>mdi-teacher</VIcon> {{ courseViceTeacher }}
-                    </p>
+                    <h3>Lehrkraft</h3>
+                    <p><VIcon>mdi-human-male-board</VIcon> {{ courseTeacher }}</p>
+                    <template v-if="courseViceTeacher">
+                        <h4>Vertretungslehrkraft</h4>
+                        <p><VIcon>mdi-teacher</VIcon> {{ courseViceTeacher }}</p>
+                    </template>
+                </VWindowItem>
+                <VWindowItem value="students">
+                    <h3>Schülerinnen und Schüler</h3>
+                    <template v-if="students == undefined">
+                        <VProgressCircular indeterminate></VProgressCircular>
+                    </template>
+                    <template v-else-if="students.length === 0">
+                        <p>
+                            Keine Schülerinnen und Schüler in der Klasse/im Kurs
+                            {{ courseName }}
+                        </p>
+                    </template>
+                    <template v-else>
+                        <p>
+                            Schülerinnen und Schüler in der Klasse/im Kurs
+                            {{ courseName }}
+                        </p>
+                        <VList>
+                            <VListItem v-for="student in students" :key="student.id">
+                                <VListItemIcon>
+                                    <VIcon>mdi-account</VIcon>
+                                </VListItemIcon>
+                                <VListItemText>{{ student.name }}</VListItemText>
+                            </VListItem>
+                        </VList>
+                    </template>
                 </VWindowItem>
             </VWindow>
         </VCardText>
@@ -75,4 +128,8 @@ export default {
     </VCard>
 </template>
 
-<style scoped></style>
+<style scoped>
+.v-window-item {
+    padding: 5px;
+}
+</style>
