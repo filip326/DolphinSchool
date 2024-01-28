@@ -21,9 +21,9 @@
     border-radius: 10px;
     width: 100%;
     position: absolute;
-    right: 10%;
     top: 50%;
-    transform: translate(0, -50%);
+    left: 50%;
+    transform: translate(-50%, -45%);
     display: grid;
     gap: 20px;
     grid-template-columns: 1fr 1fr;
