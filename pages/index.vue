@@ -3,7 +3,7 @@ import QRCode from "qrcode";
 import { client as pwless } from "@passwordless-id/webauthn";
 
 definePageMeta({
-    layout: "login",
+    redirect: "/login",
 });
 export default {
     data() {

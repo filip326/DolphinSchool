@@ -112,6 +112,10 @@ export default eventHandler(async (event) => {
     }
     await session.activate();
 
+    if (user.changePasswordRequired) {
+        return "continue with password change";
+    }
+
     if (user.askForMFASetup) {
         return "continue with 2fa setup";
     }
