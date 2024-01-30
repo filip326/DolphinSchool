@@ -417,7 +417,15 @@ export default {
                 </VCardText>
             </VWindowItem>
             <VWindowItem value="change_password"> Hello! change_password </VWindowItem>
-            <VWindowItem value="forgot_password"> Hello! forgot_password </VWindowItem>
+            <VWindowItem value="forgot_password">
+                <VCardTitle>Passwort vergessen</VCardTitle>
+                <VCardText>
+                    Falls Sie Ihr Passwort vergessen haben, können Sie hier ein neues
+                    Passwort beantragen. Sie erhalten von Ihrer Schule (z.B.
+                    Klassenlehrkraft) ein neues Passwort.
+                    <!-- TODO: implement a password reset form and backend logic @Barsch2006 -->
+                </VCardText>
+            </VWindowItem>
             <VWindowItem value="error">
                 <VCardTitle>upsy-daisy</VCardTitle>
                 <VCardText>
