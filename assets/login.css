@@ -48,3 +48,74 @@ button[type="submit"] {
     margin-top: 10px;
     width: 100%;
 }
+
+.v-card {
+    padding: 5px;
+}
+
+.v-card .v-img {
+    max-height: 100px;
+}
+
+.v-card-title {
+    text-align: center;
+    font-size: 2em;
+}
+
+.v-btn {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.v-btn.left-button {
+    justify-content: left;
+}
+
+.v-btn.small-btn {
+    font-size: 0.9em;
+}
+
+.v-btn .v-btn__append {
+    margin-left: auto;
+}
+
+.v-card-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        translate: -5px;
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+        translate: 5px;
+    }
+}
