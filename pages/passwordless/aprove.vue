@@ -145,12 +145,12 @@ export default {
             <VAlert v-if="error" type="error" :text="error_message" />
             <ul>
                 <li>
-                    Prüfe die URL in der Adresszeile des Browsers. Logge dich
-                    <u>nicht</u> ein, wenn du dir nicht sicher bist, dass du auf der
-                    offiziellen Website von DolphinSchool bist.
+                    Prüfen Sie die URL in der Adresszeile des Browsers. Loggen Sie sich
+                    <u>nicht</u> ein, wenn Sie sich nicht sicher sind, dass Sie auf der
+                    offiziellen Website von DolphinSchool sind.
                 </li>
-                <li>Drücke nun auf den Button weiter.</li>
-                <li>Du wirst automatisch angemeldet.</li>
+                <li>Drücken Sie nun auf den Button weiter unten.</li>
+                <li>Sie werden automatisch angemeldet.</li>
             </ul>
         </VCardText>
 
