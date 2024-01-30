@@ -152,7 +152,7 @@ export default {
                     </VCardText>
                 </VWindowItem>
                 <VWindowItem value="done">
-                    <VCardTitle>Passwordless Login</VCardTitle>
+                    <VCardTitle>Erfolgreich</VCardTitle>
                     <VCardText>
                         Die Einrichtung von Passwordless war erfolgreich. Sie können sich
                         nun mit Ihrem Smartphone anmelden. Nutzen Sie dafür den Button
@@ -168,7 +168,7 @@ export default {
                     </VCardText>
                 </VWindowItem>
                 <VWindowItem value="not-available">
-                    <VCardTitle>Passwordless Login</VCardTitle>
+                    <VCardTitle>nicht verfügbar</VCardTitle>
                     <VCardText>
                         Passwordless ist auf diesem Gerät leider nicht verfügbar.
                         <VBtn
