@@ -1,4 +1,4 @@
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import { SessionState } from "../../Dolphin/Session/Session";
 import Session from "../../Dolphin/Session/Session";
 

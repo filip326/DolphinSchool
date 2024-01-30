@@ -1,17 +1,18 @@
-<script>
+<script lang="ts">
 export default {
     data() {
         return {
+            formState: "old_password" as
+                | "old_password"
+                | "checking_old_password"
+                | "info"
+                | "new_password"
+                | "confirm_password",
             old_pwd: "",
             new_pwd: "",
             rules: {
-                required: (v) => !!v || "Dieses Feld ist erforderlich!",
-                wiederholen: (v) =>
-                    v === this.new_pwd || "Die Passwörter stimmen nicht überein!",
-                notsame: (v) =>
-                    v !== this.old_pwd ||
-                    "Das neue Passwort muss sich vom alten unterscheiden!",
-                password: (v) => {
+                required: (v: string) => !!v || "Dieses Feld ist erforderlich!",
+                password: (v: string) => {
                     if (v.length < 10) {
                         return "Das Passwort muss mindestens 10 Zeichen lang sein!";
                     }
@@ -33,6 +34,52 @@ export default {
         };
     },
     methods: {
+        passwordMeetsRequirement(password: string): boolean {
+            // check some password requirements
+            if (password.length < 10) {
+                return false;
+            }
+            if (!/[a-z]/.test(password)) {
+                return false;
+            }
+            if (!/[A-Z]/.test(password)) {
+                return false;
+            }
+            if (!/[0-9]/.test(password)) {
+                return false;
+            }
+            return true;
+        },
+        async checkOldPassword() {
+            if (!this.old_pwd) {
+                return;
+            }
+            this.formState = "checking_old_password";
+
+            const serverResponse = await useFetch("/api/setup/pwd/verify_old", {
+                method: "POST",
+                body: {
+                    oldPassword: this.old_pwd,
+                },
+            });
+
+            if (serverResponse.status.value !== "success") {
+                this.error.message = "Das Passwort konnte leider nicht überprüft werden";
+                this.error.shown = true;
+                this.old_pwd = "";
+                this.formState = "old_password";
+                return;
+            }
+
+            if (serverResponse.data.value?.passwordValid) {
+                this.formState = "info";
+            } else {
+                this.error.message = "Das Passwort ist leider falsch!";
+                this.error.shown = true;
+                this.old_pwd = "";
+                this.formState = "old_password";
+            }
+        },
         async changePassword() {
             const response = await useFetch("/api/setup/pwd/change", {
                 method: "POST",
@@ -43,14 +90,14 @@ export default {
             });
 
             if (!response.data.value || response.error.value) {
-                if (response.error.value.statusCode === 200) {
+                if (response.error?.value?.statusCode === 200) {
                     await navigateTo("/home");
                     return;
                 }
 
                 this.error.shown = true;
                 this.error.message =
-                    response.error.value.statusCode === 400
+                    response.error?.value?.statusCode === 400
                         ? response.error.value.message
                         : "Passwort ändern fehlgeschlagen!";
                 return;
@@ -60,8 +107,8 @@ export default {
                 await navigateTo("/home");
                 return;
             } else {
-                this.error.shown = true;
                 this.error.message = "Das Passwort konnte nicht geändert werden!";
+                this.error.shown = true;
             }
         },
     },
@@ -76,76 +123,122 @@ export default {
 </script>
 
 <template>
-    <div class="settings_form">
-        <section class="settings_info">
-            <div>
-                <h1>Passwort ändern</h1>
-                <div>
+    <VCard>
+        <VCardTitle> Passwort ändern </VCardTitle>
+        <VWindow v-model="formState">
+            <VWindowItem value="old_password">
+                <VCardText>
+                    <p>Geben Sie bitte zunächst Ihr altes Passwort ein.</p>
+                    <VTextField
+                        type="password"
+                        label="Altes Passwort"
+                        v-model="old_pwd"
+                        :rules="[rules.required]"
+                        @keyup.enter="checkOldPassword()"
+                    />
+                    <VBtn
+                        color="primary"
+                        @click="checkOldPassword()"
+                        :disabled="!old_pwd"
+                    >
+                        Weiter
+                    </VBtn>
+                </VCardText>
+            </VWindowItem>
+            <VWindowItem value="checking_old_password">
+                <VCardText>
+                    <VProgressCircular indeterminate color="primary" />
+                    <p>Prüfe Passwort...</p>
+                </VCardText>
+            </VWindowItem>
+            <VWindowItem value="info">
+                <VCardText>
                     <p>
-                        Beachten Sie die folgenden Regeln für Ihres Passwort. Sie können
-                        Ihr Passwort jederzeit in den Einstellungen ändern.
+                        Bitte vergeben Sie im nächsten Schritt ein neues Passwort. Bitte
+                        achten Sie darauf, dass ihr Passwort sicher ist.
                     </p>
-                </div>
-                <ul>
-                    <li>Das Passwort muss mindestens 10 Zeichen lang sein.</li>
-                    <li>
-                        Das Passwort muss mindestens einen Kleinbuchstaben (a-z)
-                        enthalten.
-                    </li>
-                    <li>
-                        Das Passwort muss mindestens einen Großbuchstaben (A-Z) enthalten.
-                    </li>
-                    <li>Das Passwort muss mindestens eine Ziffer (0-9) enthalten.</li>
-                </ul>
-                <div>
-                    <p>
-                        Es wird empfohlen neben einem sicherem Passwort die
-                        Zwei-Faktor-Authentifizierung in den Einstellungen zu aktivieren.
-                        Weitere Informationen finden Sie beispielsweise auf der
-                        <a
-                            href="https://www.bsi.bund.de/DE/Themen/Verbraucherinnen-und-Verbraucher/Informationen-und-Empfehlungen/Cyber-Sicherheitsempfehlungen/Accountschutz/Sichere-Passwoerter-erstellen/sichere-passwoerter-erstellen_node.html"
-                        >
-                            Website des BSI
-                        </a>
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <VForm @submit.prevent="changePassword()">
-            <VAlert
-                v-if="error.shown"
-                type="error"
-                variant="text"
-                :text="error.message"
-            />
-
-            <p>
-                Geben Sie Ihr bisheriges Passwort ein. Wählen Sie anschließend ein neues
-                Passwort und wiederholen Sie dieses.
-            </p>
-
-            <VTextField
-                v-model="old_pwd"
-                label="bisheriges Passwort"
-                type="password"
-                :rules="[rules.required]"
-            />
-            <VTextField
-                v-model="new_pwd"
-                label="neues Passwort"
-                type="password"
-                :rules="[rules.required, rules.notsame, rules.password]"
-            />
-            <VTextField
-                label="Passwort wiederholen"
-                type="password"
-                :rules="[rules.required, rules.wiederholen, rules.password]"
-            />
-
-            <VBtn type="submit" color="primary" class="mr-4">Passwort ändern</VBtn>
-        </VForm>
-    </div>
+                    <ul>
+                        <li>
+                            Ein sicheres Passwort sollte mindestens 10 Zeichen lang sein.
+                        </li>
+                        <li>
+                            Ein sicheres Passwort sollte mindestens einen Kleinbuchstaben
+                            (a-z) enthalten.
+                        </li>
+                        <li>
+                            Ein sicheres Passwort sollte mindestens einen Großbuchstaben
+                            (A-Z) enthalten.
+                        </li>
+                        <li>
+                            Ein sicheres Passwort sollte mindestens eine Ziffer (0-9)
+                            enthalten.
+                        </li>
+                        <li>
+                            Ein sicheres Passwort sollte mindestens ein Sonderzeichen
+                            enthalten.
+                        </li>
+                        <li>
+                            Ihr Passwort sollte nicht Ihre persönlichen Daten wie z.B.
+                            Name, Geburtsdatum, oder die ihrer Freunde und Verwandte
+                            enththalten.
+                        </li>
+                    </ul>
+                    <VBtn color="primary" @click="formState = 'new_password'">
+                        Weiter
+                    </VBtn>
+                </VCardText>
+            </VWindowItem>
+            <VWindowItem value="new_password">
+                <VCardText>
+                    <p>Bitte vergeben Sie ein neues Passwort.</p>
+                    <VTextField
+                        type="password"
+                        label="Neues Passwort"
+                        v-model="new_pwd"
+                        :rules="[rules.required]"
+                        @keyup.enter="formState = 'confirm_password'"
+                    />
+                    <VBtn
+                        color="primary"
+                        @click="formState = 'confirm_password'"
+                        :disabled="!new_pwd || !passwordMeetsRequirement(new_pwd)"
+                    >
+                        Weiter
+                    </VBtn>
+                </VCardText>
+            </VWindowItem>
+            <VWindowItem value="confirm_password">
+                <VCardText>
+                    <p>Bitte geben Sie das Passwort erneut ein.</p>
+                    <VTextField
+                        type="password"
+                        label="Neues Passwort bestätigen"
+                        :rules="[rules.required]"
+                        @keyup.enter="changePassword()"
+                    />
+                    <VBtn color="primary" @click="changePassword()" :disabled="!new_pwd">
+                        Weiter
+                    </VBtn>
+                </VCardText>
+            </VWindowItem>
+        </VWindow>
+    </VCard>
+    <VDialog
+        v-model="error.shown"
+        @click:outside="error.shown = false"
+        persistent
+        @keyup.esc.prevent="error.shown = false"
+    >
+        <VCard>
+            <VCardTitle> Fehler </VCardTitle>
+            <VCardText>
+                <p>{{ error.message }}</p>
+            </VCardText>
+            <VCardActions>
+                <VBtn color="primary" @click="error.shown = false"> Schließen </VBtn>
+            </VCardActions>
+        </VCard>
+    </VDialog>
 </template>
 
 <style scoped>

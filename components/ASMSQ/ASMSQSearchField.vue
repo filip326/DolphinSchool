@@ -23,12 +23,22 @@ export default {
         }[];
         selected: string[];
         timeout: NodeJS.Timeout | null;
+        rules: {
+            required: (value: string | string[]) => boolean | string;
+        };
     } {
         return {
             searchText: "",
             suggestions: [],
             selected: [],
             timeout: null,
+            rules: {
+                required: (value: string | string[]) => {
+                    if (Array.isArray(value) && value.length === 0)
+                        return "Bitte wähle mindestens einen Eintrag aus.";
+                    else return !!value || "Bitte wähle einen Eintrag aus.";
+                },
+            },
         };
     },
     methods: {
@@ -72,7 +82,7 @@ export default {
             v-model:search="searchText"
             chips
             closable-chips
-            multiple
+            :multiple="multi"
             :items="suggestions"
             item-title="label"
             item-value="value"
@@ -83,8 +93,8 @@ export default {
                 $emit('update:modelValue', selected);
             "
             no-data-text="Suche nach passenden Vorschlägen..."
-        >
-        </VAutocomplete>
+            :rules="[rules.required]"
+        />
     </div>
 </template>
 

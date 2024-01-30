@@ -1,7 +1,7 @@
 import User from "../../Dolphin/User/User";
 import Session from "../../Dolphin/Session/Session";
 import BruteForceProtection from "../../Dolphin/BruteForceProtection/BruteForceProtection";
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 
 export default eventHandler(async (event) => {
     const { username, password } = await readBody(event);
@@ -111,6 +111,10 @@ export default eventHandler(async (event) => {
         return "continue with 2fa";
     }
     await session.activate();
+
+    if (user.changePasswordRequired) {
+        return "continue with password change";
+    }
 
     if (user.askForMFASetup) {
         return "continue with 2fa setup";

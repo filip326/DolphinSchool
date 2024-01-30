@@ -18,6 +18,10 @@ export default {
                     name: "2FA",
                     link: "/settings/security/totp/setup",
                 },
+                {
+                    name: "Passwordless",
+                    link: "/passwordless/setup",
+                },
             ] as Array<{ name: string; link: string }>,
         };
     },

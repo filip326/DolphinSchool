@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import {
     Permissions,
     isAdminLevelPermission,
-} from "~/server/Dolphin/Permissions/PermissionManager";
+} from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import User from "~/server/Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {

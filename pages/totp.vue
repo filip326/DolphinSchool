@@ -82,15 +82,13 @@ export default {
             <!--
             TODO: #12 make text field a otp field when released in vuetify
         -->
-            <VTextField
-                type="text"
+            <VOtpInput
+                :length="6"
+                focus-all
                 label="2FA-Code"
                 v-model="totp"
-                placeholder="123456"
-                hint="Geben Sie hier den Code ein."
                 :rules="[rules.required, rules.totpLength, rules.totpNumbers]"
-            >
-            </VTextField>
+            />
 
             <VBtn :loading="button.loading" type="submit" size="large" variant="outlined"
                 >Einloggen</VBtn

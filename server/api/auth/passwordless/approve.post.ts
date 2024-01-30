@@ -1,4 +1,4 @@
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import PasswordlessQR from "../../../Dolphin/Passwordless/PasswordlessQR";
 import User from "../../../Dolphin/User/User";
 

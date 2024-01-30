@@ -15,22 +15,21 @@
 }
 
 .loginform {
-    max-width: 800px;
     background-color: #111111;
     padding: 20px;
     border-radius: 10px;
-    width: 100%;
+    width: min(100%, 800px);
     position: absolute;
-    right: 10%;
     top: 50%;
-    transform: translate(0, -50%);
+    left: 50%;
+    transform: translate(-50%, -45%);
     display: grid;
     gap: 20px;
     grid-template-columns: 1fr 1fr;
 }
 
 .loginform.small {
-    width: 400px;
+    width: min(100%, 400px);
 
     grid-template-columns: 1fr;
 }
@@ -50,33 +49,73 @@ button[type="submit"] {
     width: 100%;
 }
 
-@media screen and (max-width: 800px) {
-    .login-wrapper {
-        display: block;
-        height: 100vh;
-        width: 100vw;
-        margin: 0;
-        padding: 0;
-        user-select: none;
-        top: 0;
-        left: 0;
-        position: relative;
-        z-index: 1;
+.v-card {
+    padding: 5px;
+}
+
+.v-card .v-img {
+    max-height: 100px;
+}
+
+.v-card-title {
+    text-align: center;
+    font-size: 2em;
+}
+
+.v-btn {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.v-btn.left-button {
+    justify-content: left;
+}
+
+.v-btn.small-btn {
+    font-size: 0.9em;
+}
+
+.v-btn .v-btn__append {
+    margin-left: auto;
+}
+
+.v-card-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+}
+
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
     }
-
-    .loginform {
-        position: relative;
-        right: 0;
-        top: 0;
-
-        transform: none;
-        display: flex;
-        flex-direction: column;
-
-        gap: 50px;
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        translate: -5px;
     }
-
-    .only-on-pc {
-        display: none;
+    20%,
+    40%,
+    60%,
+    80% {
+        translate: 5px;
     }
 }

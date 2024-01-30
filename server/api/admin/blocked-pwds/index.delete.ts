@@ -1,5 +1,5 @@
 import Dolphin from "~/server/Dolphin/Dolphin";
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 
 export default eventHandler(async (event) => {
     const checkAuthResult = await event.context.auth.checkAuth({

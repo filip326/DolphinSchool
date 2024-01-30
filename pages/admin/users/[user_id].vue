@@ -182,6 +182,12 @@ export default {
                             <VDialog
                                 activator="parent"
                                 v-model="passwordChange.show_confirmation_dialog"
+                                @click:outside="
+                                    passwordChange.show_confirmation_dialog = false
+                                "
+                                @keydown.esc.prevent="
+                                    passwordChange.show_confirmation_dialog = false
+                                "
                             >
                                 <VCard>
                                     <VCardTitle>
@@ -205,6 +211,9 @@ export default {
                                             color="error"
                                             :disabled="
                                                 passwordChange.loading_new_password
+                                            "
+                                            @click="
+                                                passwordChange.show_confirmation_dialog = false
                                             "
                                             >Abbrechen</VBtn
                                         >

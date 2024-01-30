@@ -26,7 +26,7 @@ export default async function checkAuth(options: {
     }
     if (whoamiRes.data.value?.mfa_required) {
         if (options.redirectOnMfaRequired) {
-            await navigateTo("/totp");
+            await navigateTo("/login");
             return {
                 authenticated: false,
                 mfa_required: true,
@@ -48,7 +48,7 @@ export default async function checkAuth(options: {
         if (whoamiRes.data.value?.authenticated) {
             if (whoamiRes.data.value.change_password_required) {
                 if (options.redirectOnPwdChange) {
-                    await navigateTo("/setup/chpwd");
+                    await navigateTo("/login");
                     return {
                         authenticated: false,
                         password_change_required: true,

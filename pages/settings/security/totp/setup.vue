@@ -54,11 +54,12 @@
                 <VProgressCircular v-else indeterminate color="primary" />
             </div>
 
-            <VTextField
+            <VOtpInput
                 v-model="code"
                 label="Code"
                 name="code"
                 type="text"
+                focus-all
                 :rules="[rules.required, rules.totpLength, rules.totpNumbers]"
             />
 

@@ -10,6 +10,7 @@ definePageMeta({
 export default {
     data() {
         return {
+            formState: "info",
             debug_log: "",
             loading: true,
             challenge: "",
@@ -19,20 +20,20 @@ export default {
     },
     methods: {
         async setupPasswordless() {
-            this.loading = true;
+            this.formState = "setting-up";
 
             // check if passwordless is available
             if (!pwless.isAvailable()) {
-                navigateTo("/passwordless/not-avaible");
+                this.formState = "not-available";
                 return;
             }
             if (!pwless.isLocalAuthenticator()) {
-                navigateTo("/passwordless/not-avaible");
+                this.formState = "not-available";
                 return;
             }
 
             if (!this.challenge) {
-                navigateTo("/passwordless/not-avaible");
+                this.formState = "not-available";
                 return;
             }
 
@@ -57,12 +58,12 @@ export default {
             });
 
             if (response.status.value !== "success") {
-                navigateTo("/passwordless/not-avaible");
+                this.formState = "not-available";
                 return;
             }
 
             // redirect to dashboard
-            navigateTo("/passwordless/setup-success");
+            this.formState = "done";
         },
     },
     async beforeCreate() {
@@ -74,12 +75,17 @@ export default {
     },
     async beforeMount() {
         if (!pwless.isAvailable()) {
-            navigateTo("/passwordless/not-avaible");
+            this.formState = "not-available";
             return;
         }
 
         if (!pwless.isLocalAuthenticator()) {
-            navigateTo("/passwordless/not-avaible");
+            this.formState = "not-available";
+            return;
+        }
+
+        if (localStorage.getItem("passwordless")) {
+            this.formState = "done";
             return;
         }
 
@@ -87,7 +93,7 @@ export default {
             method: "GET",
         });
         if (response.status.value !== "success") {
-            navigateTo("/passwordless/not-avaible");
+            this.formState = "not-available";
             return;
         }
 
@@ -96,7 +102,7 @@ export default {
         this.username = response.data.value.username;
 
         if (!this.challenge || !this.token || !this.username) {
-            navigateTo("/passwordless/not-avaible");
+            this.formState = "not-available";
             return;
         }
 
@@ -106,34 +112,81 @@ export default {
 </script>
 
 <template>
-    <div class="loginform">
-        <div>
-            <h1>passwordless Login</h1>
-            <p>
-                Mit passwordless Login können Sie sich auf diesem Gerät ohne Passwort
-                anmelden. Zusätzlich können Sie sich auf anderen Geräten durch scannen des
-                QR-Codes sehr einfach und sicher anmelden. Aktivieren Sie diese Funktion
-                nur, wenn Sie eine sichere Bildschirmsperre eingerichtet haben.
-            </p>
-            <p>
-                <b>Wichtig:</b> Falls Sie sich entscheiden das Passwort zu deaktivieren,
-                können Sie sich nur noch anmelden, indem Sie mit diesem Gerät den QR-Code
-                scannen. Auf diesem Gerät bleiben Sie angemeldet. Benutzen Sie diese
-                Option <u>nur</u>, wenn es sich um Ihr Smartphone handelt.
-            </p>
-        </div>
-        <VForm @submit.prevent="setupPasswordless()">
-            <h1>Einrichten:</h1>
-            <VCheckbox label="Dies ist mein eigenes, privates Gerät" />
-            <VCheckbox
-                label="Ich habe auf diesem Gerät eine sichere Bildschirmsperre (PIN, Passwort, Fingerabdruck oder Gesichtserkennung) eingerichtet"
-            />
-            <VCheckbox
-                label="Die Anmeldung mit Passwort nach der Einrichtung deaktivieren. Dadurch kann ich mich nur noch anmelden, in dem ich mit diesem Gerät den QR-Code scanne. Dies erhöht die Kontosicherheit erheblich."
-            />
-            <VBtn type="submit" :loading="loading" color="primary"> Einrichten </VBtn>
-            <VBtn type="button"> Überspringen </VBtn>
-        </VForm>
+    <div class="loginform small">
+        <VCard>
+            <VWindow
+                v-model="formState"
+                :touch="{
+                    start() {},
+                    end() {},
+                    left() {},
+                    right() {},
+                    down() {},
+                    up() {},
+                    move() {},
+                }"
+            >
+                <VWindowItem value="info">
+                    <VCardTitle>Passwordless Login</VCardTitle>
+                    <VCardText>
+                        Durch die Verwendung von Passwordless Login können Sie sich ohne
+                        ihr Passwort auf diesem und andren Geräten anmelden. Nach der
+                        Einrichtung können Sie sich nur durch das Scannen eines QR-Codes
+                        mit ihrer Kamera anmelden.
+                        <VBtn
+                            color="primary"
+                            @click="setupPasswordless"
+                            append-icon="mdi-chevron-right"
+                            >Einrichten</VBtn
+                        >
+                        <VBtn
+                            color="text"
+                            to="/home"
+                            class="left-button"
+                            prepend-icon="mdi-chevron-left"
+                            >Zurück zur Startseite</VBtn
+                        >
+                    </VCardText>
+                </VWindowItem>
+                <VWindowItem value="setting-up">
+                    <VCardTitle>Passwordless Login</VCardTitle>
+                    <VCardText>
+                        Die Einrichtung von Passwordless hat begonnen. Bitte folgen Sie
+                        den Anweisungen Ihres Browsers/Betriebssystems.
+                        <VProgressCircular indeterminate color="primary" />
+                    </VCardText>
+                </VWindowItem>
+                <VWindowItem value="done">
+                    <VCardTitle>Erfolgreich</VCardTitle>
+                    <VCardText>
+                        Die Einrichtung von Passwordless war erfolgreich. Sie können sich
+                        nun mit Ihrem Smartphone anmelden. Nutzen Sie dafür den Button
+                        "Passwordless" auf der
+                        Login-Maske.
+                        <VBtn
+                            color="text"
+                            to="/home"
+                            class="left-button"
+                            prepend-icon="mdi-chevron-left"
+                            >Zurück zur Startseite</VBtn
+                        >
+                    </VCardText>
+                </VWindowItem>
+                <VWindowItem value="not-available">
+                    <VCardTitle>nicht verfügbar</VCardTitle>
+                    <VCardText>
+                        Passwordless ist auf diesem Gerät leider nicht verfügbar.
+                        <VBtn
+                            color="text"
+                            to="/home"
+                            class="left-button"
+                            prepend-icon="mdi-chevron-left"
+                            >Zurück zur Startseite</VBtn
+                        >
+                    </VCardText>
+                </VWindowItem>
+            </VWindow>
+        </VCard>
     </div>
 </template>
 

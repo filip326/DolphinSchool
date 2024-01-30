@@ -1,5 +1,5 @@
 import Subject from "~/server/Dolphin/Course/Subject";
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 
 export default defineEventHandler(async (event) => {
     // check for permission

@@ -32,6 +32,7 @@ class PasswordlessQR {
             url: string;
             challenge: string;
             tokenSHA256: string;
+            expires: number;
         }>
     > {
         this.tick();
@@ -63,6 +64,7 @@ class PasswordlessQR {
                 url: `${process.env.DOMAIN}/passwordless/aprove?token=${tokenSHA256}&challenge=${challenge}`,
                 challenge,
                 tokenSHA256,
+                expires: expirery,
             },
             null,
         ];
@@ -162,20 +164,12 @@ class PasswordlessQR {
             return [false, null];
         }
 
-        const user = await dolphin.database.collection<User>("users").findOne({
-            _id: challenge.user,
-        });
-
-        if (!user) {
-            return [undefined, DolphinErrorTypes.FAILED];
-        }
-
         // login successful, delete token since it's single use
         await dolphin.database.collection<IPasswordlessQR>("passwordless").deleteOne({
             token,
         });
 
-        return [user, null];
+        return User.getUserById(challenge.user);
     }
 
     static async register(

@@ -1,5 +1,6 @@
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
+import User from "~/server/Dolphin/User/User";
 
 export default defineEventHandler(async (event) => {
     const { success, statusCode } = await event.context.auth.checkAuth({
@@ -61,16 +62,36 @@ export default defineEventHandler(async (event) => {
         });
     }
 
+    const returnCourses: {
+        name: string;
+        id: string;
+        teacher: string;
+        student_count: number;
+    }[] = [];
+
+    await Promise.all(
+        courses.map(async (course) => {
+            const [teacher, teacherFindError] = await User.getUserById(course.teacher);
+            if (teacherFindError) {
+                throw createError({
+                    statusCode: 500,
+                    message: "Error while finding teacher",
+                });
+            }
+            returnCourses.push({
+                name: course.name,
+                id: course._id.toHexString(),
+                teacher: teacher?.fullName ?? `Unknown <${course.teacher}>`,
+                student_count: course.students.length,
+            });
+        }),
+    );
+
     // return courses as
     // { name: string;
     // id: string;
     // teacher: string;
     // student_count: number; }[]
 
-    return courses.map((course) => ({
-        name: course.name,
-        id: course._id.toHexString(),
-        teacher: course.teacher,
-        student_count: course.students.length,
-    }));
+    return returnCourses;
 });

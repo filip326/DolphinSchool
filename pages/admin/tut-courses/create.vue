@@ -56,7 +56,15 @@ export default {
             return true;
         },
         async createClass() {
-            if (!this.year || this.teacherId.length <= 0) {
+            if (!this.year || this.teacherId.length === 0) {
+                console.log(
+                    "year: ",
+                    this.year,
+                    "teacherId: ",
+                    this.teacherId,
+                    "userIds: ",
+                    this.userIds,
+                );
                 this.error = {
                     shown: true,
                     msg: "Bitte füllen Sie alle Felder aus",
@@ -103,7 +111,7 @@ export default {
                     :rules="[rules.required]"
                     @update:model-value="sek1.className = year.toString()"
                 ></VSelect>
-                <SearchUser label="Lehrkraft" :limit="1" @modelValue="setTeacherId" />
+                <SearchUser label="Lehrkraft" :limit="1" v-model="teacherId" />
                 <template v-if="typeof year === 'number' && year < 11">
                     <VTextField
                         label="Klassenname"
@@ -118,7 +126,7 @@ export default {
             <VCardText>
                 Hier können Schüler:innen hinzugefügt werden. Dies können Sie auch später
                 tun.
-                <SearchUser label="Schüler:innen" @user-ids="setUserIds" />
+                <SearchUser label="Schüler:innen" v-model="userIds" />
             </VCardText>
             <VAlert v-if="error.shown" type="error" title="Error" :text="error.msg" />
             <VCardActions>

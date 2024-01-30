@@ -1,4 +1,4 @@
-import { Permissions } from "~/server/Dolphin/Permissions/PermissionManager";
+import { Permissions } from "~/server/Dolphin/PermissionsAndRoles/PermissionManager";
 import Course from "~/server/Dolphin/Course/Course";
 import TutCourse from "~/server/Dolphin/Tut/TutCourse";
 
@@ -275,8 +275,7 @@ export default defineEventHandler(async (event): Promise<NavBar> => {
         label: "Einstellungen",
         location: "/settings",
         children: [
-            { label: "Profil", location: "/settings/profile" },
-            { label: "Passwort", location: "/settings/password" },
+            { label: "Passwort", location: "/settings/security/chpwd" },
             { label: "E-Mails", location: "/settings/notifications/mail" },
             { label: "Benachrichtigungen", location: "/settings/notifications/push" },
         ],

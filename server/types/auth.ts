@@ -1,5 +1,5 @@
 import User from "../Dolphin/User/User";
-import { Permissions } from "../Dolphin/Permissions/PermissionManager";
+import { Permissions } from "../Dolphin/PermissionsAndRoles/PermissionManager";
 
 interface CheckAuthOptions {
     PermissionLevel?: Permissions;

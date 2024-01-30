@@ -563,4 +563,3 @@ class Course implements WithId<ICourse> {
 
 export default Course;
 export { ICourse, CreateSingleClassCourseOptions, CreateCourseOptions };
-
