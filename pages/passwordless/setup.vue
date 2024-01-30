@@ -84,6 +84,11 @@ export default {
             return;
         }
 
+        if (localStorage.getItem("passwordless")) {
+            this.formState = "done";
+            return;
+        }
+
         const response = await useFetch("/api/auth/passwordless/setup", {
             method: "GET",
         });
@@ -156,7 +161,7 @@ export default {
                     <VCardText>
                         Die Einrichtung von Passwordless war erfolgreich. Sie können sich
                         nun mit Ihrem Smartphone anmelden. Nutzen Sie dafür den Button
-                        "PasswordlessQR" oder "Als {{ username }} anmelden" auf der
+                        "Passwordless" auf der
                         Login-Maske.
                         <VBtn
                             color="text"

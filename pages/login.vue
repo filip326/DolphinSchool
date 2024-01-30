@@ -1,5 +1,6 @@
 <script lang="ts">
 import { toDataURL } from "qrcode";
+import { client as pwless } from "@passwordless-id/webauthn";
 
 definePageMeta({
     layout: "login",
@@ -99,6 +100,8 @@ export default {
                     this.formState = "passwordless";
                     console.log("done");
                 });
+            } else {
+                return;
             }
 
             if (this.passwordlessQRInterval) {
@@ -108,6 +111,57 @@ export default {
                 this.passwordlessTick,
                 1000 * 20, // every 20 seconds
             );
+
+            if (!pwless.isAvailable() || !pwless.isLocalAuthenticator()) {
+                return;
+            }
+            const passwordlessLocalData = localStorage.getItem("passwordless");
+            if (passwordlessLocalData) {
+                const data = JSON.parse(passwordlessLocalData);
+                if (data.username && data.credId) {
+                    this.formState = "loading";
+                    const result = await pwless.authenticate(
+                        [data.credId],
+                        response.data.value!.challenge,
+                        {
+                            userVerification: "required",
+                        },
+                    );
+                    if (!result) {
+                        return;
+                    }
+                    const aprovalResponse = await useFetch(
+                        "/api/auth/passwordless/approve",
+                        {
+                            method: "post",
+                            body: {
+                                username: data.username,
+                                tokenHash: response.data.value!.tokenHash,
+                                signed: result,
+                            },
+                        },
+                    );
+
+                    if (aprovalResponse.status.value === "success") {
+                        const loginResponse = await useFetch(
+                            "/api/auth/passwordless/login",
+                            {
+                                method: "post",
+                                body: {
+                                    token: response.data.value!.token,
+                                },
+                            },
+                        );
+                        if (loginResponse.status.value === "success") {
+                            if (loginResponse.data.value === "Login successful") {
+                                navigateTo("/home");
+                                return;
+                            }
+                        }
+                    }
+                    this.formState = "passwordless";
+                }
+            }
         },
         zurueckAufLos() {
             this.formState = "start";
@@ -306,7 +360,7 @@ export default {
                         append-icon="mdi-chevron-right"
                         class="small-btn"
                         @click="openPasswordless"
-                        >Passwordless-QR</VBtn
+                        >Passwordless</VBtn
                     >
                     <VBtn variant="text" append-icon="mdi-chevron-right" class="small-btn"
                         >Passwort vergessen</VBtn
@@ -382,6 +436,4 @@ export default {
     </VCard>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
