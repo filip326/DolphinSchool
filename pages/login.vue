@@ -34,6 +34,17 @@ export default {
         };
         passwordlessQr: PasswordlessQRData[];
         passwordlessQRInterval?: NodeJS.Timeout;
+        support: {
+            description: string;
+            fullName: string;
+            tut: string;
+            teacher: string;
+            email: string;
+        };
+        rules: {
+            required: (value: string) => boolean | string;
+            email: (value: string) => boolean | string;
+        };
     } {
         return {
             formState: "start",
@@ -46,6 +57,17 @@ export default {
                 otpLoading: false,
             },
             passwordlessQr: [],
+            support: {
+                description: "",
+                fullName: "",
+                tut: "",
+                teacher: "",
+                email: "",
+            },
+            rules: {
+                required: (value: string) => !!value || "Erforderlich",
+                email: (value: string) => /.+@.+/.test(value) || "Ungültige E-Mail",
+            },
         };
     },
 
@@ -423,7 +445,52 @@ export default {
                     Falls Sie Ihr Passwort vergessen haben, können Sie hier ein neues
                     Passwort beantragen. Sie erhalten von Ihrer Schule (z.B.
                     Klassenlehrkraft) ein neues Passwort.
-                    <!-- TODO: implement a password reset form and backend logic @Barsch2006 -->
+                    <VForm @submit.prevent="">
+                        <VTextField
+                            label="Voller Name"
+                            v-model="support.fullName"
+                            :rules="[rules.required]"
+                        />
+                        <VTextField
+                            label="E-Mail"
+                            type="email"
+                            hint="Deine private E-Mail Adresse, die unter der wir dich erreichen können, falls bei uns Fragen auftreten."
+                            v-model="support.email"
+                            :rules="[rules.required, rules.email]"
+                        />
+                        <VTextField
+                            label="Deine Klasse/ Tutorium"
+                            v-model="support.tut"
+                            :rules="[rules.required]"
+                        />
+                        <VTextField
+                            label="Klassenlehrkraft"
+                            v-model="support.teacher"
+                            :rules="[rules.required]"
+                        />
+                        <VTextarea
+                            label="Beschreibung"
+                            hint="Beschreibe uns dein Problem. Wir werden uns so schnell wie möglich bei dir melden."
+                            v-model="support.description"
+                        />
+                        <VBtn
+                            variant="outlined"
+                            append-icon="mdi-chevron-right"
+                            class="small-btn"
+                            type="submit"
+                        >
+                            Absenden
+                        </VBtn>
+                        <VBtn
+                            type="button"
+                            variant="outlined"
+                            prepend-icon="mdi-chevron-left"
+                            class="small-btn left-button"
+                            @click="zurueckAufLos"
+                        >
+                            Zurück
+                        </VBtn>
+                    </VForm>
                 </VCardText>
             </VWindowItem>
             <VWindowItem value="error">
