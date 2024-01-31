@@ -22,7 +22,8 @@ export default {
             | "change_password"
             | "totp"
             | "passwordless"
-            | "error";
+            | "error"
+            | "pwd-reset-success";
 
         login: {
             username: string;
@@ -326,6 +327,17 @@ export default {
                 this.login.otpShake = false;
             }, 500);
         },
+        async submitPwdForgot() {
+            const res = await useFetch("/api/support", {
+                method: "post",
+                body: this.support,
+            });
+            if (res.status.value === "success") {
+                this.formState = "pwd-reset-success";
+            } else {
+                // todo error handling
+            }
+        },
     },
     async beforeCreate() {
         const auth = await checkAuth({
@@ -491,6 +503,21 @@ export default {
                             Zurück
                         </VBtn>
                     </VForm>
+                </VCardText>
+            </VWindowItem>
+            <VWindowItem value="pwd-reset-success">
+                <VCardTitle>Passwort vergessen</VCardTitle>
+                <VCardText>
+                    Wir haben deine Anfrage erhalten. Wir werden uns so schnell wie
+                    möglich bei dir melden.
+                    <VBtn
+                        variant="outlined"
+                        prepend-icon="mdi-chevron-left"
+                        class="small-btn left-button"
+                        @click="zurueckAufLos"
+                    >
+                        Zurück
+                    </VBtn>
                 </VCardText>
             </VWindowItem>
             <VWindowItem value="error">
