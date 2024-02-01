@@ -8,6 +8,7 @@ interface SupportItem {
     };
     failed: boolean;
     date: number;
+    solved?: boolean;
 }
 
 class SupportManager {

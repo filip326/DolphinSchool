@@ -81,7 +81,6 @@ export default defineEventHandler(async (event) => {
     }
 
     // todo: check if mail in user. if then send mail. if not:
-    // todo: add request to reset pwd to database
 
     const supportObj = await SupportManager.createSupport(username, krz, gebDate);
 
