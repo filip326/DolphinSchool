@@ -1,3 +1,4 @@
+import SupportManager from "~/server/Dolphin/Support/SupportManager";
 import User from "~/server/Dolphin/User/User";
 
 // sends every response after 45 seconds
@@ -24,10 +25,19 @@ export default defineEventHandler(async (event) => {
         return;
     }
 
-    // todo add support ticket to database
+    if (await SupportManager.supportBruthforceProtection(username)) {
+        setTimeout(() => {
+            throw createError({
+                status: 400,
+                message: "Invalid body",
+            });
+        }, 45000);
+        return;
+    }
 
     const [user, userErr] = await User.getUserByUsername(username);
     if (userErr || !user) {
+        await SupportManager.createFailedSupport(username, krz, gebDate);
         setTimeout(() => {
             throw createError({
                 status: 400,
@@ -38,6 +48,7 @@ export default defineEventHandler(async (event) => {
     }
 
     if (user.gebDate === gebDate) {
+        await SupportManager.createFailedSupport(username, krz, gebDate);
         setTimeout(() => {
             throw createError({
                 status: 400,
@@ -49,6 +60,7 @@ export default defineEventHandler(async (event) => {
 
     const [teacher, teacherErr] = await User.getUserByKrz(krz);
     if (teacherErr || !teacher) {
+        await SupportManager.createFailedSupport(username, krz, gebDate);
         setTimeout(() => {
             throw createError({
                 status: 400,
@@ -58,6 +70,7 @@ export default defineEventHandler(async (event) => {
         return;
     }
     if (!teacher.isTeacher()) {
+        await SupportManager.createFailedSupport(username, krz, gebDate);
         setTimeout(() => {
             throw createError({
                 status: 400,
@@ -70,7 +83,10 @@ export default defineEventHandler(async (event) => {
     // todo: check if mail in user. if then send mail. if not:
     // todo: add request to reset pwd to database
 
+    const supportObj = await SupportManager.createSupport(username, krz, gebDate);
+
     return {
         statusCode: 200,
+        inserted: supportObj,
     };
 });
