@@ -6,6 +6,7 @@ interface CreateUserOptions {
     type: UserType;
     password?: string;
     permissions?: number;
+    gebDate: string;
 }
 
 export default CreateUserOptions;

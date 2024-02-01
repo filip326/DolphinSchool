@@ -1,36 +1,76 @@
-export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+import User from "~/server/Dolphin/User/User";
 
-    // check body
-    if (!body) {
-        throw createError({
-            status: 400,
-            message: "Invalid body",
-        });
-    }
-    if (!body.fullName || !body.tut || !body.teacher || !body.email) {
+// sends every response after 45 seconds
+export default defineEventHandler(async (event) => {
+    const { username, krz, gebDate } = await readBody(event);
+
+    if (!username || !krz || !gebDate) {
         throw createError({
             status: 400,
             message: "Invalid body",
         });
     }
     if (
-        typeof body.fullName !== "string" ||
-        typeof body.tut !== "string" ||
-        typeof body.teacher !== "string" ||
-        typeof body.email !== "string"
+        typeof username !== "string" ||
+        typeof krz !== "string" ||
+        typeof gebDate !== "string"
     ) {
-        throw createError({
-            status: 400,
-            message: "Invalid body",
-        });
-    }
-    if (body.description && typeof body.description !== "string") {
-        throw createError({
-            status: 400,
-            message: "Invalid body",
-        });
+        setTimeout(() => {
+            throw createError({
+                status: 400,
+                message: "Invalid body",
+            });
+        }, 45000);
+        return;
     }
 
     // todo add support ticket to database
+
+    const [user, userErr] = await User.getUserByUsername(username);
+    if (userErr || !user) {
+        setTimeout(() => {
+            throw createError({
+                status: 400,
+                message: "Invalid body",
+            });
+        }, 45000);
+        return;
+    }
+
+    if (user.gebDate === gebDate) {
+        setTimeout(() => {
+            throw createError({
+                status: 400,
+                message: "Invalid body",
+            });
+        }, 45000);
+        return;
+    }
+
+    const [teacher, teacherErr] = await User.getUserByKrz(krz);
+    if (teacherErr || !teacher) {
+        setTimeout(() => {
+            throw createError({
+                status: 400,
+                message: "Invalid body",
+            });
+        }, 45000);
+        return;
+    }
+    if (!teacher.isTeacher()) {
+        setTimeout(() => {
+            throw createError({
+                status: 400,
+                message: "Invalid body",
+            });
+        }, 45000);
+        return;
+    }
+
+    // todo: check if mail in user. if then send mail. if not:
+    // todo: add request to reset pwd to database
+
+    return {
+        statusCode: 200,
+    };
 });

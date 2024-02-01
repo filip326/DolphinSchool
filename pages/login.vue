@@ -36,11 +36,9 @@ export default {
         passwordlessQr: PasswordlessQRData[];
         passwordlessQRInterval?: NodeJS.Timeout;
         support: {
-            description: string;
-            fullName: string;
-            tut: string;
-            teacher: string;
-            email: string;
+            username: string;
+            krz: string;
+            gebDate: string;
         };
         rules: {
             required: (value: string) => boolean | string;
@@ -59,11 +57,9 @@ export default {
             },
             passwordlessQr: [],
             support: {
-                description: "",
-                fullName: "",
-                tut: "",
-                teacher: "",
-                email: "",
+                username: "",
+                krz: "",
+                gebDate: "",
             },
             rules: {
                 required: (value: string) => !!value || "Erforderlich",
@@ -335,7 +331,12 @@ export default {
             if (res.status.value === "success") {
                 this.formState = "pwd-reset-success";
             } else {
-                // todo error handling
+                this.formState = "error";
+                this.support = {
+                    username: "",
+                    krz: "",
+                    gebDate: "",
+                };
             }
         },
     },
@@ -459,31 +460,21 @@ export default {
                     Klassenlehrkraft) ein neues Passwort.
                     <VForm @submit.prevent="">
                         <VTextField
-                            label="Voller Name"
-                            v-model="support.fullName"
+                            label="Benutzername"
+                            v-model="support.username"
                             :rules="[rules.required]"
                         />
                         <VTextField
-                            label="E-Mail"
-                            type="email"
-                            hint="Deine private E-Mail Adresse, die unter der wir dich erreichen können, falls bei uns Fragen auftreten."
-                            v-model="support.email"
-                            :rules="[rules.required, rules.email]"
-                        />
-                        <VTextField
-                            label="Deine Klasse/ Tutorium"
-                            v-model="support.tut"
+                            label="Geburtsdatum"
+                            v-model="support.gebDate"
                             :rules="[rules.required]"
                         />
                         <VTextField
                             label="Klassenlehrkraft"
-                            v-model="support.teacher"
+                            :max-lenght="4"
+                            v-model="support.krz"
+                            hint="Lediglich das Kürzel vom Vertretungsplan"
                             :rules="[rules.required]"
-                        />
-                        <VTextarea
-                            label="Beschreibung"
-                            hint="Beschreibe uns dein Problem. Wir werden uns so schnell wie möglich bei dir melden."
-                            v-model="support.description"
                         />
                         <VBtn
                             variant="outlined"

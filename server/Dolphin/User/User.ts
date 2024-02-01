@@ -2,7 +2,10 @@ import Dolphin from "../Dolphin";
 import { Collection, Filter, ObjectId, WithId } from "mongodb";
 import { UserType } from "./UserTypes";
 import MethodResult, { DolphinErrorTypes } from "../MethodResult";
-import PermissionManager, { Permissions } from "../PermissionsAndRoles/PermissionManager";
+import PermissionManager, {
+    Permissions,
+    Roles,
+} from "../PermissionsAndRoles/PermissionManager";
 import { compare, hash } from "bcrypt";
 import { ISubject } from "../Course/Subject";
 
@@ -22,6 +25,7 @@ interface IUser {
     mfa_setup_secret?: string;
     doNotAskForMFASetupUntil?: number;
     permissions: number;
+    roles: Roles[];
 
     deleted?: number;
 
@@ -33,6 +37,8 @@ interface IUser {
     //teacher properties
     subjects?: ISubject[];
     kuerzel?: string;
+
+    gebDate: string;
 
     webAuthNCredentials?: {
         [key: string]:
@@ -64,6 +70,16 @@ class User implements WithId<IUser> {
             deleted: { $lt: Date.now() - 1000 * 60 * 60 * 24 * 60 },
         });
         return dbResult.deletedCount;
+    }
+
+    static async getUserByKrz(krz: string): Promise<MethodResult<User>> {
+        const dolphin = Dolphin.instance ?? (await Dolphin.init(useRuntimeConfig()));
+        const userCollection = dolphin.database.collection<IUser>("users");
+        const user = await userCollection.findOne({ kuerzel: krz });
+        if (!user) {
+            return [undefined, DolphinErrorTypes.NOT_FOUND];
+        }
+        return [new User(userCollection, user), null];
     }
 
     /**
@@ -174,6 +190,8 @@ class User implements WithId<IUser> {
         const passwordHash = await hash(password, 12);
 
         const user: IUser = {
+            roles: [],
+            gebDate: options.gebDate,
             type: options.type,
             fullName: options.fullName,
             username: options.username,
@@ -232,6 +250,8 @@ class User implements WithId<IUser> {
 
     deleted?: number;
 
+    gebDate: string;
+
     _permissionManager: PermissionManager;
 
     userCollection: Collection<IUser>;
@@ -254,6 +274,8 @@ class User implements WithId<IUser> {
     private _totp?: OTPAuth.TOTP;
     private _setupTotp?: OTPAuth.TOTP;
 
+    roles: Roles[] = [];
+
     private constructor(collection: Collection<IUser>, user: WithId<IUser>) {
         this._id = user._id;
         this.type = user.type;
@@ -269,7 +291,8 @@ class User implements WithId<IUser> {
         this.subjects = user.subjects;
         this.kuerzel = user.kuerzel;
 
-        this._permissionManager = new PermissionManager(this.permissions);
+        this._permissionManager = new PermissionManager(this.permissions, this.roles);
+        this.gebDate = user.gebDate;
 
         this.userCollection = collection;
 
